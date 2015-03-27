@@ -8,6 +8,7 @@ import pprint
 from pyCTS import CTS_URN # https://github.com/mromanello/CTS_dev
 from surfext import *
 from rdflib import Literal
+import ConfigParser
 
 # register the namespaces
 surf.ns.register(ecrm="http://erlangen-crm.org/current/")
@@ -212,15 +213,12 @@ def get_citable_nodes(urn,catalog,scheme,perseus_getvalidreff="http://www.perseu
         prev_urn = urn
     return passage_nodes, part_of_relations,follow_relations
 def main():
-    
-    s = Store(  reader      = 'allegro_franz',
-                writer      = 'allegro_franz',
-                server      = 'de.digitalclassicist.org',
-                port        = 10035,
-                catalog     = 'python-catalog',
-                #repository  = 'hucit',
-                repository  = 'kb_test'
-                )
+    config = ConfigParser.ConfigParser()
+    config.readfp(open("agraph.ini"))
+    store_params = dict(config.items("surf"))
+    store_params['port'] = int(store_params['port']) # force the `port` to be an integer
+    s=Store(**store_params)
+
     """
     s = Store(  reader='rdflib',
                 writer='rdflib',
