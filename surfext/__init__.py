@@ -14,7 +14,7 @@ surf.ns.register(hucit="http://purl.org/net/hucit#")
 class HucitAuthor(object):
         """ TODO """
         def __repr__(self):
-            names = ["%s (@%s)"%(name[1],name[0]) for name in self.get_names()]
+            names = ["%s (@%s)"%(name[1].encode('utf-8'),name[0]) for name in self.get_names()]
             return "HucitAuthor (names=[%s],urn=%s)"%(",".join(names),self.get_urn())
         def get_names(self):
             """
@@ -79,7 +79,6 @@ class HucitAuthor(object):
             TODO
             """
             return [work  for creation in self.efrbroo_P14i_performed for work in creation.efrbroo_R16_initiated]
-
 class HucitWork(object):
     """docstring for HucitWork"""
     def __repr__(self):
@@ -140,7 +139,6 @@ class HucitWork(object):
         TODO
         """
         pass
-
 class HucitTextElement(object):
     """docstring for HucitTextElement"""
     def __repr__(self):

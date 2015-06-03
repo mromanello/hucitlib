@@ -2,6 +2,20 @@
 # -*- coding: utf-8 -*-
 # author: Matteo Romanello, matteo.romanello@gmail.com
 
+from franz.openrdf.sail.allegrographserver import AllegroGraphServer
+from franz.openrdf.repository.repository import Repository
+from franz.miniclient import repository
+from franz.openrdf.query.query import QueryLanguage
+from franz.openrdf.model import URI
+from franz.openrdf.vocabulary.rdf import RDF
+from franz.openrdf.vocabulary.rdfs import RDFS
+from franz.openrdf.vocabulary.owl import OWL
+from franz.openrdf.vocabulary.xmlschema import XMLSchema
+from franz.openrdf.query.dataset import Dataset
+from franz.openrdf.rio.rdfformat import RDFFormat
+from franz.openrdf.rio.rdfwriter import  NTriplesWriter
+from franz.openrdf.rio.rdfxmlwriter import RDFXMLWriter
+
 import requests # http://docs.python-requests.org
 from lxml import etree
 import pprint
@@ -9,12 +23,39 @@ from pyCTS import CTS_URN # https://github.com/mromanello/CTS_dev
 from surfext import *
 from rdflib import Literal
 import ConfigParser
+import argparse
+import rdflib
 
 # register the namespaces
 surf.ns.register(ecrm="http://erlangen-crm.org/current/")
 surf.ns.register(efrbroo="http://erlangen-crm.org/efrbroo/")
 surf.ns.register(kb="http://data.mr56k.info/")
 
+DESC = """
+Example usage:
+
+    python populate.py agraph.ini "urn:cts:latinLit:phi0134.phi004" "data/"
+
+"""
+
+def connect_to_3store(host, port, catalog, repository, user, password):
+    """
+    Connects to an AllegroGraph triple store.
+    """
+    server = AllegroGraphServer(host, port, user, password)
+    catalog = server.openCatalog(catalog)
+    myRepository = catalog.getRepository(repository, Repository.ACCESS)
+    myRepository.initialize()
+    return myRepository.getConnection()
+def export_triples(connection,output_file):
+    """
+    TODO
+    """
+    writer = NTriplesWriter(output_file)
+    connection.export(writer)
+    return
+def create_text_structure(class_name,work_urn):
+    pass
 def create_text_element_type(class_name, label):
     """
     Creates an instance of E55_Type corresponding to a type of TextElement (e.g. book, line, etc.)
@@ -37,7 +78,7 @@ def create_text_element(class_name,urn,label,text_element_type,text_structure):
         instance.rdfs_label = Literal(label,lang="en")
         ctsurn_uri = "%s#cts_urn"%str(instance.subject)
         ctsurn = Identifier(ctsurn_uri)
-        ctsurn.rdfs_label = Literal(label)
+        ctsurn.rdfs_label = Literal(urn)
         ctsurn.save()
         instance.ecrm_P1_is_identified_by = ctsurn
         instance.ecrm_P2_has_type = text_element_type
@@ -213,54 +254,81 @@ def get_citable_nodes(urn,catalog,scheme,perseus_getvalidreff="http://www.perseu
         prev_urn = urn
     return passage_nodes, part_of_relations,follow_relations
 def main():
+
+    parser = argparse.ArgumentParser(description=DESC)
+    parser.add_argument("config_file", help="File with parameters for connectiong with the AG triple store",type=str)
+    parser.add_argument("ctsurn", nargs="+", help="The CTS URN of the work to process",type=str)
+    parser.add_argument("out_dir", help="The directory where the generated triples should be written to",type=str)
+    args = parser.parse_args()
+
     config = ConfigParser.ConfigParser()
-    config.readfp(open("agraph.ini"))
+    config.readfp(open(args.config_file))
     store_params = dict(config.items("surf"))
     store_params['port'] = int(store_params['port']) # force the `port` to be an integer
     s=Store(**store_params)
-
     """
     s = Store(  reader='rdflib',
                 writer='rdflib',
                 rdflib_store = 'IOMemory')
     """
-    global ss
-    ss = surf.Session(s, {})
-    print >> sys.stderr, "the 3store contains %s triples"%ss.default_store.size()
-    ss.default_store.clear()
-    print >> sys.stderr, "the 3store contains %s triples"%ss.default_store.size()
-    # define classes
-    global Person, Work, Type, TextElement, TextStructure, Identifier
-    Person = ss.get_class(surf.ns.EFRBROO['F10_Person'])
-    Work = ss.get_class(surf.ns.EFRBROO['F1_Work'])
-    Type = ss.get_class(surf.ns.ECRM['E55_Type'])
-    TextElement = ss.get_class(surf.ns.HUCIT['TextElement'])
-    TextStructure = ss.get_class(surf.ns.HUCIT['TextStructure'])
-    Identifier = ss.get_class(surf.ns.ECRM['E42_Identifier'])
-    # define the mapping between classes and object definitions
-    ss.mapping[surf.ns.EFRBROO.F10_Person] = HucitAuthor
-    ss.mapping[surf.ns.EFRBROO.F1_Work] = HucitWork
 
     catalog = parse_perseus_catalog()
-    urns = [
-    'urn:cts:latinLit:phi0690.phi003'
-    ,'urn:cts:greekLit:tlg0012.tlg001'
-    ,'urn:cts:latinLit:phi0690.phi003' 
-    ]
-    for urn in urns[:1]: # process only the first urn
-        longest_scheme = get_citation_scheme(urn,catalog)
-        print >> sys.stderr, "*%s* can be cited by %s"%(catalog[urn]['title'],"/".join(longest_scheme))
-        passage_nodes, part_of_relations,follow_relations = get_citable_nodes(urn,catalog,longest_scheme)
-        passage_nodes = {urn:passage_nodes[urn] for urn in passage_nodes if (CTS_URN(urn).get_passage(1)=="1")}
-        print >> sys.stderr, "found %i citable nodes for %s"%(len(passage_nodes),urn)
-        text_structure = TextStructure(surf.ns.KB["%s#text_structure"%(urn)])
-        text_structure.hucit_is_structure_of = surf.ns.KB["works/%s"%urn]
-        text_structure.save()
-        levels = [create_text_element_type(Type,level) for level in longest_scheme]
-        text_elemements = [create_text_element(TextElement, urn, passage_nodes[urn]["label"],levels[CTS_URN(urn).get_citation_depth()-1],text_structure) for urn in passage_nodes]
-        [create_follows_relation(rel) for rel in follow_relations]
+    perseus_works = list(set(["urn:cts:%s:%s.%s"%(CTS_URN(key).cts_namespace,CTS_URN(key).textgroup,CTS_URN(key).work) for key in catalog.keys() if CTS_URN(key).work is not None]))
+    success = {}
 
+    #urns = ["urn:cts:latinLit:phi0690.phi003"]
+    #urns = ["urn:cts:greekLit:tlg0006.tlg019"]
+    #urns = ["urn:cts:latinLit:phi0134.phi004"] # a short example
 
-    #print data[urn]['follow_relations']
+    urns = args.ctsurn
+    if(type(urns)==type("string")):
+        urns = [urns]
+    
+    #for n,urn in enumerate(perseus_works):
+    for n,cts_urn in enumerate(urns): # process only the first urn
+        global ss
+        ss = surf.Session(s, {})
+        print >> sys.stderr, "the 3store contains %s triples"%ss.default_store.size()
+        ss.default_store.clear()
+        print >> sys.stderr, "the 3store contains %s triples"%ss.default_store.size()
+        
+        # define classes
+        global Person, Work, Type, TextElement, TextStructure, Identifier
+        Person = ss.get_class(surf.ns.EFRBROO['F10_Person'])
+        Work = ss.get_class(surf.ns.EFRBROO['F1_Work'])
+        Type = ss.get_class(surf.ns.ECRM['E55_Type'])
+        TextElement = ss.get_class(surf.ns.HUCIT['TextElement'])
+        TextStructure = ss.get_class(surf.ns.HUCIT['TextStructure'])
+        Identifier = ss.get_class(surf.ns.ECRM['E42_Identifier'])
+
+        print >> sys.stderr,"processing %i / %i"%(n+1,len(perseus_works))
+
+        try:
+            longest_scheme = get_citation_scheme(cts_urn,catalog)
+            print >> sys.stderr, "*%s* can be cited by %s"%(catalog[cts_urn]['title'],"/".join(longest_scheme))
+            passage_nodes, part_of_relations,follow_relations = get_citable_nodes(cts_urn,catalog,longest_scheme)
+            print >> sys.stderr, "found %i citable nodes for %s"%(len(passage_nodes),cts_urn)
+            text_structure = TextStructure(surf.ns.KB["%s#text_structure"%(cts_urn)])
+            text_structure.hucit_is_structure_of = surf.ns.KB["works/%s"%cts_urn]
+            text_structure.save()
+            levels = [create_text_element_type(Type,level) for level in longest_scheme]
+            [create_text_element(TextElement, urn, passage_nodes[urn]["label"],levels[CTS_URN(urn).get_citation_depth()-1],text_structure) for urn in passage_nodes]
+            [create_follows_relation(rel) for rel in follow_relations]
+            [create_part_of_relation(rel) for rel in part_of_relations]
+            store_connection = connect_to_3store(store_params['server']
+                                                ,store_params['port']
+                                                ,store_params['catalog']
+                                                ,store_params['repository']
+                                                ,store_params["user"]
+                                                ,store_params["password"])
+            export_triples(store_connection, "%snt/%s.nt"%(args.out_dir, cts_urn))
+            g = rdflib.Graph()
+            g.load("%snt/%s.nt"%(args.out_dir, cts_urn),format="nt")
+            g.serialize("%sturtle/%s.ttl"%(args.out_dir, cts_urn),format="turtle")
+        except Exception, e:
+            print e
+        finally:
+            ss.close()
+
 if __name__ == '__main__':
     main()
