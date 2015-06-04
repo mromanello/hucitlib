@@ -312,16 +312,16 @@ def main():
                 levels = [create_text_element_type(Type,level) for level in longest_scheme]
                 text_elements = [create_text_element(TextElement, urn, passage_nodes[urn]["label"],levels[CTS_URN(urn).get_citation_depth()-1]) for urn in passage_nodes]
                 for n,te in enumerate(text_elements):
-                    print >> sys.stderr,"adding Textelement %i / %i"%(n+1,len(text_elements))
+                    print >> sys.stderr,"[%s] adding Textelement %i / %i"%(cts_urn, n+1,len(text_elements))
                     text_structure.hucit_has_element.append(te)
                 text_structure.update()
 
                 for n,rel in enumerate(follow_relations):
-                    print >> sys.stderr,"adding follow relations %i / %i"%(n+1,len(follow_relations))
+                    print >> sys.stderr,"[%s] adding follow relations %i / %i"%(cts_urn, n+1,len(follow_relations))
                     create_follows_relation(rel)
 
                 for n,rel in enumerate(part_of_relations):
-                    print >> sys.stderr,"adding part-of relations %i / %i"%(n+1,len(part_of_relations))
+                    print >> sys.stderr," [%s] adding part-of relations %i / %i"%(cts_urn, n+1,len(part_of_relations))
                     create_part_of_relation(rel)
 
                 store_connection = connect_to_3store(store_params['server']
