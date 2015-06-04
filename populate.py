@@ -2,6 +2,14 @@
 # -*- coding: utf-8 -*-
 # author: Matteo Romanello, matteo.romanello@gmail.com
 
+"""
+
+TODO:
+
+* add `hucit:resolves_to` property to link to text passages in Perseus 
+
+"""
+
 from franz.openrdf.sail.allegrographserver import AllegroGraphServer
 from franz.openrdf.repository.repository import Repository
 from franz.miniclient import repository
@@ -30,7 +38,7 @@ import os
 # register the namespaces
 surf.ns.register(ecrm="http://erlangen-crm.org/current/")
 surf.ns.register(efrbroo="http://erlangen-crm.org/efrbroo/")
-surf.ns.register(kb="http://data.mr56k.info/")
+surf.ns.register(kb="http://purl.org/net/hucit-kb/")
 
 DESC = """
 Example usage:
@@ -270,11 +278,6 @@ def main():
                 writer='rdflib',
                 rdflib_store = 'IOMemory')
     """
-
-    #urns = ["urn:cts:latinLit:phi0690.phi003"]
-    #urns = ["urn:cts:greekLit:tlg0006.tlg019"]
-    #urns = ["urn:cts:latinLit:phi0134.phi004"] # a short example
-
     urns = args.ctsurn
     if(type(urns)==type("string")):
         urns = [urns]
