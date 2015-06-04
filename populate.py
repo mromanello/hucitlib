@@ -312,8 +312,8 @@ def main():
                 levels = [create_text_element_type(Type,level) for level in longest_scheme]
                 text_elements = [create_text_element(TextElement, urn, passage_nodes[urn]["label"],levels[CTS_URN(urn).get_citation_depth()-1]) for urn in passage_nodes]
                 for te in text_elements:
-                    text_structure.hucit_has_element.append(instance)
-                text_structure.save()
+                    text_structure.hucit_has_element.append(te)
+                text_structure.update()
 
                 [create_follows_relation(rel) for rel in follow_relations]
                 [create_part_of_relation(rel) for rel in part_of_relations]
