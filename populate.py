@@ -25,6 +25,7 @@ from rdflib import Literal
 import ConfigParser
 import argparse
 import rdflib
+import os
 
 # register the namespaces
 surf.ns.register(ecrm="http://erlangen-crm.org/current/")
@@ -69,7 +70,7 @@ def create_text_element_type(class_name, label):
         instance.save()
     finally:
         return instance
-def create_text_element(class_name,urn,label,text_element_type,text_structure):
+def create_text_element(class_name,urn,label,text_element_type):
     """
     Creates an instance of HuCit:TextElement
     """
@@ -83,8 +84,6 @@ def create_text_element(class_name,urn,label,text_element_type,text_structure):
         instance.ecrm_P1_is_identified_by = ctsurn
         instance.ecrm_P2_has_type = text_element_type
         instance.save()
-        text_structure.hucit_has_element.append(instance)
-        text_structure.save()
         print >> sys.stderr, "created resource %s for %s"%(str(instance),urn)
         return instance
     except Exception, e:
@@ -272,10 +271,6 @@ def main():
                 rdflib_store = 'IOMemory')
     """
 
-    catalog = parse_perseus_catalog()
-    perseus_works = list(set(["urn:cts:%s:%s.%s"%(CTS_URN(key).cts_namespace,CTS_URN(key).textgroup,CTS_URN(key).work) for key in catalog.keys() if CTS_URN(key).work is not None]))
-    success = {}
-
     #urns = ["urn:cts:latinLit:phi0690.phi003"]
     #urns = ["urn:cts:greekLit:tlg0006.tlg019"]
     #urns = ["urn:cts:latinLit:phi0134.phi004"] # a short example
@@ -284,51 +279,59 @@ def main():
     if(type(urns)==type("string")):
         urns = [urns]
     
-    #for n,urn in enumerate(perseus_works):
     for n,cts_urn in enumerate(urns): # process only the first urn
-        global ss
-        ss = surf.Session(s, {})
-        print >> sys.stderr, "the 3store contains %s triples"%ss.default_store.size()
-        ss.default_store.clear()
-        print >> sys.stderr, "the 3store contains %s triples"%ss.default_store.size()
-        
-        # define classes
-        global Person, Work, Type, TextElement, TextStructure, Identifier
-        Person = ss.get_class(surf.ns.EFRBROO['F10_Person'])
-        Work = ss.get_class(surf.ns.EFRBROO['F1_Work'])
-        Type = ss.get_class(surf.ns.ECRM['E55_Type'])
-        TextElement = ss.get_class(surf.ns.HUCIT['TextElement'])
-        TextStructure = ss.get_class(surf.ns.HUCIT['TextStructure'])
-        Identifier = ss.get_class(surf.ns.ECRM['E42_Identifier'])
+        if(not os.path.isfile("%snt/%s.nt"%(args.out_dir, cts_urn))):
+            catalog = parse_perseus_catalog()
+            perseus_works = list(set(["urn:cts:%s:%s.%s"%(CTS_URN(key).cts_namespace,CTS_URN(key).textgroup,CTS_URN(key).work) for key in catalog.keys() if CTS_URN(key).work is not None]))
+            
+            global ss
+            ss = surf.Session(s, {})
+            print >> sys.stderr, "the 3store contains %s triples"%ss.default_store.size()
+            ss.default_store.clear()
+            print >> sys.stderr, "the 3store contains %s triples"%ss.default_store.size()
+            
+            # define classes
+            global Person, Work, Type, TextElement, TextStructure, Identifier
+            Person = ss.get_class(surf.ns.EFRBROO['F10_Person'])
+            Work = ss.get_class(surf.ns.EFRBROO['F1_Work'])
+            Type = ss.get_class(surf.ns.ECRM['E55_Type'])
+            TextElement = ss.get_class(surf.ns.HUCIT['TextElement'])
+            TextStructure = ss.get_class(surf.ns.HUCIT['TextStructure'])
+            Identifier = ss.get_class(surf.ns.ECRM['E42_Identifier'])
 
-        print >> sys.stderr,"processing %i / %i"%(n+1,len(perseus_works))
+            print >> sys.stderr,"processing %i / %i"%(n+1,len(perseus_works))
 
-        try:
-            longest_scheme = get_citation_scheme(cts_urn,catalog)
-            print >> sys.stderr, "*%s* can be cited by %s"%(catalog[cts_urn]['title'],"/".join(longest_scheme))
-            passage_nodes, part_of_relations,follow_relations = get_citable_nodes(cts_urn,catalog,longest_scheme)
-            print >> sys.stderr, "found %i citable nodes for %s"%(len(passage_nodes),cts_urn)
-            text_structure = TextStructure(surf.ns.KB["%s#text_structure"%(cts_urn)])
-            text_structure.hucit_is_structure_of = surf.ns.KB["works/%s"%cts_urn]
-            text_structure.save()
-            levels = [create_text_element_type(Type,level) for level in longest_scheme]
-            [create_text_element(TextElement, urn, passage_nodes[urn]["label"],levels[CTS_URN(urn).get_citation_depth()-1],text_structure) for urn in passage_nodes]
-            [create_follows_relation(rel) for rel in follow_relations]
-            [create_part_of_relation(rel) for rel in part_of_relations]
-            store_connection = connect_to_3store(store_params['server']
-                                                ,store_params['port']
-                                                ,store_params['catalog']
-                                                ,store_params['repository']
-                                                ,store_params["user"]
-                                                ,store_params["password"])
-            export_triples(store_connection, "%snt/%s.nt"%(args.out_dir, cts_urn))
-            g = rdflib.Graph()
-            g.load("%snt/%s.nt"%(args.out_dir, cts_urn),format="nt")
-            g.serialize("%sturtle/%s.ttl"%(args.out_dir, cts_urn),format="turtle")
-        except Exception, e:
-            print e
-        finally:
-            ss.close()
+            try:
+                longest_scheme = get_citation_scheme(cts_urn,catalog)
+                print >> sys.stderr, "*%s* can be cited by %s"%(catalog[cts_urn]['title'],"/".join(longest_scheme))
+                passage_nodes, part_of_relations,follow_relations = get_citable_nodes(cts_urn,catalog,longest_scheme)
+                print >> sys.stderr, "found %i citable nodes for %s"%(len(passage_nodes),cts_urn)
+                text_structure = TextStructure(surf.ns.KB["%s#text_structure"%(cts_urn)])
+                text_structure.hucit_is_structure_of = surf.ns.KB["works/%s"%cts_urn]
+                text_structure.save()
+                levels = [create_text_element_type(Type,level) for level in longest_scheme]
+                text_elements = [create_text_element(TextElement, urn, passage_nodes[urn]["label"],levels[CTS_URN(urn).get_citation_depth()-1]) for urn in passage_nodes]
+                for te in text_elements:
+                    text_structure.hucit_has_element.append(instance)
+                text_structure.save()
 
+                [create_follows_relation(rel) for rel in follow_relations]
+                [create_part_of_relation(rel) for rel in part_of_relations]
+                store_connection = connect_to_3store(store_params['server']
+                                                    ,store_params['port']
+                                                    ,store_params['catalog']
+                                                    ,store_params['repository']
+                                                    ,store_params["user"]
+                                                    ,store_params["password"])
+                export_triples(store_connection, "%snt/%s.nt"%(args.out_dir, cts_urn))
+                g = rdflib.Graph()
+                g.load("%snt/%s.nt"%(args.out_dir, cts_urn),format="nt")
+                g.serialize("%sturtle/%s.ttl"%(args.out_dir, cts_urn),format="turtle")
+            except Exception, e:
+                print e
+            finally:
+                ss.close()
+        else:
+            print >> sys.stderr,"%s was already processed"%cts_urn            
 if __name__ == '__main__':
     main()
