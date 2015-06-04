@@ -7,6 +7,7 @@
 TODO:
 
 * add `hucit:resolves_to` property to link to text passages in Perseus 
+* add a `level` property (?)
 
 """
 
@@ -337,6 +338,9 @@ def main():
                 g = rdflib.Graph()
                 g.load("%snt/%s.nt"%(args.out_dir, cts_urn),format="nt")
                 g.serialize("%sturtle/%s.ttl"%(args.out_dir, cts_urn),format="turtle")
+            except (KeyboardInterrupt, SystemExit):
+                ss.close()
+                raise e
             except Exception, e:
                 print e
             finally:
