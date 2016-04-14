@@ -1,11 +1,6 @@
-"""
-
-TODO:
-
-* test: the methods `get_author_label` and `get_work_label` should never return None
-
-"""
-
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+# author: Matteo Romanello, matteo.romanello@gmail.com
 
 import ConfigParser
 import surf
@@ -35,6 +30,10 @@ class KnowledgeBase(object):
 		surf.ns.register(hucit="http://purl.org/net/hucit#")
 		return
 	def __init__(self, config_file):
+		"""
+		TODO: support also the use of an in-memory store,
+			with data loaded from the `data` directory
+		"""
 		self._logger = logging.getLogger('KnowledgeBase')
 		try:
 			config = ConfigParser.ConfigParser()

@@ -10,17 +10,32 @@ from rdflib import Literal
 surf.ns.register(ecrm="http://erlangen-crm.org/current/")
 surf.ns.register(efrbroo="http://erlangen-crm.org/efrbroo/")
 surf.ns.register(hucit="http://purl.org/net/hucit#")
+surf.ns.register(kb="http://128.178.21.39:8080/matteo-data/")
 
 class HucitAuthor(object):
         """ TODO """
         def __repr__(self):
-            names = ["%s (@%s)"%(name[1].encode('utf-8'),name[0]) for name in self.get_names()]
-            return "HucitAuthor (names=[%s],urn=%s)"%(",".join(names),self.get_urn())
+            names = ["%s (@%s)"%(name[1],name[0]) for name in self.get_names()]
+            return ("HucitAuthor (names=[%s],urn=%s)"%(",".join(names),self.get_urn())).encode("utf-8")
+        def __unicode__(self):
+            names = self.get_names()
+            try:
+                english_name = [name[1] for name in names if name[0]=='en']
+                return english_name[0]
+            except Exception, e:
+                try:
+                    default_name = [name[1] for name in names if name[0]==None]
+                    return default_name[0]
+                except Exception, e:
+                    try:
+                        latin_name = [name[1] for name in names if name[0]=='la']
+                        return latin_name[0]
+                    except Exception, e:
+                        return None
         def get_names(self):
             """
 
             Returns a dict where key is the language and value is the name in that language.
-            Problem: only one label with lang will be returned (same key `None` is used)
             
             Example:
                 {'it':"Sofocle"}
@@ -55,9 +70,12 @@ class HucitAuthor(object):
             Assumes that each HucitAuthor has only one CTS URN.
             """
             # TODO: check type
-            type_ctsurn = self.session.get_resource('http://phd.mr56k.info/data/types#CTS_URN',self.session.get_class(surf.ns.ECRM['E55_Type']))
-            urn = [CTS_URN(urnstring.rdfs_label.one) for urnstring in self.ecrm_P1_is_identified_by if urnstring.uri == surf.ns.ECRM['E42_Identifier'] and urnstring.ecrm_P2_has_type.first == type_ctsurn][0]
-            return urn
+            try:
+                type_ctsurn = self.session.get_resource(surf.ns.KB["types#CTS_URN"],self.session.get_class(surf.ns.ECRM['E55_Type']))
+                urn = [CTS_URN(urnstring.rdfs_label.one) for urnstring in self.ecrm_P1_is_identified_by if urnstring.uri == surf.ns.ECRM['E42_Identifier'] and urnstring.ecrm_P2_has_type.first == type_ctsurn][0]
+                return urn
+            except Exception, e:
+                return None
         def set_urn(self,urn):
             """TODO: finish and test"""
             try:
@@ -66,25 +84,26 @@ class HucitAuthor(object):
                 id_uri = "%s#cts_urn"%str(self.subject)
                 id = Identifier(id_uri)
                 id.rdfs_label = Literal(urn)
-                type_ctsurn = self.session.get_resource('http://phd.mr56k.info/data/types#CTS_URN',Type)
+                type_ctsurn = self.session.get_resource(surf.ns.KB["types#CTS_URN"],Type)
                 id.ecrm_P2_has_type = type_ctsurn
                 return True
             except Exception, e:
                 print e
-                return False
-            
+                return False  
             pass
         def get_works(self):
             """
-            TODO
+            Returns a list of the works (intances of `surf.Resource` and `HucitWork`)
+            attributed to a given author.
             """
-            return [work  for creation in self.efrbroo_P14i_performed for work in creation.efrbroo_R16_initiated]
+            return [work  for creation in self.efrbroo_P14i_performed 
+                                    for work in creation.efrbroo_R16_initiated]
 class HucitWork(object):
     """docstring for HucitWork"""
     def __repr__(self):
         """TODO"""
         titles = ["%s (@%s)"%(title[1],title[0]) for title in self.get_titles()]
-        return "HucitWork (title=[%s],urn=%s)"%(",".join(titles),self.get_urn())
+        return ("HucitWork (title=[%s],urn=%s)"%(",".join(titles),self.get_urn())).encode('utf-8')
     def __unicode__(self):
         """
         TODO: finish
@@ -103,16 +122,17 @@ class HucitWork(object):
                     return latin_title[0]
                 except Exception, e:
                     return None
-    def __str__(self):
-        return unicode(self)
     def get_titles(self):
         """TODO"""
         return [(label.language,label.title()) for label in self.efrbroo_P102_has_title.first.rdfs_label]
     def get_urn(self):
         """TODO"""
-        type_ctsurn = self.session.get_resource('http://phd.mr56k.info/data/types#CTS_URN',self.session.get_class(surf.ns.ECRM['E55_Type']))
-        urn = [CTS_URN(urnstring.rdfs_label.one) for urnstring in self.ecrm_P1_is_identified_by if urnstring.uri == surf.ns.ECRM['E42_Identifier'] and urnstring.ecrm_P2_has_type.first == type_ctsurn][0]
-        return urn
+        try:
+            type_ctsurn = self.session.get_resource(surf.ns.KB["types#CTS_URN"],self.session.get_class(surf.ns.ECRM['E55_Type']))
+            urn = [CTS_URN(urnstring.rdfs_label.one) for urnstring in self.ecrm_P1_is_identified_by if urnstring.uri == surf.ns.ECRM['E42_Identifier'] and urnstring.ecrm_P2_has_type.first == type_ctsurn][0]
+            return urn
+        except Exception, e:
+            return None
     def set_urn(self,urn):
         """TODO: finish and test"""
         try:
@@ -134,6 +154,12 @@ class HucitWork(object):
         Returns the levels of the TextStructure of this Work, in the right order (e.g. Book/Chapter/Section).
         """
         pass
+    @property
+    def author(self):
+        CreationEvent = self.session.get_class(surf.ns.EFRBROO['F27_Work_Conception'])
+        Person = self.session.get_class(surf.ns.EFRBROO['F10_Person'])
+        creation_event =  CreationEvent.get_by(efrbroo_R16_initiated=self).first()
+        return Person.get_by(efrbroo_P14i_performed = creation_event).first()
     def get_top_elements(self):
         """
         TODO
