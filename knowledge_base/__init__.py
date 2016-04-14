@@ -83,9 +83,19 @@ class KnowledgeBase(object):
 			resource_uri = result['results']['bindings'][0]['resource_URI']['value']
 			return self._session.get_resource(resource_uri,Person)
 	def get_authors(self):
+		"""
+
+		Returns the list of authors in the KB (type=`HucitAuthor`)
+		
+		"""
 		Person = self._session.get_class(surf.ns.EFRBROO['F10_Person'])
 		return list(Person.all())
 	def get_works(self):
+		"""
+		
+		Returns the list of works in the KB (type=`HucitWork`)
+		
+		"""
 		Work = self._session.get_class(surf.ns.EFRBROO['F1_Work'])
 		return list(Work.all())
 	def get_author_label(self,urn):
@@ -149,5 +159,10 @@ class KnowledgeBase(object):
 				except Exception, e:
 					return None
 	def get_author_of(self): # TODO finish
+		pass
+	def to_json(self):
+		"""
+		Serialise the content of the KnowledgeBase as JSON
+		"""
 		pass
 
