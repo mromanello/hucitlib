@@ -8,6 +8,7 @@ TODO:
 
 * add `hucit:resolves_to` property to link to text passages in Perseus 
 * add a `level` property (?)
+* catch exceptions to the `create_follows_relation` and `create_part_of_relation` methods
 
 """
 
