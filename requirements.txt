@@ -1,0 +1,2 @@
+git+https://github.com/mromanello/surfrdf.git#egg=surfrdf-0.1.8
+rdflib==4.2.1
