@@ -9,6 +9,8 @@ from surfext import HucitAuthor
 from surfext import HucitWork
 from pyCTS import CTS_URN
 
+logger = logging.getLogger('KnowledgeBase')
+
 class KnowledgeBase(object):
 	"""
 
@@ -34,7 +36,6 @@ class KnowledgeBase(object):
 		TODO: support also the use of an in-memory store,
 			with data loaded from the `data` directory
 		"""
-		self._logger = logging.getLogger('KnowledgeBase')
 		try:
 			config = ConfigParser.ConfigParser()
 			config.readfp(open(config_file))
@@ -46,6 +47,21 @@ class KnowledgeBase(object):
 			self._register_mappings()
 		except Exception, e:
 			raise e
+	def __getstate__(self):
+		"""
+		Instances of `surfrdf.Store` and `surfrdf.Session` cannot be serialised. 
+		Thus they need to be dropped when pickling. 
+		"""
+		odict = self.__dict__.copy()
+		del odict['_store']
+		del odict['_session']
+		return odict
+	def __setstate__(self,dict):
+		self.__dict__.update(dict)
+		self._store = surf.Store(**self._store_params)
+		self._session = surf.Session(self._store, {})
+		self._register_namespaces()
+		self._register_mappings()
 	def get_resource_by_urn(self,urn):
 		"""
 		
@@ -70,7 +86,7 @@ class KnowledgeBase(object):
 		try: #check type of the input URN
 			assert type(urn) == type(CTS_URN(str(urn)))
 		except Exception, e: #convert to pyCTS.CTS_URN if it's a string
-			self._logger.debug('Converted the input urn from string to %s'%type(CTS_URN))
+			logger.debug('Converted the input urn from string to %s'%type(CTS_URN))
 			urn = CTS_URN(urn)
 		if(urn.work is not None):
 			Work = self._session.get_class(surf.ns.EFRBROO['F1_Work'])
