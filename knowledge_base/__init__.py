@@ -8,6 +8,7 @@ import logging
 from surfext import HucitAuthor
 from surfext import HucitWork
 from pyCTS import CTS_URN
+import pkg_resources
 
 logger = logging.getLogger('KnowledgeBase')
 
@@ -40,9 +41,18 @@ class KnowledgeBase(object):
 			config = ConfigParser.ConfigParser()
 			config.readfp(open(config_file))
 			self._store_params = dict(config.items("surf"))
-			self._store_params['port'] = int(self._store_params['port']) # force the `port` to be an integer
+			if(self._store_params.has_key('port')):
+				self._store_params['port'] = int(self._store_params['port']) # force the `port` to be an integer
 			self._store=surf.Store(**self._store_params)
 			self._session = surf.Session(self._store, {})
+			if(self._store_params.has_key("rdflib_store")):
+				basedir = pkg_resources.resource_filename('knowledge_base','data/kb/')
+				sources = ["%s%s"%(basedir, file) for file in self._store_params["knowledge_base_sources"].split(",")]
+				source_format = self._store_params["sources_format"]
+				for source_path in sources:
+					self._store.writer.graph.parse(source=source_path,format=source_format)
+					#self._store.load_triples(source=source_path,format=source_format)
+					logger.info("The KnowledgeBase contains %i triples"%self._store.size())
 			self._register_namespaces()
 			self._register_mappings()
 		except Exception, e:
