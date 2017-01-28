@@ -50,7 +50,7 @@ class KnowledgeBase(object):
 				sources = ["%s%s"%(basedir, file) for file in self._store_params["knowledge_base_sources"].split(",")]
 				source_format = self._store_params["sources_format"]
 				for source_path in sources:
-					self._store.writer.graph.parse(source=source_path,format=source_format)
+					self._store.writer._graph.parse(source=source_path,format=source_format)
 					#self._store.load_triples(source=source_path,format=source_format)
 					logger.info("The KnowledgeBase contains %i triples"%self._store.size())
 			self._register_namespaces()

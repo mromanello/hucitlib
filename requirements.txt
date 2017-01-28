@@ -1,4 +1,4 @@
 https://github.com/mromanello/pyCTS/archive/master.zip
-git+https://github.com/mromanello/surfrdf.git#egg=surfrdf-0.1.8
+surf==1.1.9
 rdflib==4.2.1
-SPARQLWrapper==1.6.0
+#SPARQLWrapper==1.6.0
