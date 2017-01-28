@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # author: Matteo Romanello, matteo.romanello@gmail.com
 import logging
+import pytest
 from knowledge_base import KnowledgeBase
 from pytest import fixture
 import pdb
