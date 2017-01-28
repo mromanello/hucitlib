@@ -5,6 +5,7 @@ from knowledge_base import KnowledgeBase
 from pytest import fixture
 import pdb
 
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -13,7 +14,7 @@ def kb_inmemory(configuration_file="inmemory.ini"):
 	if(configuration_file is not None):
 		return KnowledgeBase(configuration_file)
 @fixture
-def kb_virtuoso(configuration_file="/media/romanell_files/tmp/virtuoso.ini"):
+def kb_virtuoso(configuration_file="virtuoso.ini"):
 	if(configuration_file is not None):
 		return KnowledgeBase(configuration_file)
 def test_kb_virtuoso(kb_virtuoso):
