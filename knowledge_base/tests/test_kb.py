@@ -17,6 +17,7 @@ def kb_inmemory(configuration_file="inmemory.ini"):
 def kb_virtuoso(configuration_file="virtuoso.ini"):
 	if(configuration_file is not None):
 		return KnowledgeBase(configuration_file)
+@pytest.mark.skip(reason="need to deal with installing virtuoso at build-time")
 def test_kb_virtuoso(kb_virtuoso):
 	logger.debug(kb_virtuoso)
 	authors = kb_virtuoso.get_authors()

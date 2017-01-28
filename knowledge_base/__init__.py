@@ -55,7 +55,7 @@ class KnowledgeBase(object):
 					logger.info("The KnowledgeBase contains %i triples"%self._store.size())
 			self._register_namespaces()
 			self._register_mappings()
-		except Exception, e:
+		except Exception as e:
 			raise e
 	def __getstate__(self):
 		"""
@@ -95,7 +95,7 @@ class KnowledgeBase(object):
 		"""%urn
 		try: #check type of the input URN
 			assert type(urn) == type(CTS_URN(str(urn)))
-		except Exception, e: #convert to pyCTS.CTS_URN if it's a string
+		except Exception as e: #convert to pyCTS.CTS_URN if it's a string
 			logger.debug('Converted the input urn from string to %s'%type(CTS_URN))
 			urn = CTS_URN(urn)
 		if(urn.work is not None):
@@ -143,16 +143,16 @@ class KnowledgeBase(object):
 		try:
 			assert len(en_names) > 0
 			return en_names[0]
-		except Exception, e:
+		except Exception as e:
 			none_names = sorted([name[1] for name in names if name[0]==None],key=len)
 			try:
 				return none_names[0]
-			except Exception, e:
+			except Exception as e:
 				la_names = sorted([name[1] for name in names if name[0]=="la"],key=len)
 				try:
 					assert len(la_names) > 0
 					return la_names[0]
-				except Exception, e:
+				except Exception as e:
 					return None
 	def get_work_label(self,urn):
 		"""
@@ -173,16 +173,16 @@ class KnowledgeBase(object):
 		try:
 			assert len(en_titles) > 0
 			return en_titles[0]
-		except Exception, e:
+		except Exception as e:
 			la_titles = [title[1] for title in titles if title[0]==None]
 			try:
 				assert len(la_titles) > 0
 				return la_titles[0]
-			except Exception, e:
+			except Exception as e:
 				none_titles = [title[1] for title in titles if title[0]=="la"]
 				try:
 					return none_titles[0]
-				except Exception, e:
+				except Exception as e:
 					return None
 	def get_author_of(self): # TODO finish
 		pass
