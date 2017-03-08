@@ -76,7 +76,7 @@ class HucitAuthor(object):
             try:
                 type_abbreviation = self.session.get_resource(surf.ns.KB["types#abbreviation"]
                                                             , self.session.get_class(surf.ns.ECRM['E55_Type']))
-                abbreviations = [abbreviation.rdfs_label.one 
+                abbreviations = [abbreviation.rdfs_label.one.title() 
                                     for name in self.ecrm_P1_is_identified_by 
                                         for abbreviation in name.ecrm_P139_has_alternative_form
                                             if name.uri == surf.ns.EFRBROO['F12_Name'] 
@@ -170,7 +170,7 @@ class HucitWork(object):
         try:
             type_abbreviation = self.session.get_resource(surf.ns.KB["types#abbreviation"]
                                                         , self.session.get_class(surf.ns.ECRM['E55_Type']))
-            abbreviations = [abbreviation.rdfs_label.one 
+            abbreviations = [abbreviation.rdfs_label.one.title() 
                                 for title in self.efrbroo_P102_has_title 
                                     for abbreviation in title.ecrm_P139_has_alternative_form
                                         if title.uri == surf.ns.EFRBROO['E35_Title'] 
