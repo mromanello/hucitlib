@@ -5,8 +5,7 @@
 import ConfigParser
 import surf
 import logging
-from surfext import HucitAuthor
-from surfext import HucitWork
+from surfext import *
 from pyCTS import CTS_URN
 import pkg_resources
 
@@ -34,8 +33,7 @@ class KnowledgeBase(object):
 		return
 	def __init__(self, config_file):
 		"""
-		TODO: support also the use of an in-memory store,
-			with data loaded from the `data` directory
+		TODO
 		"""
 		try:
 			config = ConfigParser.ConfigParser()
@@ -79,6 +77,9 @@ class KnowledgeBase(object):
 		corresponding to the input CTS URN. Currently supports
 		only HucitAuthor and HucitWork. 
 
+		:param urn: the CTS URN of the resource to fetch
+		:return: either an instance of `HucitAuthor` or of `HucitWork`
+
 		"""
 		search_query = """
 		    PREFIX frbroo: <http://erlangen-crm.org/efrbroo/>
@@ -110,16 +111,18 @@ class KnowledgeBase(object):
 			return self._session.get_resource(resource_uri,Person)
 	def get_authors(self):
 		"""
+		Returns the authors in the Knowledge Base.
 
-		Returns the list of authors in the KB (type=`HucitAuthor`)
+		:return: a list of `HucitAuthor` instances.
 		
 		"""
 		Person = self._session.get_class(surf.ns.EFRBROO['F10_Person'])
 		return list(Person.all())
 	def get_works(self):
 		"""
-		
-		Returns the list of works in the KB (type=`HucitWork`)
+		Returns the works in the Knowledge Base.
+
+		:return: a list of `HucitWork` instances.
 		
 		"""
 		Work = self._session.get_class(surf.ns.EFRBROO['F1_Work'])
@@ -186,9 +189,37 @@ class KnowledgeBase(object):
 					return None
 	def get_author_of(self): # TODO finish
 		pass
+	def get_statistics(self):
+		"""
+		Gather basic stats about the Knowledge Base and its contents.
+
+		:return: a dictionary
+
+		"""
+		statistics = {
+			"number_authors" : 0
+			, "number_author_names" : 0
+			, "number_author_abbreviations" : 0
+			, "number_works" : 0
+			, "number_work_titles" : 0
+			, "number_title_abbreviations" : 0
+		}
+		for author in self.get_authors():
+			statistics["number_authors"] += 1
+			statistics["number_author_names"] += len(author.get_names())
+			statistics["number_author_abbreviations"] += len(author.get_abbreviations())
+			for work in author.get_works():
+				statistics["number_works"] += 1
+				statistics["number_work_titles"] += len(work.get_titles())
+				statistics["number_title_abbreviations"] += len(work.get_abbreviations())
+		return statistics
 	def to_json(self):
 		"""
-		Serialise the content of the KnowledgeBase as JSON
-		"""
-		pass
+		Serialises the content of the KnowledgeBase as JSON.
 
+		:return: TODO
+		"""
+		return {
+			"statistics" : self.get_statistics()
+			, "authors" : [author.to_json() for author in self.get_authors()] 
+		} 
