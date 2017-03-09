@@ -4,7 +4,7 @@ python:
 # command to install dependencies
 install:
   - "pip install -U -r requirements.txt"
-  - "pip install ."
-  - "pip install -U pytest"
+  - "pip install -e ."
+  - "pip install -U pytest pytest-cov coveralls"
 # command to run tests
 script: py.test
