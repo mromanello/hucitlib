@@ -13,7 +13,9 @@ surf.ns.register(hucit="http://purl.org/net/hucit#")
 surf.ns.register(kb="http://128.178.21.39:8080/matteo-data/")
 
 class HucitAuthor(object):
-        """ TODO """
+        """
+        Object mapping for instances of `http://erlangen-crm.org/efrbroo/F10_Person`.
+        """
         def __repr__(self):
             names = ["%s (@%s)"%(name[1],name[0]) for name in self.get_names()]
             return ("HucitAuthor (names=[%s],urn=%s)"%(",".join(names),self.get_urn())).encode("utf-8")
@@ -34,7 +36,6 @@ class HucitAuthor(object):
                         return None
         def get_names(self):
             """
-
             Returns a dict where key is the language and value is the name in that language.
             
             Example:
@@ -65,6 +66,25 @@ class HucitAuthor(object):
         def add_name_abbreviation(self):
             """TODO"""
             pass
+        def get_abbreviations(self):
+            """
+            Get abbreviations of the names of the author.
+
+            :return: a list of strings (empty list if no abbreviations available).
+            """
+            abbreviations = []
+            try:
+                type_abbreviation = self.session.get_resource(surf.ns.KB["types#abbreviation"]
+                                                            , self.session.get_class(surf.ns.ECRM['E55_Type']))
+                abbreviations = [abbreviation.rdfs_label.one.title() 
+                                    for name in self.ecrm_P1_is_identified_by 
+                                        for abbreviation in name.ecrm_P139_has_alternative_form
+                                            if name.uri == surf.ns.EFRBROO['F12_Name'] 
+                                                and abbreviation.ecrm_P2_has_type.first == type_abbreviation]
+            except Exception as e:
+                logger.debug("Exception raised when getting abbreviations for %a"%self)
+            finally:
+                return abbreviations
         def get_urn(self):
             """
             Assumes that each HucitAuthor has only one CTS URN.
@@ -74,7 +94,7 @@ class HucitAuthor(object):
                 type_ctsurn = self.session.get_resource(surf.ns.KB["types#CTS_URN"],self.session.get_class(surf.ns.ECRM['E55_Type']))
                 urn = [CTS_URN(urnstring.rdfs_label.one) for urnstring in self.ecrm_P1_is_identified_by if urnstring.uri == surf.ns.ECRM['E42_Identifier'] and urnstring.ecrm_P2_has_type.first == type_ctsurn][0]
                 return urn
-            except Exception, e:
+            except Exception as e:
                 return None
         def set_urn(self,urn):
             """TODO: finish and test"""
@@ -101,10 +121,20 @@ class HucitAuthor(object):
         def to_json(self):
             """
             TODO: returns a JSON representation of the object
+
+            {
+                uri : ""
+                , urn : "urn:cts:xxx"
+                , names : ["a", "b"]
+                , name_abbreviations: ["a.", "b."]
+                , works : [{}, {}]
+            }
             """
-            pass
+            return {}
 class HucitWork(object):
-    """docstring for HucitWork"""
+    """
+    Object mapping for instances of `http://erlangen-crm.org/efrbroo/F1_Work`.
+    """
     def __repr__(self):
         """TODO"""
         titles = ["%s (@%s)"%(title[1],title[0]) for title in self.get_titles()]
@@ -130,8 +160,31 @@ class HucitWork(object):
     def get_titles(self):
         """TODO"""
         return [(label.language,label.title()) for label in self.efrbroo_P102_has_title.first.rdfs_label]
+    def get_abbreviations(self):
+        """
+        Get abbreviations of the titles of the work.
+
+        :return: a list of strings (empty list if no abbreviations available).
+        """
+        abbreviations = []
+        try:
+            type_abbreviation = self.session.get_resource(surf.ns.KB["types#abbreviation"]
+                                                        , self.session.get_class(surf.ns.ECRM['E55_Type']))
+            abbreviations = [abbreviation.rdfs_label.one.title() 
+                                for title in self.efrbroo_P102_has_title 
+                                    for abbreviation in title.ecrm_P139_has_alternative_form
+                                        if title.uri == surf.ns.EFRBROO['E35_Title'] 
+                                            and abbreviation.ecrm_P2_has_type.first == type_abbreviation]
+        except Exception as e:
+            logger.debug("Exception raised when getting abbreviations for %a"%self)
+        finally:
+            return abbreviations
     def get_urn(self):
-        """TODO"""
+        """
+        Get the CTS URN that identifies the work.
+
+        :return: an instance of `pyCTS.CTS_URN` or None
+        """
         try:
             type_ctsurn = self.session.get_resource(surf.ns.KB["types#CTS_URN"],self.session.get_class(surf.ns.ECRM['E55_Type']))
             urn = [CTS_URN(urnstring.rdfs_label.one) for urnstring in self.ecrm_P1_is_identified_by if urnstring.uri == surf.ns.ECRM['E42_Identifier'] and urnstring.ecrm_P2_has_type.first == type_ctsurn][0]
@@ -153,6 +206,11 @@ class HucitWork(object):
             print e
             return False
     def has_text_structure(self):
+        """
+        Checks whether a citable text structure is defined.
+
+        :return: boolean
+        """
         pass
     def get_citation_levels(self):
         """
@@ -161,6 +219,11 @@ class HucitWork(object):
         pass
     @property
     def author(self):
+        """
+        Returns the author to whom the work is attributed.
+
+        :return: an instance of `HucitWork` # TODO: check that's the case
+        """
         CreationEvent = self.session.get_class(surf.ns.EFRBROO['F27_Work_Conception'])
         Person = self.session.get_class(surf.ns.EFRBROO['F10_Person'])
         creation_event =  CreationEvent.get_by(efrbroo_R16_initiated=self).first()
