@@ -11,15 +11,16 @@ import pkg_resources
 
 logger = logging.getLogger('KnowledgeBase')
 
+# TODO: add exceptions => AuthorNotFound, WorkNotFound or perhaps just ResourceNotFound
+
 class KnowledgeBase(object):
 	"""
 
-	>>> #import sys
-	>>> #sys.path.append('/Users/rromanello/Documents/knowledge_base/')
-	>>> #import knowledge_base
-	>>> #from knowledge_base import KnowledgeBase
-	>>> kb = KnowledgeBase('/Users/rromanello/Documents/knowledge_base/agraph.ini')
-	>>> temp = kb.get_author_label('urn:cts:cwkb:903')
+	Example of usage:
+
+	>>> from knowledge_base import KnowledgeBase
+	>>> kb = KnowledgeBase('inmemory.ini')
+	>>> print kb.get_author_label('urn:cts:greekLit:tlg0012')
 
 	"""
 	def _register_mappings(self):
@@ -74,34 +75,28 @@ class KnowledgeBase(object):
 		self._session = surf.Session(self._store, {})
 		self._register_namespaces()
 		self._register_mappings()
+	# some legacy methods
 	@property
-	def flat_author_names(self):
-		if(self._author_names is not None):
-			return self._author_names
-		else:
-			self._author_names = self._fetch_author_names()
-			return self._author_names
+	def author_names(self):
+		"""
+		Return a dictionary like this:
+
+		{
+			"urn:cts:greekLit:tlg0012$$n1" : "Homer"
+			, "urn:cts:greekLit:tlg0012$$n2" : "Omero"
+			, ...
+		}
+		"""
+		pass
 	@property
-	def flat_author_abbreviations(self):
-		if(self._author_abbreviations is not None):
-			return self._author_abbreviations
-		else:
-			self._author_abbreviations = self._fetch_author_abbreviations()
-			return self._author_abbreviations
+	def author_abbreviations(self):
+		pass
 	@property
-	def flat_work_titles(self):
-		if(self._work_titles is not None):
-			return self._work_titles
-		else:
-			self._work_titles = self._fetch_work_titles()
-			return self._work_titles
+	def work_titles(self):
+		pass
 	@property
-	def flat_work_abbreviations(self):
-		if(self._work_abbreviations is not None):
-			return self._work_abbreviations
-		else:
-			self._work_abbreviations = self._fetch_work_abbreviations()
-			return self.work_abbreviations
+	def work_abbreviations(self):
+		pass
 	def get_resource_by_urn(self,urn):
 		"""
 		
@@ -159,7 +154,7 @@ class KnowledgeBase(object):
 		"""
 		Work = self._session.get_class(surf.ns.EFRBROO['F1_Work'])
 		return list(Work.all())
-	def get_author_label(self,urn):
+	def get_author_label(self, urn):
 		"""
 
 		Get the label corresponding to the author identified
@@ -221,6 +216,11 @@ class KnowledgeBase(object):
 					return None
 	def get_author_of(self): # TODO finish
 		pass
+	def get_flat_labels(self): # TODO implement
+		"""
+		create 4 flat dictionaries and then merge them with update
+		"""
+		pass
 	def get_statistics(self):
 		"""
 		Gather basic stats about the Knowledge Base and its contents.
@@ -245,6 +245,16 @@ class KnowledgeBase(object):
 				statistics["number_work_titles"] += len(work.get_titles())
 				statistics["number_title_abbreviations"] += len(work.get_abbreviations())
 		return statistics
+	def get_opus_maximum_of(self, author_cts_urn): # TODO implement
+		"""
+		given the CTS URN of an author, this method returns its opus maximum. 
+		If not available returns None.
+
+		:param author_cts_urn: the CTS URN of the author whose opus max is to be retrieved.
+		:return: an instance of `surfext.HucitWork` or None
+
+		""" 
+		pass
 	def to_json(self):
 		"""
 		Serialises the content of the KnowledgeBase as JSON.

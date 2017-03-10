@@ -4,21 +4,23 @@ import logging
 import sys
 import pytest
 from pytest import fixture
+import pkg_resources
+import knowledge_base
 from knowledge_base import *
-
-from surf.log import setup_logger, set_logger_level
-setup_logger()
-set_logger_level(logging.DEBUG)
-logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
+#from surf.log import setup_logger, set_logger_level
+#setup_logger()
+#set_logger_level(logging.DEBUG)
+logging.basicConfig(level=logging.INFO, stream=sys.stdout)
 logger = logging.getLogger()
 
 
-@fixture
-def kb_inmemory(configuration_file="inmemory.ini"):
-	if(configuration_file is not None):
-		return KnowledgeBase(configuration_file)
+@fixture(scope="session")
+def kb_inmemory(filename="inmemory.ini"):
+	configuration_file = pkg_resources.resource_filename('knowledge_base','config/%s'%filename)
+	logger.info("Using config file: %s"%configuration_file)
+	return KnowledgeBase(configuration_file)
 @fixture
 #@pytest.mark.skip(reason="need to deal with installing virtuoso at build-time")
-def kb_virtuoso(configuration_file="virtuoso.ini"):
-	if(configuration_file is not None):
-		return KnowledgeBase(configuration_file)
+def kb_virtuoso(filename="virtuoso.ini"):
+	configuration_file = pkg_resources.resource_filename('knowledge_base','config/%s'%filename)
+	return KnowledgeBase(configuration_file)

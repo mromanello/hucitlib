@@ -14,8 +14,11 @@ setup(name='hucit_knowledge_base'
 	,url='https://github.com/mromanello/hucit_kb/'
     ,version=VERSION
     ,packages=find_packages()
-    ,package_data={'knowledge_base': ['data/*.*'
-                                          ,'data/kb/*.*']}
+    ,package_data={'knowledge_base': [
+                                    'data/*.*'
+                                    , 'data/kb/*.*'
+                                    , 'config/*.*'
+                                    ]}
     ,install_requires=[
     					'pyCTS'
     					, 'surf>=1.1.9'

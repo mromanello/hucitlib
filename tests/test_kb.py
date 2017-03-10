@@ -27,8 +27,8 @@ def test_kb_inmemory(kb_inmemory):
 
 
 """
-Tests:
+Tests to write (each tests against both knowledge flavours):
 
-
-
+- test_get_statistics
+- test remove
 """

@@ -2,6 +2,10 @@
 # -*- coding: utf-8 -*-
 # author: Matteo Romanello, matteo.romanello@gmail.com
 
+"""
+TODO: Description of the package.
+"""
+
 import json
 import surf
 from surf import *
@@ -12,6 +16,11 @@ surf.ns.register(ecrm="http://erlangen-crm.org/current/")
 surf.ns.register(efrbroo="http://erlangen-crm.org/efrbroo/")
 surf.ns.register(hucit="http://purl.org/net/hucit#")
 surf.ns.register(kb="http://128.178.21.39:8080/matteo-data/")
+
+# TODO: define base URIs for entities (authors, works, types, names, URNs, etc.)
+BASE_URI_TYPES = surf.ns.KB["types#"]
+BASE_URI_AUTHORS = surf.ns.KB["authors#"]
+BASE_URI_WORKS = surf.ns.KB["works#"]
 
 class HucitAuthor(object):
     """
@@ -48,9 +57,10 @@ class HucitAuthor(object):
             for variant in name.rdfs_label:
                 self.names.append((variant.language,variant.title()))
         return self.names
-    def add_name(self,name,lang):
+    def add_name(self, name, lang):
         """
         TODO
+        When adding a new name, try to avoid duplicates (raise exception if needed)
         """
         newlabel = None
         if lang is not None:
@@ -128,21 +138,48 @@ class HucitAuthor(object):
         >> homer = kb.get_resource_by_urn("urn:cts:greekLit:tlg0012")
         >> homer.to_json()
         {
-            "uri" : ""
-            , "urn" : "urn:cts:xxx"
-            , "names" : ["a", "b"]
-            , "name_abbreviations": ["a.", "b."]
-            , "works" : [{}, {}]
+          "name_abbreviations": [
+            "Hom."
+          ], 
+          "urn": "urn:cts:greekLit:tlg0012", 
+          "works": [
+            {}, 
+            {}, 
+            {}
+          ], 
+          "uri": "http://128.178.21.39:8080/matteo-data/authors/927", 
+          "names": [
+            {
+              "language": "fr", 
+              "label": "Hom\u00e8re"
+            }, 
+            {
+              "language": "la", 
+              "label": "Homerus"
+            }, 
+            {
+              "language": null, 
+              "label": "Homeros"
+            }, 
+            {
+              "language": "en", 
+              "label": "Homer"
+            }, 
+            {
+              "language": "it", 
+              "label": "Omero"
+            }
+          ]
         }
         """
         names = self.get_names()
         return json.dumps({    
-                    "uri" : self.uri
-                    , "urn" : self.get_urn()
-                    , "names" : [names[lang] for lang in names]
+                    "uri" : self.subject
+                    , "urn" : str(self.get_urn())
+                    , "names" : [{"language":lang, "label":label} for lang, label in names]
                     , "name_abbreviations" : self.get_abbreviations()
                     , "works" : [work.to_json() for work in self.get_works()]
-                })
+                }, indent=2)
 class HucitWork(object):
     """
     Object mapping for instances of `http://erlangen-crm.org/efrbroo/F1_Work`.
@@ -199,12 +236,17 @@ class HucitWork(object):
         """
         try:
             type_ctsurn = self.session.get_resource(surf.ns.KB["types#CTS_URN"],self.session.get_class(surf.ns.ECRM['E55_Type']))
-            urn = [CTS_URN(urnstring.rdfs_label.one) for urnstring in self.ecrm_P1_is_identified_by if urnstring.uri == surf.ns.ECRM['E42_Identifier'] and urnstring.ecrm_P2_has_type.first == type_ctsurn][0]
+            urn = [CTS_URN(urnstring.rdfs_label.one) 
+                            for urnstring in self.ecrm_P1_is_identified_by 
+                                    if urnstring.uri == surf.ns.ECRM['E42_Identifier'] and 
+                                        urnstring.ecrm_P2_has_type.first == type_ctsurn][0]
             return urn
         except Exception, e:
             return None
     def set_urn(self,urn):
-        """TODO: finish and test"""
+        """
+        TODO: finish, refactor completely and test
+        """
         try:
             Identifier = self.session.get_class(surf.ns.ECRM['E42_Identifier'])
             Type = self.session.get_class(surf.ns.ECRM['E55_Type'])
@@ -220,6 +262,20 @@ class HucitWork(object):
     def has_text_structure(self):
         """
         Checks whether a citable text structure is defined.
+
+        :return: boolean
+        """
+        pass
+    def set_as_opus_maximum(self): # TODO: implement
+        """
+        Mark expplicitly as opus maximum.
+        """
+        pass
+    def is_opus_maximum(self): # TODO: implement
+        """
+        Two cases:
+        1. the work is flagged as opus max 
+        2. there is only one work by this author
 
         :return: boolean
         """
@@ -245,8 +301,15 @@ class HucitWork(object):
         TODO
         """
         pass
+    def to_json(self): #TODO implement
+        """
+        Serialises a HucitWork to a JSON formatted string.        
+        """
+        return {}
 class HucitTextElement(object):
-    """docstring for HucitTextElement"""
+    """
+    Object mapping for instances of `http://purl.og/net/hucit#TextElement`.
+    """
     def __repr__(self):
         return ""
     def next(self):
@@ -280,6 +343,19 @@ class HucitTextElement(object):
             return CTS_URN(urn)
         except Exception, e:
             raise e
-    
+class HucitTextStructure(object):
+    """
+    Object mapping for instances of `http://purl.og/net/hucit#TextStructure`.
+    """
+    pass
+class HucitCtsUrn(object):
+    """
+    TODO
+    """
+    def __init__(self, urn_string):
+        """
+        assign to it the right type
+        """
+        pass
         
 
