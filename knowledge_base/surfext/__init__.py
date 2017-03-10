@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # author: Matteo Romanello, matteo.romanello@gmail.com
 
+import json
 import surf
 from surf import *
 from pyCTS import CTS_URN
@@ -13,124 +14,135 @@ surf.ns.register(hucit="http://purl.org/net/hucit#")
 surf.ns.register(kb="http://128.178.21.39:8080/matteo-data/")
 
 class HucitAuthor(object):
-        """
-        Object mapping for instances of `http://erlangen-crm.org/efrbroo/F10_Person`.
-        """
-        def __repr__(self):
-            names = ["%s (@%s)"%(name[1],name[0]) for name in self.get_names()]
-            return ("HucitAuthor (names=[%s],urn=%s)"%(",".join(names),self.get_urn())).encode("utf-8")
-        def __unicode__(self):
-            names = self.get_names()
+    """
+    Object mapping for instances of `http://erlangen-crm.org/efrbroo/F10_Person`.
+    """
+    def __repr__(self):
+        names = ["%s (@%s)"%(name[1],name[0]) for name in self.get_names()]
+        return ("HucitAuthor (names=[%s],urn=%s)"%(",".join(names),self.get_urn())).encode("utf-8")
+    def __unicode__(self):
+        names = self.get_names()
+        try:
+            english_name = [name[1] for name in names if name[0]=='en']
+            return english_name[0]
+        except Exception, e:
             try:
-                english_name = [name[1] for name in names if name[0]=='en']
-                return english_name[0]
+                default_name = [name[1] for name in names if name[0]==None]
+                return default_name[0]
             except Exception, e:
                 try:
-                    default_name = [name[1] for name in names if name[0]==None]
-                    return default_name[0]
+                    latin_name = [name[1] for name in names if name[0]=='la']
+                    return latin_name[0]
                 except Exception, e:
-                    try:
-                        latin_name = [name[1] for name in names if name[0]=='la']
-                        return latin_name[0]
-                    except Exception, e:
-                        return None
-        def get_names(self):
-            """
-            Returns a dict where key is the language and value is the name in that language.
-            
-            Example:
-                {'it':"Sofocle"}
-            """
-            names = [id for id in self.ecrm_P1_is_identified_by if id.uri == surf.ns.EFRBROO['F12_Name']]
-            self.names = []
-            for name in names:
-                for variant in name.rdfs_label:
-                    self.names.append((variant.language,variant.title()))
-            return self.names
-        def add_name(self,name,lang):
-            """
-            TODO
-            """
-            newlabel = None
-            if lang is not None:
-                newlabel = Literal(name, lang=lang)
-            else:
-                newlabel = Literal(name)
-            name = [id for id in self.ecrm_P1_is_identified_by if id.uri == surf.ns.EFRBROO['F12_Name']][0]
-            try:
-                name.rdfs_label.append(newlabel)
-                return True
-            except Exception, e:
-                print e
-                return False
-        def add_name_abbreviation(self):
-            """TODO"""
-            pass
-        def get_abbreviations(self):
-            """
-            Get abbreviations of the names of the author.
+                    return None
+    def get_names(self):
+        """
+        Returns a dict where key is the language and value is the name in that language.
+        
+        Example:
+            {'it':"Sofocle"}
+        """
+        names = [id for id in self.ecrm_P1_is_identified_by if id.uri == surf.ns.EFRBROO['F12_Name']]
+        self.names = []
+        for name in names:
+            for variant in name.rdfs_label:
+                self.names.append((variant.language,variant.title()))
+        return self.names
+    def add_name(self,name,lang):
+        """
+        TODO
+        """
+        newlabel = None
+        if lang is not None:
+            newlabel = Literal(name, lang=lang)
+        else:
+            newlabel = Literal(name)
+        name = [id for id in self.ecrm_P1_is_identified_by if id.uri == surf.ns.EFRBROO['F12_Name']][0]
+        try:
+            name.rdfs_label.append(newlabel)
+            return True
+        except Exception, e:
+            print e
+            return False
+    def add_name_abbreviation(self):
+        """TODO"""
+        pass
+    def get_abbreviations(self):
+        """
+        Get abbreviations of the names of the author.
 
-            :return: a list of strings (empty list if no abbreviations available).
-            """
-            abbreviations = []
-            try:
-                type_abbreviation = self.session.get_resource(surf.ns.KB["types#abbreviation"]
-                                                            , self.session.get_class(surf.ns.ECRM['E55_Type']))
-                abbreviations = [abbreviation.rdfs_label.one.title() 
-                                    for name in self.ecrm_P1_is_identified_by 
-                                        for abbreviation in name.ecrm_P139_has_alternative_form
-                                            if name.uri == surf.ns.EFRBROO['F12_Name'] 
-                                                and abbreviation.ecrm_P2_has_type.first == type_abbreviation]
-            except Exception as e:
-                logger.debug("Exception raised when getting abbreviations for %a"%self)
-            finally:
-                return abbreviations
-        def get_urn(self):
-            """
-            Assumes that each HucitAuthor has only one CTS URN.
-            """
-            # TODO: check type
-            try:
-                type_ctsurn = self.session.get_resource(surf.ns.KB["types#CTS_URN"],self.session.get_class(surf.ns.ECRM['E55_Type']))
-                urn = [CTS_URN(urnstring.rdfs_label.one) for urnstring in self.ecrm_P1_is_identified_by if urnstring.uri == surf.ns.ECRM['E42_Identifier'] and urnstring.ecrm_P2_has_type.first == type_ctsurn][0]
-                return urn
-            except Exception as e:
-                return None
-        def set_urn(self,urn):
-            """TODO: finish and test"""
-            try:
-                Identifier = self.session.get_class(surf.ns.ECRM['E42_Identifier'])
-                Type = self.session.get_class(surf.ns.ECRM['E55_Type'])
-                id_uri = "%s#cts_urn"%str(self.subject)
-                id = Identifier(id_uri)
-                id.rdfs_label = Literal(urn)
-                type_ctsurn = self.session.get_resource(surf.ns.KB["types#CTS_URN"],Type)
-                id.ecrm_P2_has_type = type_ctsurn
-                return True
-            except Exception, e:
-                print e
-                return False  
-            pass
-        def get_works(self):
-            """
-            Returns a list of the works (intances of `surf.Resource` and `HucitWork`)
-            attributed to a given author.
-            """
-            return [work  for creation in self.efrbroo_P14i_performed 
-                                    for work in creation.efrbroo_R16_initiated]
-        def to_json(self):
-            """
-            TODO: returns a JSON representation of the object
+        :return: a list of strings (empty list if no abbreviations available).
+        """
+        abbreviations = []
+        try:
+            type_abbreviation = self.session.get_resource(surf.ns.KB["types#abbreviation"]
+                                                        , self.session.get_class(surf.ns.ECRM['E55_Type']))
+            abbreviations = [abbreviation.rdfs_label.one.title() 
+                                for name in self.ecrm_P1_is_identified_by 
+                                    for abbreviation in name.ecrm_P139_has_alternative_form
+                                        if name.uri == surf.ns.EFRBROO['F12_Name'] 
+                                            and abbreviation.ecrm_P2_has_type.first == type_abbreviation]
+        except Exception as e:
+            logger.debug("Exception raised when getting abbreviations for %a"%self)
+        finally:
+            return abbreviations
+    def get_urn(self):
+        """
+        Assumes that each HucitAuthor has only one CTS URN.
+        """
+        # TODO: check type
+        try:
+            type_ctsurn = self.session.get_resource(surf.ns.KB["types#CTS_URN"],self.session.get_class(surf.ns.ECRM['E55_Type']))
+            urn = [CTS_URN(urnstring.rdfs_label.one) for urnstring in self.ecrm_P1_is_identified_by if urnstring.uri == surf.ns.ECRM['E42_Identifier'] and urnstring.ecrm_P2_has_type.first == type_ctsurn][0]
+            return urn
+        except Exception as e:
+            return None
+    def set_urn(self,urn):
+        """TODO: finish and test"""
+        try:
+            Identifier = self.session.get_class(surf.ns.ECRM['E42_Identifier'])
+            Type = self.session.get_class(surf.ns.ECRM['E55_Type'])
+            id_uri = "%s#cts_urn"%str(self.subject)
+            id = Identifier(id_uri)
+            id.rdfs_label = Literal(urn)
+            type_ctsurn = self.session.get_resource(surf.ns.KB["types#CTS_URN"],Type)
+            id.ecrm_P2_has_type = type_ctsurn
+            return True
+        except Exception, e:
+            print e
+            return False  
+        pass
+    def get_works(self):
+        """
+        Returns a list of the works (intances of `surf.Resource` and `HucitWork`)
+        attributed to a given author.
+        """
+        return [work  for creation in self.efrbroo_P14i_performed 
+                                for work in creation.efrbroo_R16_initiated]
+    def to_json(self):
+        """
+        Serialises a HucitAuthor to a JSON formatted string.
 
-            {
-                uri : ""
-                , urn : "urn:cts:xxx"
-                , names : ["a", "b"]
-                , name_abbreviations: ["a.", "b."]
-                , works : [{}, {}]
-            }
-            """
-            return {}
+        Example:
+
+        >> homer = kb.get_resource_by_urn("urn:cts:greekLit:tlg0012")
+        >> homer.to_json()
+        {
+            "uri" : ""
+            , "urn" : "urn:cts:xxx"
+            , "names" : ["a", "b"]
+            , "name_abbreviations": ["a.", "b."]
+            , "works" : [{}, {}]
+        }
+        """
+        names = self.get_names()
+        return json.dumps({    
+                    "uri" : self.uri
+                    , "urn" : self.get_urn()
+                    , "names" : [names[lang] for lang in names]
+                    , "name_abbreviations" : self.get_abbreviations()
+                    , "works" : [work.to_json() for work in self.get_works()]
+                })
 class HucitWork(object):
     """
     Object mapping for instances of `http://erlangen-crm.org/efrbroo/F1_Work`.

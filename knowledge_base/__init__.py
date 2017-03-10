@@ -35,6 +35,10 @@ class KnowledgeBase(object):
 		"""
 		TODO
 		"""
+		self._authors = None
+		self._works = None
+		self._author_abbreviations = None
+		self._work_abbreviations = None
 		try:
 			config = ConfigParser.ConfigParser()
 			config.readfp(open(config_file))
@@ -70,6 +74,34 @@ class KnowledgeBase(object):
 		self._session = surf.Session(self._store, {})
 		self._register_namespaces()
 		self._register_mappings()
+	@property
+	def flat_author_names(self):
+		if(self._author_names is not None):
+			return self._author_names
+		else:
+			self._author_names = self._fetch_author_names()
+			return self._author_names
+	@property
+	def flat_author_abbreviations(self):
+		if(self._author_abbreviations is not None):
+			return self._author_abbreviations
+		else:
+			self._author_abbreviations = self._fetch_author_abbreviations()
+			return self._author_abbreviations
+	@property
+	def flat_work_titles(self):
+		if(self._work_titles is not None):
+			return self._work_titles
+		else:
+			self._work_titles = self._fetch_work_titles()
+			return self._work_titles
+	@property
+	def flat_work_abbreviations(self):
+		if(self._work_abbreviations is not None):
+			return self._work_abbreviations
+		else:
+			self._work_abbreviations = self._fetch_work_abbreviations()
+			return self.work_abbreviations
 	def get_resource_by_urn(self,urn):
 		"""
 		
