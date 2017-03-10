@@ -1,7 +1,9 @@
 import os
 from setuptools import setup, find_packages
-#import citation_extractor
-#VERSION = citation_extractor.__version__
+
+NAME = "knowledge_base"
+execfile('{0}/__version__.py'.format(NAME))
+VERSION = str_version
 
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
@@ -10,9 +12,13 @@ setup(name='hucit_knowledge_base'
 	,author='Matteo Romanello'
 	,author_email='matteo.romanello@gmail.com'
 	,url='https://github.com/mromanello/hucit_kb/'
-    ,version=""
+    ,version=VERSION
     ,packages=find_packages()
     ,package_data={'knowledge_base': ['data/*.*'
                                           ,'data/kb/*.*']}
+    ,install_requires=[
+    					'pyCTS'
+    					, 'surf>=1.1.9'
+    				]
     ,long_description=read('README.md')
 )
