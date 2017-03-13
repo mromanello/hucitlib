@@ -11,7 +11,8 @@ Examples of usage:
 	python knowledge_base/cli.py find "Aeneid"
 	python knowledge_base/cli.py find “urn:cts:greekLit:tlg0012"
 	python knowledge_base/cli.py add —-what=[name|abbr|title|sameas] —-to=“urn:cts:greekLit:tlg0012” “Omero@it"
-	python knowledge_base/cli.py clear_cache
+	python knowledge_base/cli.py refresh
+	python knowledge_base/cli.py start (?)
 
 Use memcached to store a cached kb, with an expiration date of a week or so. 
 Store the KB as well as an instance of `citation_extractor.Utils.FastDict.LookupDictionary`.

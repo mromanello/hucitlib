@@ -34,7 +34,7 @@ class KnowledgeBase(object):
 		return
 	def __init__(self, config_file):
 		"""
-		TODO
+		TODO: read default configuration file if none is provided
 		"""
 		self._authors = None
 		self._works = None
@@ -79,7 +79,7 @@ class KnowledgeBase(object):
 	@property
 	def author_names(self):
 		"""
-		Return a dictionary like this:
+		Returns a dictionary like this:
 
 		{
 			"urn:cts:greekLit:tlg0012$$n1" : "Homer"
@@ -87,16 +87,29 @@ class KnowledgeBase(object):
 			, ...
 		}
 		"""
-		pass
+		return {"%s$$n%i"%(author.get_urn(), i) : name[1] 
+				for author in self.get_authors()
+						for i, name in enumerate(author.get_names())
+												if author.get_urn() is not None}
 	@property
 	def author_abbreviations(self):
-		pass
+		return {"%s$$n%i"%(author.get_urn(), i) : abbrev 
+				for author in self.get_authors()
+						for i, abbrev in enumerate(author.get_abbreviations())
+												if author.get_urn() is not None}
 	@property
 	def work_titles(self):
-		pass
+		return {"%s$$n%i"%(work.get_urn(), i) : title[1] 
+				for author in self.get_authors()
+					for work in author.get_works()
+						for i, title in enumerate(work.get_titles())
+												if work.get_urn() is not None}
 	@property
 	def work_abbreviations(self):
-		pass
+		return {"%s$$n%i"%(work.get_urn(), i) : abbrev 
+				for author in self.get_authors()
+					for work in author.get_works()
+						for i, abbrev in enumerate(work.get_abbreviations())}
 	def get_resource_by_urn(self,urn):
 		"""
 		
@@ -215,11 +228,6 @@ class KnowledgeBase(object):
 				except Exception as e:
 					return None
 	def get_author_of(self): # TODO finish
-		pass
-	def get_flat_labels(self): # TODO implement
-		"""
-		create 4 flat dictionaries and then merge them with update
-		"""
 		pass
 	def get_statistics(self):
 		"""

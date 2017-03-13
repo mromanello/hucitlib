@@ -24,8 +24,27 @@ def test_kb_inmemory(kb_inmemory):
 		logger.info("%s"%author)
 	iliad = kb_inmemory.get_resource_by_urn("urn:cts:greekLit:tlg0012.tlg001")
 	logger.info("%s"%iliad.author)
-
-
+def test_kb_author_names(kb_inmemory):
+	names = kb_inmemory.author_names
+	assert names is not None and len(names) > 0
+	logger.info("%i unique author names found in the KB"%len(names))
+def test_kb_author_abbreviations(kb_inmemory):
+	abbreviations = kb_inmemory.author_abbreviations
+	assert abbreviations is not None and len(abbreviations) > 0
+	logger.info("%i abbreviations of author names found in the KB"%len(abbreviations))
+	for i, author_key in enumerate(abbreviations.keys()[:10]):
+		logger.info("%i. %s => %s"%(i, author_key.split("$$")[0], abbreviations[author_key]))
+def test_kb_get_titles(kb_inmemory):
+	titles = kb_inmemory.work_titles
+	assert titles is not None and len(titles) > 0
+	logger.info("%i work titles found in the KB"%len(titles))
+def test_kb_work_abbreviations(kb_inmemory):
+	abbreviations = kb_inmemory.work_abbreviations
+	assert abbreviations is not None and len(abbreviations) > 0
+	logger.info("%i abbreviations of work titles found in the KB"%len(abbreviations))
+def test_kb_get_statistics(kb_inmemory):
+	stats = kb_inmemory.get_statistics()
+	assert stats is not None and not 0 in stats.values()
 """
 Tests to write (each tests against both knowledge flavours):
 
