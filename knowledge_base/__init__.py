@@ -9,6 +9,7 @@ import logging
 from surfext import *
 from pyCTS import CTS_URN
 import pkg_resources
+import __version__
 
 logger = logging.getLogger('')
 

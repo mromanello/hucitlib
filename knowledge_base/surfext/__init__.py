@@ -87,7 +87,7 @@ class HucitAuthor(object):
             return True
         except Exception as e:
             raise e
-    def add_name_abbreviation(self, new_abbreviation):
+    def add_abbreviation(self, new_abbreviation):
         """
         Adds a new name variant to an author.
 
@@ -330,15 +330,42 @@ class HucitWork(object):
         try:
             type_abbreviation = self.session.get_resource(surf.ns.KB["types#abbreviation"]
                                                         , self.session.get_class(surf.ns.ECRM['E55_Type']))
-            abbreviations = [abbreviation.rdfs_label.one.title() 
+            abbreviations = [label.title() 
                                 for title in self.efrbroo_P102_has_title 
                                     for abbreviation in title.ecrm_P139_has_alternative_form
-                                        if title.uri == surf.ns.EFRBROO['E35_Title'] 
-                                            and abbreviation.ecrm_P2_has_type.first == type_abbreviation]
+                                        for label in abbreviation.rdfs_label
+                                            if title.uri == surf.ns.EFRBROO['E35_Title'] 
+                                             and abbreviation.ecrm_P2_has_type.first == type_abbreviation]
         except Exception as e:
             logger.debug("Exception raised when getting abbreviations for %a"%self)
         finally:
             return abbreviations
+    def add_abbreviation(self, new_abbreviation):
+        """
+        Adds a new name variant to a work.
+
+        :param new_abbreviation: the abbreviation to be added 
+        :return: `True` if the abbreviation is added, `False` otherwise (the abbreviation is a duplicate)
+        """
+        try:
+            assert new_abbreviation not in self.get_abbreviations()
+        except Exception as e: 
+            # TODO: raise a custom exception
+            logger.warning("Duplicate abbreviation detected while adding \"%s\""%new_abbreviation)
+            return False
+        try:
+            type_abbreviation = self.session.get_resource(surf.ns.KB["types#abbreviation"]
+                                                        , self.session.get_class(surf.ns.ECRM['E55_Type']))
+            abbreviation = [abbreviation 
+                                for title in self.efrbroo_P102_has_title 
+                                    for abbreviation in title.ecrm_P139_has_alternative_form
+                                        if title.uri == surf.ns.EFRBROO['E35_Title'] 
+                                            and abbreviation.ecrm_P2_has_type.first == type_abbreviation][0]
+            abbreviation.rdfs_label.append(Literal(new_abbreviation))
+            abbreviation.save()
+            return True
+        except Exception as e:
+            raise e
     def get_urn(self):
         """
         Get the CTS URN that identifies the work.
