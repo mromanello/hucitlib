@@ -6,11 +6,15 @@
 TODO: Description of the package.
 """
 
+import pdb
 import json
 import surf
+import logging
 from surf import *
 from pyCTS import CTS_URN
 from rdflib import Literal
+
+logger = logging.getLogger('')
 
 surf.ns.register(ecrm="http://erlangen-crm.org/current/")
 surf.ns.register(efrbroo="http://erlangen-crm.org/efrbroo/")
@@ -57,11 +61,20 @@ class HucitAuthor(object):
             for variant in name.rdfs_label:
                 self.names.append((variant.language,variant.title()))
         return self.names
-    def add_name(self, name, lang):
+    def add_name(self, name, lang=None):
         """
-        TODO
-        When adding a new name, try to avoid duplicates (raise exception if needed)
+        Adds a new name variant to an author.
+
+        :param name: the name to be added 
+        :param lang: the language of the name variant
+        :return: `True` if the name is added, `False` otherwise (the name is a duplicate)
         """
+        try:
+            assert (lang, name) not in self.get_names()
+        except Exception as e: 
+            # TODO: raise a custom exception
+            logger.warning("Duplicate name detected while adding \"%s (lang=%s)\""%(name, lang))
+            return False
         newlabel = None
         if lang is not None:
             newlabel = Literal(name, lang=lang)
@@ -70,13 +83,36 @@ class HucitAuthor(object):
         name = [id for id in self.ecrm_P1_is_identified_by if id.uri == surf.ns.EFRBROO['F12_Name']][0]
         try:
             name.rdfs_label.append(newlabel)
+            name.save()
             return True
-        except Exception, e:
-            print e
+        except Exception as e:
+            raise e
+    def add_name_abbreviation(self, new_abbreviation):
+        """
+        Adds a new name variant to an author.
+
+        :param new_abbreviation: the abbreviation to be added 
+        :return: `True` if the abbreviation is added, `False` otherwise (the abbreviation is a duplicate)
+        """
+        try:
+            assert new_abbreviation not in self.get_abbreviations()
+        except Exception as e: 
+            # TODO: raise a custom exception
+            logger.warning("Duplicate abbreviation detected while adding \"%s\""%new_abbreviation)
             return False
-    def add_name_abbreviation(self):
-        """TODO"""
-        pass
+        try:
+            type_abbreviation = self.session.get_resource(surf.ns.KB["types#abbreviation"]
+                                                        , self.session.get_class(surf.ns.ECRM['E55_Type']))
+            abbreviation = [abbreviation 
+                                for name in self.ecrm_P1_is_identified_by 
+                                    for abbreviation in name.ecrm_P139_has_alternative_form
+                                        if name.uri == surf.ns.EFRBROO['F12_Name'] 
+                                            and abbreviation.ecrm_P2_has_type.first == type_abbreviation][0]
+            abbreviation.rdfs_label.append(Literal(new_abbreviation))
+            abbreviation.save()
+            return True
+        except Exception as e:
+            raise e
     def get_abbreviations(self):
         """
         Get abbreviations of the names of the author.
@@ -87,11 +123,12 @@ class HucitAuthor(object):
         try:
             type_abbreviation = self.session.get_resource(surf.ns.KB["types#abbreviation"]
                                                         , self.session.get_class(surf.ns.ECRM['E55_Type']))
-            abbreviations = [abbreviation.rdfs_label.one.title() 
+            abbreviations = [label.title() 
                                 for name in self.ecrm_P1_is_identified_by 
                                     for abbreviation in name.ecrm_P139_has_alternative_form
-                                        if name.uri == surf.ns.EFRBROO['F12_Name'] 
-                                            and abbreviation.ecrm_P2_has_type.first == type_abbreviation]
+                                        for label in abbreviation.rdfs_label 
+                                            if name.uri == surf.ns.EFRBROO['F12_Name'] 
+                                                and abbreviation.ecrm_P2_has_type.first == type_abbreviation]
         except Exception as e:
             logger.debug("Exception raised when getting abbreviations for %a"%self)
         finally:
@@ -102,26 +139,30 @@ class HucitAuthor(object):
         """
         # TODO: check type
         try:
-            type_ctsurn = self.session.get_resource(surf.ns.KB["types#CTS_URN"],self.session.get_class(surf.ns.ECRM['E55_Type']))
-            urn = [CTS_URN(urnstring.rdfs_label.one) for urnstring in self.ecrm_P1_is_identified_by if urnstring.uri == surf.ns.ECRM['E42_Identifier'] and urnstring.ecrm_P2_has_type.first == type_ctsurn][0]
+            type_ctsurn = self.session.get_resource(surf.ns.KB["types#CTS_URN"]
+                                                    , self.session.get_class(surf.ns.ECRM['E55_Type']))
+            urn = [CTS_URN(urnstring.rdfs_label.one) 
+                                for urnstring in self.ecrm_P1_is_identified_by 
+                                                            if urnstring.uri == surf.ns.ECRM['E42_Identifier'] 
+                                                            and urnstring.ecrm_P2_has_type.first == type_ctsurn][0]
             return urn
         except Exception as e:
             return None
     def set_urn(self,urn):
-        """TODO: finish and test"""
+        """
+        Change the CTS URN of the author or adds a new one (if no URN is assigned).
+        """
+        Type = self.session.get_class(surf.ns.ECRM['E55_Type'])
+        Identifier = self.session.get_class(surf.ns.ECRM['E42_Identifier'])
+        id_uri = "%s#cts_urn"%str(self.subject)
         try:
-            Identifier = self.session.get_class(surf.ns.ECRM['E42_Identifier'])
-            Type = self.session.get_class(surf.ns.ECRM['E55_Type'])
-            id_uri = "%s#cts_urn"%str(self.subject)
             id = Identifier(id_uri)
             id.rdfs_label = Literal(urn)
-            type_ctsurn = self.session.get_resource(surf.ns.KB["types#CTS_URN"],Type)
-            id.ecrm_P2_has_type = type_ctsurn
+            id.ecrm_P2_has_type = Type(surf.ns.KB["types#CTS_URN"])
+            id.save()
             return True
         except Exception, e:
-            print e
-            return False  
-        pass
+            raise e 
     def get_works(self):
         """
         Returns a list of the works (intances of `surf.Resource` and `HucitWork`)
@@ -143,9 +184,77 @@ class HucitAuthor(object):
           ], 
           "urn": "urn:cts:greekLit:tlg0012", 
           "works": [
-            {}, 
-            {}, 
-            {}
+            {
+              "urn": "urn:cts:greekLit:tlg0012.tlg001", 
+              "titles": [
+                {
+                  "language": "it", 
+                  "label": "Iliade"
+                }, 
+                {
+                  "language": "la", 
+                  "label": "Ilias"
+                }, 
+                {
+                  "language": "en", 
+                  "label": "Iliad"
+                }, 
+                {
+                  "language": "de", 
+                  "label": "Ilias"
+                }, 
+                {
+                  "language": "fr", 
+                  "label": "L'Iliade"
+                }
+              ], 
+              "uri": "http://128.178.21.39:8080/matteo-data/works/2815", 
+              "title_abbreviations": [
+                "Il."
+              ]
+            }, 
+            {
+              "urn": "urn:cts:greekLit:tlg0012.tlg002", 
+              "titles": [
+                {
+                  "language": "en", 
+                  "label": "Odyssey"
+                }, 
+                {
+                  "language": "fr", 
+                  "label": "L'Odyss\u00e9e"
+                }, 
+                {
+                  "language": "it", 
+                  "label": "Odissea"
+                }, 
+                {
+                  "language": "la", 
+                  "label": "Odyssea"
+                }, 
+                {
+                  "language": "de", 
+                  "label": "Odyssee"
+                }
+              ], 
+              "uri": "http://128.178.21.39:8080/matteo-data/works/2816", 
+              "title_abbreviations": [
+                "Od."
+              ]
+            }, 
+            {
+              "urn": "urn:cts:cwkb:927.2814", 
+              "titles": [
+                {
+                  "language": "la", 
+                  "label": "Epigrammata"
+                }
+              ], 
+              "uri": "http://128.178.21.39:8080/matteo-data/works/2814", 
+              "title_abbreviations": [
+                "Epigr."
+              ]
+            }
           ], 
           "uri": "http://128.178.21.39:8080/matteo-data/authors/927", 
           "names": [
@@ -178,7 +287,7 @@ class HucitAuthor(object):
                     , "urn" : str(self.get_urn())
                     , "names" : [{"language":lang, "label":label} for lang, label in names]
                     , "name_abbreviations" : self.get_abbreviations()
-                    , "works" : [work.to_json() for work in self.get_works()]
+                    , "works" : [json.loads(work.to_json()) for work in self.get_works()]
                 }, indent=2)
 class HucitWork(object):
     """
@@ -209,8 +318,10 @@ class HucitWork(object):
     def get_titles(self):
         """TODO"""
         return [(label.language,label.title()) for label in self.efrbroo_P102_has_title.first.rdfs_label]
-    def get_abbreviations(self):
+    def get_abbreviations(self, combine=False):
         """
+        TODO: if `combine==True`, concatenate with author abbreviation(s)
+
         Get abbreviations of the titles of the work.
 
         :return: a list of strings (empty list if no abbreviations available).
@@ -235,7 +346,8 @@ class HucitWork(object):
         :return: an instance of `pyCTS.CTS_URN` or None
         """
         try:
-            type_ctsurn = self.session.get_resource(surf.ns.KB["types#CTS_URN"],self.session.get_class(surf.ns.ECRM['E55_Type']))
+            type_ctsurn = self.session.get_resource(surf.ns.KB["types#CTS_URN"]
+                                                    , self.session.get_class(surf.ns.ECRM['E55_Type']))
             urn = [CTS_URN(urnstring.rdfs_label.one) 
                             for urnstring in self.ecrm_P1_is_identified_by 
                                     if urnstring.uri == surf.ns.ECRM['E42_Identifier'] and 
@@ -245,20 +357,19 @@ class HucitWork(object):
             return None
     def set_urn(self,urn):
         """
-        TODO: finish, refactor completely and test
+        Change the CTS URN of the author or adds a new one (if no URN is assigned).
         """
+        Type = self.session.get_class(surf.ns.ECRM['E55_Type'])
+        Identifier = self.session.get_class(surf.ns.ECRM['E42_Identifier'])
+        id_uri = "%s#cts_urn"%str(self.subject)
         try:
-            Identifier = self.session.get_class(surf.ns.ECRM['E42_Identifier'])
-            Type = self.session.get_class(surf.ns.ECRM['E55_Type'])
-            id_uri = "%s#cts_urn"%str(self.subject)
             id = Identifier(id_uri)
             id.rdfs_label = Literal(urn)
-            type_ctsurn = self.session.get_resource('http://phd.mr56k.info/data/types#CTS_URN',Type)
-            id.ecrm_P2_has_type = type_ctsurn
+            id.ecrm_P2_has_type = Type(surf.ns.KB["types#CTS_URN"])
+            id.save()
             return True
         except Exception, e:
-            print e
-            return False
+            raise e
     def has_text_structure(self):
         """
         Checks whether a citable text structure is defined.
@@ -268,7 +379,7 @@ class HucitWork(object):
         pass
     def set_as_opus_maximum(self): # TODO: implement
         """
-        Mark expplicitly as opus maximum.
+        Mark explicitly a work as the opus maximum.
         """
         pass
     def is_opus_maximum(self): # TODO: implement
@@ -301,11 +412,18 @@ class HucitWork(object):
         TODO
         """
         pass
-    def to_json(self): #TODO implement
+    def to_json(self):
         """
         Serialises a HucitWork to a JSON formatted string.        
         """
-        return {}
+        titles = self.get_titles()
+        return json.dumps({
+                "uri" : self.subject
+                , "urn" : str(self.get_urn())
+                , "titles" : [{"language":lang, "label":label} for lang, label in titles]
+                , "title_abbreviations" : self.get_abbreviations()
+
+            }, indent=2)
 class HucitTextElement(object):
     """
     Object mapping for instances of `http://purl.og/net/hucit#TextElement`.

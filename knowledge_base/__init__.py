@@ -4,12 +4,13 @@
 
 import ConfigParser
 import surf
+import json
 import logging
 from surfext import *
 from pyCTS import CTS_URN
 import pkg_resources
 
-logger = logging.getLogger('KnowledgeBase')
+logger = logging.getLogger('')
 
 # TODO: add exceptions => AuthorNotFound, WorkNotFound or perhaps just ResourceNotFound
 
@@ -269,7 +270,7 @@ class KnowledgeBase(object):
 
 		:return: TODO
 		"""
-		return {
+		return json.dumps({
 			"statistics" : self.get_statistics()
-			, "authors" : [author.to_json() for author in self.get_authors()] 
-		} 
+			, "authors" : [json.loads(author.to_json()) for author in self.get_authors()] 
+		}, indent=2)

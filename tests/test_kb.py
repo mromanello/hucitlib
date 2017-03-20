@@ -45,9 +45,3 @@ def test_kb_work_abbreviations(kb_inmemory):
 def test_kb_get_statistics(kb_inmemory):
 	stats = kb_inmemory.get_statistics()
 	assert stats is not None and not 0 in stats.values()
-"""
-Tests to write (each tests against both knowledge flavours):
-
-- test_get_statistics
-- test remove
-"""
