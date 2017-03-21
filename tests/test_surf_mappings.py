@@ -57,3 +57,8 @@ def test_hucitwork_add_abbreviation(kb_inmemory):
 	odyssey = kb_inmemory.get_resource_by_urn("urn:cts:greekLit:tlg0012.tlg002")
 	assert odyssey.add_abbreviation("Od.") is False
 	assert odyssey.add_abbreviation("Odyss.") is True
+def test_hucitwork_get_abbreviations(kb_inmemory):
+	iperide = kb_inmemory.get_resource_by_urn("urn:cts:greekLit:tlg0030")
+	combined_abbreviations = iperide.get_works()[0].get_abbreviations(combine=True)
+	assert combined_abbreviations is not None and type(combined_abbreviations) is type([])
+	logger.info(combined_abbreviations)

@@ -10,6 +10,7 @@ import pdb
 import json
 import surf
 import logging
+import itertools
 from surf import *
 from pyCTS import CTS_URN
 from rdflib import Literal
@@ -336,6 +337,10 @@ class HucitWork(object):
                                         for label in abbreviation.rdfs_label
                                             if title.uri == surf.ns.EFRBROO['E35_Title'] 
                                              and abbreviation.ecrm_P2_has_type.first == type_abbreviation]
+            if (combine and len(abbreviations)>0 and len(self.author.get_abbreviations())>=1):
+                abbreviations = ["%s %s"%(author_abbrev, work_abbrev) 
+                                                for author_abbrev, work_abbrev in itertools.product(self.author.get_abbreviations()
+                                                                                                    , self.get_abbreviations())]
         except Exception as e:
             logger.debug("Exception raised when getting abbreviations for %a"%self)
         finally:
