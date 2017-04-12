@@ -387,7 +387,7 @@ class HucitWork(object):
             return urn
         except Exception, e:
             return None
-    def set_urn(self,urn):
+    def set_urn(self, urn):
         """
         Change the CTS URN of the author or adds a new one (if no URN is assigned).
         """
