@@ -2,3 +2,4 @@ https://github.com/mromanello/pyCTS/archive/master.zip
 surf>=1.1.9
 rdflib>=4.2.1
 #SPARQLWrapper==1.6.0
+docopt
