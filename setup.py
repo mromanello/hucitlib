@@ -19,6 +19,11 @@ setup(name='hucit_knowledge_base'
                                     , 'data/kb/*.*'
                                     , 'config/*.*'
                                     ]}
+    ,entry_points={
+        'console_scripts':[
+            'hucit = knowledge_base.__main__:main'
+        ]
+    }
     ,install_requires=[
     					'pyCTS'
     					, 'surf>=1.1.9'

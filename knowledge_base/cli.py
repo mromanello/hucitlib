@@ -52,18 +52,21 @@ def show_result(resource, verbose=False):
     TODO
     """
     if resource.uri==surf.ns.EFRBROO['F10_Person']:
-        print("\n{:50} {:40}\n".format(unicode(resource), resource.get_urn()))
+        print("\n{} ({})\n".format(unicode(resource), resource.get_urn()))
         works = resource.get_works()
         print("Works by {} ({}):\n".format(resource, len(works)))
         [show_result(work) for work in works]
         print("\n")
     elif resource.uri==surf.ns.EFRBROO['F1_Work']:
-        print("{:50} {:40}".format(unicode(resource), resource.get_urn()))
         if verbose:
+            print("\n{} ({})".format(unicode(resource), resource.get_urn()))
             print("\nTitles:")
             print("\n".join(["{:20} ({})".format(title, lang) for lang, title in resource.get_titles()]))
             if len(resource.get_abbreviations()) > 0:
                 print("\nAbbreviations: {}\n".format(", ".join(["{}".format(abbr) for abbr in resource.get_abbreviations()])))
+        else:
+            print("{:50} {:40}".format(unicode(resource), resource.get_urn()))
+
 
 def main(arguments):
     """
