@@ -21,7 +21,7 @@ setup(name='hucit_knowledge_base'
                                     ]}
     ,entry_points={
         'console_scripts':[
-            'hucit = knowledge_base.__main__:main'
+            'hucit = knowledge_base.cli:main'
         ]
     }
     ,install_requires=[

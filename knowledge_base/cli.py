@@ -23,6 +23,7 @@ from __future__ import unicode_literals
 import logging
 from pyCTS import CTS_URN, BadCtsUrnSyntax
 import surf
+import pkg_resources
 from surfext import *
 from docopt import docopt
 from __init__ import KnowledgeBase
@@ -68,11 +69,13 @@ def show_result(resource, verbose=False):
             print("{:50} {:40}".format(unicode(resource), resource.get_urn()))
 
 
-def main(arguments):
+def main():
     """
     Define the CLI inteface/commands.
     """
-    kb = KnowledgeBase("knowledge_base/config/virtuoso.ini")
+    arguments = docopt(__doc__, version='Naval Fate 2.0')
+    cfg_filename = pkg_resources.resource_filename('knowledge_base','config/virtuoso.ini')
+    kb = KnowledgeBase(cfg_filename)
     #print(arguments)
     if arguments["find"]:
         search_string = arguments["<search_string>"]
@@ -98,5 +101,4 @@ def main(arguments):
         pass
 
 if __name__ == '__main__':
-    arguments = docopt(__doc__, version='Naval Fate 2.0')
-    main(arguments)
+    main()
