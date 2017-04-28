@@ -88,6 +88,17 @@ class HucitAuthor(object):
             return True
         except Exception as e:
             raise e
+    def remove_name(self, name_to_remove): #TODO implement
+        name = [id for id in self.ecrm_P1_is_identified_by if id.uri == surf.ns.EFRBROO['F12_Name']][0]
+
+        for label in name.rdfs_label:
+            if label.title() == name_to_remove:
+                name.rdfs_label.pop(name.rdfs_label.index(label))
+                name.save()
+                return True
+            else:
+                pass
+        return False
     def add_abbreviation(self, new_abbreviation):
         """
         Adds a new name variant to an author.
@@ -111,6 +122,20 @@ class HucitAuthor(object):
                                             and abbreviation.ecrm_P2_has_type.first == type_abbreviation][0]
             abbreviation.rdfs_label.append(Literal(new_abbreviation))
             abbreviation.save()
+            return True
+        except IndexError as e:
+            # means there is no abbreviation instance yet
+            type_abbreviation = self.session.get_resource(surf.ns.KB["types#abbreviation"]
+                                                        , self.session.get_class(surf.ns.ECRM['E55_Type']))
+            Appellation = self.session.get_class(surf.ns.ECRM['E41_Appellation'])
+            abbreviation_uri = "%s#abbr"%str(self.subject)
+            abbreviation = Appellation(abbreviation_uri)
+            abbreviation.ecrm_P2_has_type = type_abbreviation
+            abbreviation.rdfs_label.append(Literal(new_abbreviation))
+            abbreviation.save()
+            name = self.ecrm_P1_is_identified_by.first
+            name.ecrm_P139_has_alternative_form = abbreviation
+            name.save()
             return True
         except Exception as e:
             raise e
@@ -368,6 +393,15 @@ class HucitWork(object):
                                             and abbreviation.ecrm_P2_has_type.first == type_abbreviation][0]
             abbreviation.rdfs_label.append(Literal(new_abbreviation))
             abbreviation.save()
+            return True
+        except IndexError as e:
+            # means there is no name instance yet
+            Type = self.session.get_class(surf.ns.ECRM['E55_Type'])
+            Appellation = self.session.get_class(surf.ns.ECRM['E41_Appellation'])
+            abbreviation_uri = "%s#abbr"%str(self.subject)
+            abbreviation = Appellation(abbreviation_uri)
+            abbreviation.ecrm_P2_has_type = Type(surf.ns.KB["types#abbreviation"])
+            abbreviation.rdfs_label.append(Literal(new_abbreviation))
             return True
         except Exception as e:
             raise e

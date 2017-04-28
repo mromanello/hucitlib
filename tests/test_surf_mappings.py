@@ -32,6 +32,9 @@ def test_hucitauthor_add_duplicate_name(kb_inmemory):
 	assert number_names_before == number_names_after
 
 def test_hucitauthor_add_abbreviation(kb_inmemory):
+	"""
+	TODO: try adding abbreviation to an author that does not have any
+	"""
 	abbr = "Arist."
 	aristophanes = kb_inmemory.get_resource_by_urn("urn:cts:greekLit:tlg0019")
 	aristophanes.add_abbreviation(abbr)
