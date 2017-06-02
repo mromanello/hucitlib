@@ -14,8 +14,6 @@ Options:
     --config-file=<path> Path to the configuration file (overwrites default configuration).
 
 """
-#knowledge_base/cli.py find “urn:cts:greekLit:tlg0012"
-#knowledge_base/cli.py add —-what=[name|abbr|title|sameas] —-to=“urn:cts:greekLit:tlg0012” “Omero@it"
 
 from __future__ import print_function
 from __future__ import unicode_literals
@@ -67,7 +65,6 @@ def show_result(resource, verbose=False):
                 print("\nAbbreviations: {}\n".format(", ".join(["{}".format(abbr) for abbr in resource.get_abbreviations()])))
         else:
             print("{:50} {:40}".format(unicode(resource), resource.get_urn()))
-
 
 def main():
     """
