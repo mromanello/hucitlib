@@ -20,7 +20,7 @@ logger = logging.getLogger('')
 surf.ns.register(ecrm="http://erlangen-crm.org/current/")
 surf.ns.register(efrbroo="http://erlangen-crm.org/efrbroo/")
 surf.ns.register(hucit="http://purl.org/net/hucit#")
-surf.ns.register(kb="http://128.178.21.39:8080/matteo-data/")
+surf.ns.register(kb="http://purl.org/hucit/kb/")
 
 # TODO: define base URIs for entities (authors, works, types, names, URNs, etc.)
 BASE_URI_TYPES = surf.ns.KB["types#"]
@@ -234,7 +234,7 @@ class HucitAuthor(object):
                   "label": "L'Iliade"
                 }
               ], 
-              "uri": "http://128.178.21.39:8080/matteo-data/works/2815", 
+              "uri": "http://purl.org/hucit/kb/works/2815", 
               "title_abbreviations": [
                 "Il."
               ]
@@ -263,7 +263,7 @@ class HucitAuthor(object):
                   "label": "Odyssee"
                 }
               ], 
-              "uri": "http://128.178.21.39:8080/matteo-data/works/2816", 
+              "uri": "http://purl.org/hucit/kb/works/2816", 
               "title_abbreviations": [
                 "Od."
               ]
@@ -276,13 +276,13 @@ class HucitAuthor(object):
                   "label": "Epigrammata"
                 }
               ], 
-              "uri": "http://128.178.21.39:8080/matteo-data/works/2814", 
+              "uri": "http://purl.org/hucit/kb/works/2814", 
               "title_abbreviations": [
                 "Epigr."
               ]
             }
           ], 
-          "uri": "http://128.178.21.39:8080/matteo-data/authors/927", 
+          "uri": "http://purl.org/hucit/kb/authors/927", 
           "names": [
             {
               "language": "fr", 
