@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# script adapted from:
+# https://github.com/SemanticMediaWiki/SemanticMediaWiki/blob/master/tests/travis/install-services.sh#L8
+
 BASE_PATH=$(pwd)
 VIRTUOSO=7.2.4
 
@@ -36,7 +39,6 @@ make install
 export VIRTUOSO_PATH=/usr/local/virtuoso-opensource/bin
 
 /usr/local/virtuoso-opensource/bin/virtuoso-t -f -c /usr/local/virtuoso-opensource/var/lib/virtuoso/db/virtuoso.ini &
-#sudo /usr/local/virtuoso-opensource/bin/virtuoso-t -f &
 
 sleep 10
 
