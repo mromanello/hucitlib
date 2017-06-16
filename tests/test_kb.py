@@ -4,8 +4,6 @@ import logging
 import pytest
 import pickle
 
-
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 

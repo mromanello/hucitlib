@@ -21,7 +21,7 @@ def kb_inmemory(filename="inmemory.ini"):
 	return KnowledgeBase(configuration_file)
 @fixture
 
-#@pytest.mark.skip(reason="need to deal with installing virtuoso at build-time")
+@fixture(scope="session")
 def kb_virtuoso(filename="virtuoso.ini"):
 	configuration_file = pkg_resources.resource_filename('knowledge_base','config/%s'%filename)
 	logger.info("Using config file: %s"%configuration_file)
