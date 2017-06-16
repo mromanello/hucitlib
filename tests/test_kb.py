@@ -9,7 +9,6 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-@pytest.mark.skip(reason="need to deal with installing virtuoso at build-time")
 def test_kb_virtuoso(kb_virtuoso):
     logger.debug(kb_virtuoso)
     authors = kb_virtuoso.get_authors()
@@ -35,32 +34,33 @@ def test_kb_inmemory(kb_inmemory):
     logger.info("%s" % iliad.author)
 
 
-def test_kb_author_names(kb_inmemory):
-    names = kb_inmemory.author_names
+def test_kb_author_names(kb_virtuoso):
+    names = kb_virtuoso.author_names
     assert names is not None and len(names) > 0
     logger.info("%i unique author names found in the KB" % len(names))
 
 
-def test_kb_author_abbreviations(kb_inmemory):
-    abbreviations = kb_inmemory.author_abbreviations
+def test_kb_author_abbreviations(kb_virtuoso):
+    abbreviations = kb_virtuoso.author_abbreviations
     assert abbreviations is not None and len(abbreviations) > 0
     logger.info("%i abbreviations of author names found in the KB" % len(abbreviations))
     for i, author_key in enumerate(abbreviations.keys()[:10]):
         logger.info("%i. %s => %s" % (i, author_key.split("$$")[0], abbreviations[author_key]))
 
 
-def test_kb_get_titles(kb_inmemory):
-    titles = kb_inmemory.work_titles
+def test_kb_get_titles(kb_virtuoso):
+    titles = kb_virtuoso.work_titles
     assert titles is not None and len(titles) > 0
     logger.info("%i work titles found in the KB" % len(titles))
 
 
-def test_kb_work_abbreviations(kb_inmemory):
-    abbreviations = kb_inmemory.work_abbreviations
+def test_kb_work_abbreviations(kb_virtuoso):
+    abbreviations = kb_virtuoso.work_abbreviations
     assert abbreviations is not None and len(abbreviations) > 0
     logger.info("%i abbreviations of work titles found in the KB" % len(abbreviations))
 
 
-def test_kb_get_statistics(kb_inmemory):
-    stats = kb_inmemory.get_statistics()
+def test_kb_get_statistics(kb_virtuoso):
+    stats = kb_virtuoso.get_statistics()
+    logger.info(stats)
     assert stats is not None and 0 not in stats.values()
