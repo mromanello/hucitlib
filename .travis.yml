@@ -7,6 +7,6 @@ install:
   - "pip install -e ."
   - "pip install -U pytest pytest-cov codecov"
 # command to run tests
-script: py.test --cov=knowledge_base -vv
+script: travis wait 30 py.test --cov=knowledge_base -vv
 after_success:
 - codecov
