@@ -128,7 +128,7 @@ class KnowledgeBase(object):
         return {"%s$$n%i" % (work.get_urn(), i): abbrev
                 for author in self.get_authors()
                 for work in author.get_works()
-                for i, abbrev in enumerate(work.get_abbreviations())}
+                for i, abbrev in enumerate(work.get_abbreviations(combine=False) + work.get_abbreviations(combine=True))}
 
     def get_resource_by_urn(self, urn):
         """

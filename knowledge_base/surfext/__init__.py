@@ -462,7 +462,7 @@ class HucitWork(object):
         except Exception, e:
             raise e
     
-    def has_text_structure(self):
+    def has_text_structure(self): # TODO: implement 
         """
         Checks whether a citable text structure is defined.
 
@@ -486,7 +486,7 @@ class HucitWork(object):
         """
         pass
     
-    def get_citation_levels(self):
+    def get_citation_levels(self, language):
         """
         Returns the levels of the TextStructure of this Work, in the right order (e.g. Book/Chapter/Section).
         """
@@ -529,28 +529,37 @@ class HucitTextElement(object):
     """
     def __repr__(self):
         return ""
+    
     def next(self):
         """ TODO """
         return self.hucit_precedes.one
+    
     def previous(self):
         """ TODO """
         return self.hucit_follows.one
+    
     def get_labels(self):
         pass
+    
     def children(self):
         """
         TODO: the children elements should be returned 
         as an ordered collection
         """
         pass
+    
     def parent(self):
         pass
+    
     def get_type(self):
         pass
+    
     def is_first(self):
         pass
+    
     def is_last(self):
         pass
+    
     def get_urn(self):
         """
         TODO
@@ -560,11 +569,13 @@ class HucitTextElement(object):
             return CTS_URN(urn)
         except Exception, e:
             raise e
+
 class HucitTextStructure(object):
     """
     Object mapping for instances of `http://purl.og/net/hucit#TextStructure`.
     """
     pass
+
 class HucitCtsUrn(object):
     """
     TODO
