@@ -20,8 +20,9 @@ cd virtuoso-opensource
 # --disable-all-vads: This parameter disables building all the VAD packages (tutorials, demos, etc.).
 # --with-readline: This parameter is used so that the system Readline library is used
 # --program-transform-name: Both Virtuoso and unixODBC install a program named isql. Use this parameter to rename virtuosos program to isql-v
+# --program-transform-name="s/isql/isql-v/"
 
-./configure --program-transform-name="s/isql/isql-v/" --with-readline --disable-all-vads |& tee #configure.log
+./configure --with-readline --disable-all-vads |& tee #configure.log
 
 # Only output error and warnings
 make > /dev/null
@@ -32,7 +33,7 @@ make > /dev/null
 make install
 
 ## For Virtuoso
-#export PATH=$PATH:/usr/local/virtuoso-opensource/bin
+export VIRTUOSO_PATH=/usr/local/virtuoso-opensource/bin
 
 /usr/local/virtuoso-opensource/bin/virtuoso-t -f -c /usr/local/virtuoso-opensource/var/lib/virtuoso/db/virtuoso.ini &
 #sudo /usr/local/virtuoso-opensource/bin/virtuoso-t -f &
