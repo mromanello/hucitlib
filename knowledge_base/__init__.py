@@ -16,6 +16,15 @@ logger = logging.getLogger('')
 
 # TODO: add exceptions => AuthorNotFound, WorkNotFound or perhaps just ResourceNotFound
 
+def get_abbreviations(kb):
+    """
+    For the sake of profiling.
+    """
+    return {"%s$$n%i" % (author.get_urn(), i): abbrev
+                for author in kb.get_authors()
+                for i, abbrev in enumerate(author.get_abbreviations())
+                if author.get_urn() is not None}
+
 class KnowledgeBase(object):
     """
 

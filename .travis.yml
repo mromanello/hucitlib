@@ -3,10 +3,11 @@ python:
   - "2.7"
 # command to install dependencies
 install:
+  - sudo -H install_3stores.sh
   - "pip install -U -r requirements.txt"
   - "pip install -e ."
   - "pip install -U pytest pytest-cov codecov"
 # command to run tests
-script: travis_wait 30 py.test --cov=knowledge_base -vv
-after_success:
-- codecov
+#script: travis_wait 30 py.test --cov=knowledge_base -vv
+#after_success:
+#- codecov
