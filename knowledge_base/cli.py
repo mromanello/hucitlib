@@ -32,7 +32,7 @@ logger = logging.getLogger('KnowledgeBase_CLI')
 
 def print_results(matches):
     """
-    :param matche: a list of tuples.
+    :param matches: a list of tuples.
     """
     output = ""
     for n, match in enumerate(matches):

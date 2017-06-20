@@ -7,7 +7,6 @@ install:
   - "pip install -U -r requirements.txt"
   - "pip install -U -r requirements_dev.txt"
   - "pip install ."
-  - "pip install -U pytest pytest-cov codecov"
 # command to run tests
 script: py.test --cov=knowledge_base -s -vv
 after_success:

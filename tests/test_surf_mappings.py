@@ -46,18 +46,28 @@ def test_hucitauthor_add_abbreviation(kb_virtuoso):
 
 @pytest.mark.run(order=11)
 def test_hucitauthor_set_urn(kb_virtuoso):
-	homer = kb_virtuoso.get_resource_by_urn("urn:cts:greekLit:tlg0012")
+	urn = "urn:cts:greekLit:tlg0012"
+	homer = kb_virtuoso.get_resource_by_urn(urn)
 	new_urn = "urn:cts:greekLit:tlg0013"
 	homer.set_urn(new_urn)
 	assert str(homer.get_urn()) == new_urn
 
+	homer = kb_virtuoso.get_resource_by_urn(new_urn)
+	homer.set_urn(urn)
+	assert str(homer.get_urn()) == urn
+
 # TESTS FOR HUCITWORK
 @pytest.mark.run(order=12)
 def test_hucitwork_set_urn(kb_virtuoso):
-	iliad = kb_virtuoso.get_resource_by_urn("urn:cts:greekLit:tlg0012.tlg001")
+	urn = "urn:cts:greekLit:tlg0012.tlg001"
+	iliad = kb_virtuoso.get_resource_by_urn(urn)
 	new_urn = "urn:cts:greekLit:tlg0012.iliad"
 	iliad.set_urn(new_urn)
 	assert str(iliad.get_urn()) == new_urn
+
+	iliad = kb_virtuoso.get_resource_by_urn(new_urn)
+	iliad.set_urn(urn)
+	assert str(iliad.get_urn()) == urn
 
 @pytest.mark.run(order=13)
 def test_hucitwork_to_json(kb_virtuoso):
