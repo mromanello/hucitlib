@@ -1,7 +1,5 @@
-https://github.com/mromanello/pyCTS/archive/master.zip
-surf==1.1.9
-rdflib==4.2.1
 ipython
 pytest
 pytest-cov
+codecov
 pytest-ordering

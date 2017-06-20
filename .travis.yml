@@ -5,6 +5,7 @@ python:
 install:
   - sudo -H ./install_3stores.sh
   - "pip install -U -r requirements.txt"
+  - "pip install -U -r requirements_dev.txt"
   - "pip install ."
   - "pip install -U pytest pytest-cov codecov"
 # command to run tests
