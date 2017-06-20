@@ -8,6 +8,7 @@ import json
 logger = logging.getLogger(__name__)
 
 # TESTS FOR HUCITAUTHOR
+@pytest.mark.run(order=8)
 def test_hucitauthor_to_json(kb_virtuoso):
 	"""
 	Test for `HucitAuthor.to_json()`.
@@ -18,6 +19,7 @@ def test_hucitauthor_to_json(kb_virtuoso):
 	dict_from_json = json.loads(json_string)
 	assert dict_from_json is not None and json_string is not None
 
+@pytest.mark.run(order=9)
 def test_hucitauthor_add_duplicate_name(kb_virtuoso):
 	"""
 	Test to ensure that `HucitAuthor.add_name(...) does not insert duplicate names`
@@ -31,6 +33,7 @@ def test_hucitauthor_add_duplicate_name(kb_virtuoso):
 	number_names_after = len(homer.get_names())
 	assert number_names_before == number_names_after
 
+@pytest.mark.run(order=10)
 def test_hucitauthor_add_abbreviation(kb_virtuoso):
 	"""
 	TODO: try adding abbreviation to an author that does not have any
@@ -41,6 +44,7 @@ def test_hucitauthor_add_abbreviation(kb_virtuoso):
 	aristophanes.load()
 	assert abbr in aristophanes.get_abbreviations()
 
+@pytest.mark.run(order=11)
 def test_hucitauthor_set_urn(kb_virtuoso):
 	homer = kb_virtuoso.get_resource_by_urn("urn:cts:greekLit:tlg0012")
 	new_urn = "urn:cts:greekLit:tlg0013"
@@ -48,12 +52,14 @@ def test_hucitauthor_set_urn(kb_virtuoso):
 	assert str(homer.get_urn()) == new_urn
 
 # TESTS FOR HUCITWORK
+@pytest.mark.run(order=12)
 def test_hucitwork_set_urn(kb_virtuoso):
 	iliad = kb_virtuoso.get_resource_by_urn("urn:cts:greekLit:tlg0012.tlg001")
 	new_urn = "urn:cts:greekLit:tlg0012.iliad"
 	iliad.set_urn(new_urn)
 	assert str(iliad.get_urn()) == new_urn
 
+@pytest.mark.run(order=13)
 def test_hucitwork_to_json(kb_virtuoso):
 	"""
 	Test for `HucitAuthor.to_json()`.
@@ -62,11 +68,13 @@ def test_hucitwork_to_json(kb_virtuoso):
 	json_string = odyssey.to_json()
 	logger.info(json_string)
 
+@pytest.mark.run(order=14)
 def test_hucitwork_add_abbreviation(kb_virtuoso):
 	odyssey = kb_virtuoso.get_resource_by_urn("urn:cts:greekLit:tlg0012.tlg002")
 	assert odyssey.add_abbreviation("Od.") is False
 	assert odyssey.add_abbreviation("Odyss.") is True
 
+@pytest.mark.run(order=15)
 def test_hucitwork_get_abbreviations(kb_virtuoso):
 	iperide = kb_virtuoso.get_resource_by_urn("urn:cts:greekLit:tlg0030")
 	combined_abbreviations = iperide.get_works()[0].get_abbreviations(combine=True)

@@ -43,3 +43,5 @@ export VIRTUOSO_PATH=/usr/local/virtuoso-opensource/bin
 sleep 10
 
 $BASE_PATH/scripts/virtuoso/virtuoso-run-script.sh $BASE_PATH/scripts/virtuoso/load_data.sql
+
+sleep 5m

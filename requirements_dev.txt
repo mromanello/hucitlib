@@ -4,3 +4,4 @@ rdflib==4.2.1
 ipython
 pytest
 pytest-cov
+pytest-ordering
