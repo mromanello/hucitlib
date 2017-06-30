@@ -23,9 +23,9 @@ surf.ns.register(hucit="http://purl.org/net/hucit#")
 surf.ns.register(kb="http://purl.org/hucit/kb/")
 
 # TODO: define base URIs for entities (authors, works, types, names, URNs, etc.)
-BASE_URI_TYPES = surf.ns.KB["types#"]
-BASE_URI_AUTHORS = surf.ns.KB["authors#"]
-BASE_URI_WORKS = surf.ns.KB["works#"]
+BASE_URI_TYPES = surf.ns.KB["types/%s"]
+BASE_URI_AUTHORS = surf.ns.KB["authors/%s"]
+BASE_URI_WORKS = surf.ns.KB["works/%s"]
 
 class HucitAuthor(object):
     """
@@ -119,7 +119,7 @@ class HucitAuthor(object):
             return False
         
         try:
-            type_abbreviation = self.session.get_resource(surf.ns.KB["types#abbreviation"]
+            type_abbreviation = self.session.get_resource(BASE_URI_TYPES % "abbreviation"
                                                         , self.session.get_class(surf.ns.ECRM['E55_Type']))
             abbreviation = [abbreviation 
                                 for name in self.ecrm_P1_is_identified_by 
@@ -131,10 +131,10 @@ class HucitAuthor(object):
             return True
         except IndexError as e:
             # means there is no abbreviation instance yet
-            type_abbreviation = self.session.get_resource(surf.ns.KB["types#abbreviation"]
+            type_abbreviation = self.session.get_resource(BASE_URI_TYPES % "abbreviation"
                                                         , self.session.get_class(surf.ns.ECRM['E55_Type']))
             Appellation = self.session.get_class(surf.ns.ECRM['E41_Appellation'])
-            abbreviation_uri = "%s#abbr" % str(self.subject)
+            abbreviation_uri = "%s/abbr" % str(self.subject)
             abbreviation = Appellation(abbreviation_uri)
             abbreviation.ecrm_P2_has_type = type_abbreviation
             abbreviation.rdfs_label.append(Literal(new_abbreviation))
@@ -155,7 +155,7 @@ class HucitAuthor(object):
         """
         abbreviations = []
         try:
-            type_abbreviation = self.session.get_resource(surf.ns.KB["types#abbreviation"]
+            type_abbreviation = self.session.get_resource(BASE_URI_TYPES % "abbreviation"
                                                         , self.session.get_class(surf.ns.ECRM['E55_Type']))
             abbreviations = [unicode(label) 
                                 for name in self.ecrm_P1_is_identified_by 
@@ -174,7 +174,7 @@ class HucitAuthor(object):
         """
         # TODO: check type
         try:
-            type_ctsurn = self.session.get_resource(surf.ns.KB["types#CTS_URN"]
+            type_ctsurn = self.session.get_resource(BASE_URI_TYPES % "CTS_URN"
                                                     , self.session.get_class(surf.ns.ECRM['E55_Type']))
             urn = [CTS_URN(urnstring.rdfs_label.one) 
                                 for urnstring in self.ecrm_P1_is_identified_by 
@@ -190,11 +190,11 @@ class HucitAuthor(object):
         """
         Type = self.session.get_class(surf.ns.ECRM['E55_Type'])
         Identifier = self.session.get_class(surf.ns.ECRM['E42_Identifier'])
-        id_uri = "%s#cts_urn"%str(self.subject)
+        id_uri = "%s/cts_urn"%str(self.subject)
         try:
             id = Identifier(id_uri)
             id.rdfs_label = Literal(urn)
-            id.ecrm_P2_has_type = Type(surf.ns.KB["types#CTS_URN"])
+            id.ecrm_P2_has_type = Type(BASE_URI_TYPES % "CTS_URN")
             id.save()
             return True
         except Exception, e:
@@ -370,7 +370,7 @@ class HucitWork(object):
         """
         abbreviations = []
         try:
-            type_abbreviation = self.session.get_resource(surf.ns.KB["types#abbreviation"]
+            type_abbreviation = self.session.get_resource(BASE_URI_TYPES % "abbreviation"
                                                         , self.session.get_class(surf.ns.ECRM['E55_Type']))
             abbreviations = [unicode(label) 
                                 for title in self.efrbroo_P102_has_title 
@@ -402,7 +402,7 @@ class HucitWork(object):
             logger.warning("Duplicate abbreviation detected while adding \"%s\""%new_abbreviation)
             return False
         try:
-            type_abbreviation = self.session.get_resource(surf.ns.KB["types#abbreviation"]
+            type_abbreviation = self.session.get_resource(BASE_URI_TYPES % "abbreviation"
                                                         , self.session.get_class(surf.ns.ECRM['E55_Type']))
             abbreviation = [abbreviation 
                                 for title in self.efrbroo_P102_has_title 
@@ -414,10 +414,10 @@ class HucitWork(object):
             return True
         except IndexError as e:
             # means there is no name instance yet
-            type_abbreviation = self.session.get_resource(surf.ns.KB["types#abbreviation"]
+            type_abbreviation = self.session.get_resource(BASE_URI_TYPES % "abbreviation"
                                                         , self.session.get_class(surf.ns.ECRM['E55_Type']))
             Appellation = self.session.get_class(surf.ns.ECRM['E41_Appellation'])
-            abbreviation_uri = "%s#abbr"%str(self.subject)
+            abbreviation_uri = "%s/abbr"%str(self.subject)
             abbreviation = Appellation(abbreviation_uri)
             abbreviation.ecrm_P2_has_type = type_abbreviation
             abbreviation.rdfs_label.append(Literal(new_abbreviation))
@@ -436,7 +436,7 @@ class HucitWork(object):
         :return: an instance of `pyCTS.CTS_URN` or None
         """
         try:
-            type_ctsurn = self.session.get_resource(surf.ns.KB["types#CTS_URN"]
+            type_ctsurn = self.session.get_resource(BASE_URI_TYPES % "CTS_URN"
                                                     , self.session.get_class(surf.ns.ECRM['E55_Type']))
             urn = [CTS_URN(urnstring.rdfs_label.one) 
                             for urnstring in self.ecrm_P1_is_identified_by 
@@ -452,11 +452,11 @@ class HucitWork(object):
         """
         Type = self.session.get_class(surf.ns.ECRM['E55_Type'])
         Identifier = self.session.get_class(surf.ns.ECRM['E42_Identifier'])
-        id_uri = "%s#cts_urn"%str(self.subject)
+        id_uri = "%s/cts_urn"%str(self.subject)
         try:
             id = Identifier(id_uri)
             id.rdfs_label = Literal(urn)
-            id.ecrm_P2_has_type = Type(surf.ns.KB["types#CTS_URN"])
+            id.ecrm_P2_has_type = Type(BASE_URI_TYPES % "CTS_URN")
             id.save()
             return True
         except Exception, e:

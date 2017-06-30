@@ -19,8 +19,7 @@ def kb_inmemory(filename="inmemory.ini"):
 	configuration_file = pkg_resources.resource_filename('knowledge_base','config/%s'%filename)
 	logger.info("Using config file: %s"%configuration_file)
 	return KnowledgeBase(configuration_file)
-@fixture
-
+	
 @fixture(scope="session")
 def kb_virtuoso(filename="virtuoso.ini"):
 	configuration_file = pkg_resources.resource_filename('knowledge_base','config/%s'%filename)
