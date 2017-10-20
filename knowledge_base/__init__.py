@@ -11,7 +11,7 @@ from pyCTS import CTS_URN
 import pkg_resources
 import __version__
 
-logger = logging.getLogger('')
+logger = logging.getLogger(__name__)
 
 
 # TODO: add exceptions => AuthorNotFound, WorkNotFound or perhaps just ResourceNotFound
@@ -39,6 +39,8 @@ class KnowledgeBase(object):
     def _register_mappings(self):
         self._session.mapping[surf.ns.EFRBROO.F10_Person] = HucitAuthor
         self._session.mapping[surf.ns.EFRBROO.F1_Work] = HucitWork
+        self._session.mapping[surf.ns.HUCIT.TextStructure] = HucitTextStructure
+        self._session.mapping[surf.ns.HUCIT.TextElement] = HucitTextElement
         return
 
     def _register_namespaces(self):
@@ -77,8 +79,8 @@ class KnowledgeBase(object):
 
     def __getstate__(self):
         """
-        Instances of `surfrdf.Store` and `surfrdf.Session` cannot be serialised. 
-        Thus they need to be dropped when pickling. 
+        Instances of `surfrdf.Store` and `surfrdf.Session` cannot be serialised.
+        Thus they need to be dropped when pickling.
         """
         odict = self.__dict__.copy()
         del odict['_store']
@@ -141,10 +143,10 @@ class KnowledgeBase(object):
 
     def get_resource_by_urn(self, urn):
         """
-        
+
         Fetch from the KnowledgeBase the resource object
         corresponding to the input CTS URN. Currently supports
-        only HucitAuthor and HucitWork. 
+        only HucitAuthor and HucitWork.
 
         :param urn: the CTS URN of the resource to fetch
         :return: either an instance of `HucitAuthor` or of `HucitWork`
@@ -153,10 +155,10 @@ class KnowledgeBase(object):
         search_query = """
             PREFIX frbroo: <http://erlangen-crm.org/efrbroo/>
             PREFIX crm: <http://erlangen-crm.org/current/>
-            PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
-            
+            PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
             SELECT ?resource_URI
-            
+
             WHERE {
                 ?resource_URI crm:P1_is_identified_by ?urn .
                 ?urn a crm:E42_Identifier .
@@ -182,15 +184,15 @@ class KnowledgeBase(object):
     def search(self, search_string): #TODO if the underlying store is not Virtuoso it should fail and say something useful ;-)
         """
         Searches for a given string through the resources' labels.
-        
-        :param search_string: 
+
+        :param search_string:
         :return: an instance of `HucitAuthor` or `HucitWork`.
         """
         query = """
         SELECT ?s ?label ?type
         WHERE {
             ?s a ?type .
-            ?s rdfs:label ?label . 
+            ?s rdfs:label ?label .
             ?label bif:contains "'%s'" .
         }
         """ % search_string
@@ -231,7 +233,7 @@ class KnowledgeBase(object):
         Returns the authors in the Knowledge Base.
 
         :return: a list of `HucitAuthor` instances.
-        
+
         """
         Person = self._session.get_class(surf.ns.EFRBROO['F10_Person'])
         return list(Person.all())
@@ -241,7 +243,7 @@ class KnowledgeBase(object):
         Returns the works in the Knowledge Base.
 
         :return: a list of `HucitWork` instances.
-        
+
         """
         Work = self._session.get_class(surf.ns.EFRBROO['F1_Work'])
         return list(Work.all())
@@ -250,7 +252,7 @@ class KnowledgeBase(object):
         """
 
         Get the label corresponding to the author identified
-        by the input CTS URN. 
+        by the input CTS URN.
 
         try to get an lang=en label (if multiple labels in this lang exist pick the shortest)
         try to get a lang=la label (if multiple labels in this lang exist pick the shortest)
@@ -279,9 +281,9 @@ class KnowledgeBase(object):
 
     def get_work_label(self, urn):
         """
-        
+
         Get the label corresponding to the work identified
-        by the input CTS URN. 
+        by the input CTS URN.
 
         try to get an lang=en label
         try to get a lang=la label
@@ -338,7 +340,7 @@ class KnowledgeBase(object):
 
     def get_opus_maximum_of(self, author_cts_urn):  # TODO implement
         """
-        given the CTS URN of an author, this method returns its opus maximum. 
+        given the CTS URN of an author, this method returns its opus maximum.
         If not available returns None.
 
         :param author_cts_urn: the CTS URN of the author whose opus max is to be retrieved.
