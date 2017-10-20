@@ -60,9 +60,12 @@ or look up authors/works by CTS URNs:
 | Author abbreviations |     774 |     0 |     2 | 0.5      |   0.26309  |
 | Work titles          |   10354 |     1 |    31 | 1.99154  |   6.4174   |
 | Work abbreviations   |    2377 |     0 |     3 | 0.457203 |   0.574496 |
+
 ### LOD stats
 
-TODO
+|         |   link to Perseus Catalog (%) |   link to CWKB (%) |   link to VIAF (%) |   link to Wikidata (%) |
+|:--------|-------------------------------:|--------------------:|--------------------:|------------------------:|
+| Authors |                           4.91 |              100.00 |                5.88 |                    4.91 |
 
 ## Example
 
