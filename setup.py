@@ -8,25 +8,28 @@ VERSION = str_version
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
-setup(name='hucit_knowledge_base'
-	,author='Matteo Romanello'
-	,author_email='matteo.romanello@gmail.com'
-	,url='https://github.com/mromanello/hucit_kb/'
-    ,version=VERSION
-    ,packages=find_packages()
-    ,package_data={'knowledge_base': [
+setup(name='hucit_kb'
+	, author='Matteo Romanello'
+	, author_email='matteo.romanello@gmail.com'
+	, url='https://github.com/mromanello/hucit_kb/'
+    , version=VERSION
+    , packages=find_packages()
+    , package_data={'knowledge_base': [
                                     'data/*.*'
                                     , 'data/kb/*.*'
                                     , 'config/*.*'
                                     ]}
-    ,entry_points={
+    , entry_points={
         'console_scripts':[
             'hucit = knowledge_base.cli:main'
         ]
     }
-    ,install_requires=[
-    					'pyCTS'
-    					, 'surf>=1.1.9'
-    				]
-    ,long_description=read('README.md')
+    , classifiers=[
+        'Intended Audience :: Science/Research',
+        'Programming Language :: Python :: 2.7',
+        'Operating System :: POSIX'
+    ]
+    , license='GPL v3'
+    , install_requires=['pyCTS', 'surf>=1.1.9']
+    , long_description=read('README.md')
 )

@@ -1,4 +1,4 @@
-# A HuCit Knowledge Base
+# HuCit Knowledge Base
 
 ## Status
 
@@ -7,10 +7,43 @@
 
 ## Description
 
+The HuCit KB is a knowledge base about classical (Greek and Latin) texts, developed with the precise aim of supporting the automatic extraction of bibliographic references to such texts.
 
+The data model of the HuCit KB is based on the following ontologies:
 
-Based on the [HuCit Ontology](http://www.essepuntato.it/lode/owlapi/http://purl.org/net/hucit).
+* [CIDOC-CRM](http://www.cidoc-crm.org/)
+* [FRBRoo](http://www.cidoc-crm.org/frbroo/)
+* [HuCit](http://www.essepuntato.it/lode/owlapi/http://purl.org/net/hucit)
 
+It builds upon and connects with the following resources:
+
+* [Classical Works Knowledge Base](http://cwkb.org/linkedopendata)
+* [Perseus Catalog](http://catalog.perseus.org)
+* [Perseus Digital Library](http://perseus.tufts.edu)
+* [Wikidata](http://wikidata.org)
+* [VIAF](http://viaf.org)
+
+## Installation
+
+    git clone https://github.com/mromanello/hucit_kb.git
+    cd hucit_kb
+    python setup.py install
+
+## Command Line
+
+The library comes with a (development) Command Line Interface.
+
+To see the documentation, try running:
+
+    hucit --help
+
+For example, you can search works by name:
+
+    hucit find "Iliad"
+
+or look up authors/works by CTS URNs:
+
+    hucit find urn:cts:greekLit:tlg0012.tlg001
 
 ## Stats
 
