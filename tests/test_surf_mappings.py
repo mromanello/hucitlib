@@ -82,7 +82,7 @@ def test_hucitwork_to_json(kb_virtuoso):
 def test_hucitwork_add_abbreviation(kb_virtuoso):
 	odyssey = kb_virtuoso.get_resource_by_urn("urn:cts:greekLit:tlg0012.tlg002")
 	assert odyssey.add_abbreviation("Od.") is False
-	assert odyssey.add_abbreviation("Odyss.") is True
+	assert odyssey.add_abbreviation("Odyss.") is False
 
 @pytest.mark.run(order=15)
 def test_hucitwork_get_abbreviations(kb_virtuoso):
