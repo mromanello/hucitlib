@@ -30,6 +30,6 @@ setup(name='hucit_kb'
         'Operating System :: POSIX'
     ]
     , license='GPL v3'
-    , install_requires=['pyCTS', 'surf>=1.1.9']
+    , install_requires=['pyCTS', 'surf>=1.1.9', 'docopt']
     , long_description=read('README.md')
 )
