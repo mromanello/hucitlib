@@ -2,6 +2,7 @@
 
 ## Status
 
+[![PyPI version](https://badge.fury.io/py/hucitlib.svg)](https://badge.fury.io/py/hucitlib)
 [![Build Status](http://img.shields.io/travis/mromanello/hucit_kb.svg)](https://travis-ci.org/mromanello/hucit_kb)
 [![codecov](https://codecov.io/gh/mromanello/hucit_kb/branch/master/graph/badge.svg)](https://codecov.io/gh/mromanello/hucit_kb)
 
@@ -28,6 +29,10 @@ It builds upon and connects with the following resources:
     git clone https://github.com/mromanello/hucit_kb.git
     cd hucit_kb
     python setup.py install
+
+Or via `pip`:
+
+    pip install hucitlib
 
 ## Command Line
 
