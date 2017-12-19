@@ -3,3 +3,4 @@ pytest
 pytest-cov
 codecov
 pytest-ordering
+twine

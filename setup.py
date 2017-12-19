@@ -8,7 +8,7 @@ VERSION = str_version
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
-setup(name='hucit_kb'
+setup(name='hucitlib'
 	, author='Matteo Romanello'
 	, author_email='matteo.romanello@gmail.com'
 	, url='https://github.com/mromanello/hucit_kb/'
