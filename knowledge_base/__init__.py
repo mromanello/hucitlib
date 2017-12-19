@@ -239,8 +239,7 @@ class KnowledgeBase(object):
         return list(Person.all())
 
     def get_works(self):
-        """
-        Returns the works in the Knowledge Base.
+        """Return the author's works.
 
         :return: a list of `HucitWork` instances.
 
@@ -249,12 +248,9 @@ class KnowledgeBase(object):
         return list(Work.all())
 
     def get_author_label(self, urn):
-        """
+        """Get the label corresponding to the author identified by the CTS URN.
 
-        Get the label corresponding to the author identified
-        by the input CTS URN.
-
-        try to get an lang=en label (if multiple labels in this lang exist pick the shortest)
+        try to get an lang=en label (if multiple labels in this lang pick the shortest)
         try to get a lang=la label (if multiple labels in this lang exist pick the shortest)
         try to get a lang=None label (if multiple labels in this lang exist pick the shortest)
 
@@ -321,32 +317,60 @@ class KnowledgeBase(object):
 
         """
         statistics = {
-            "number_authors": 0
-            , "number_author_names": 0
-            , "number_author_abbreviations": 0
-            , "number_works": 0
-            , "number_work_titles": 0
-            , "number_title_abbreviations": 0
+            "number_authors": 0,
+            "number_author_names": 0,
+            "number_author_abbreviations": 0,
+            "number_works": 0,
+            "number_work_titles": 0,
+            "number_title_abbreviations": 0,
+            "number_opus_maximum":0,
         }
         for author in self.get_authors():
+            if author.get_urn() is not None:
+                opmax = True if self.get_opus_maximum_of(author.get_urn())\
+                    is not None else False
+                if opmax:
+                    statistics["number_opus_maximum"] += 1
             statistics["number_authors"] += 1
             statistics["number_author_names"] += len(author.get_names())
-            statistics["number_author_abbreviations"] += len(author.get_abbreviations())
+            statistics["number_author_abbreviations"] += len(
+                author.get_abbreviations()
+            )
             for work in author.get_works():
                 statistics["number_works"] += 1
                 statistics["number_work_titles"] += len(work.get_titles())
-                statistics["number_title_abbreviations"] += len(work.get_abbreviations())
+                statistics["number_title_abbreviations"] += len(
+                    work.get_abbreviations()
+                )
         return statistics
 
-    def get_opus_maximum_of(self, author_cts_urn):  # TODO implement
-        """
-        given the CTS URN of an author, this method returns its opus maximum.
+    def get_opus_maximum_of(self, author_cts_urn):
+        """Return the author's opux maximum (None otherwise).
+
+        Given the CTS URN of an author, this method returns its opus maximum.
         If not available returns None.
 
-        :param author_cts_urn: the CTS URN of the author whose opus max is to be retrieved.
+        :param author_cts_urn: the author's CTS URN.
         :return: an instance of `surfext.HucitWork` or None
 
         """
+        author = self.get_resource_by_urn(author_cts_urn)
+        assert author is not None
+        works = author.get_works()
+
+        if len(works) > 1:
+            for work in works:
+                if work.is_opus_maximum():
+                    return work
+        elif len(works) == 1:
+            return works[0]
+        else:
+            return None
+
+    def get_name_of(self): # TODO implement
+        pass
+
+    def get_title_of(self): # TODO implement
         pass
 
     def to_json(self):
