@@ -92,15 +92,16 @@ class HucitAuthor(object):
             # TODO: raise a custom exception
             logger.warning("Duplicate name detected while adding \"%s (lang=%s)\""%(name, lang))
             return False
-        newlabel = None
-        if lang is not None:
-            newlabel = Literal(name, lang=lang)
-        else:
-            newlabel = Literal(name)
-        name = [id for id in self.ecrm_P1_is_identified_by if id.uri == surf.ns.EFRBROO['F12_Name']][0]
+        newlabel = Literal(name, lang=lang) if lang is not None else \
+            Literal(name)
+        name = [
+            id
+            for id in self.ecrm_P1_is_identified_by
+            if id.uri == surf.ns.EFRBROO['F12_Name']
+        ][0]
         try:
             name.rdfs_label.append(newlabel)
-            name.save()
+            name.update()
             return True
         except Exception as e:
             raise e
@@ -111,7 +112,7 @@ class HucitAuthor(object):
         for label in name.rdfs_label:
             if unicode(label) == name_to_remove:
                 name.rdfs_label.pop(name.rdfs_label.index(label))
-                name.save()
+                name.update()
                 return True
             else:
                 pass
