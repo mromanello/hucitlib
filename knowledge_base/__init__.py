@@ -2,7 +2,11 @@
 # -*- coding: utf-8 -*-
 # author: Matteo Romanello, matteo.romanello@gmail.com
 
-import ConfigParser
+import pdb
+try:
+    import configparser
+except ImportError:
+    import ConfigParser as configparser
 import surf
 import json
 import logging
@@ -14,8 +18,6 @@ import __version__
 logger = logging.getLogger(__name__)
 
 
-# TODO: add exceptions => AuthorNotFound, WorkNotFound or perhaps just ResourceNotFound
-
 def get_abbreviations(kb):
     """
     For the sake of profiling.
@@ -24,6 +26,11 @@ def get_abbreviations(kb):
                 for author in kb.get_authors()
                 for i, abbrev in enumerate(author.get_abbreviations())
                 if author.get_urn() is not None}
+
+
+class ResourceNotFound(Exception):
+    """Raised when the resource identified by the URN is not in the KB."""
+
 
 class KnowledgeBase(object):
     """
@@ -58,7 +65,7 @@ class KnowledgeBase(object):
         self._author_abbreviations = None
         self._work_abbreviations = None
         try:
-            config = ConfigParser.ConfigParser()
+            config = configparser.ConfigParser()
             config.readfp(open(config_file))
             self._store_params = dict(config.items("surf"))
             if ('port' in self._store_params):
@@ -142,10 +149,9 @@ class KnowledgeBase(object):
                 for i, abbrev in enumerate(work.get_abbreviations(combine=False) + work.get_abbreviations(combine=True))}
 
     def get_resource_by_urn(self, urn):
-        """
+        """Fetch the resource corresponding to the input CTS URN.
 
-        Fetch from the KnowledgeBase the resource object
-        corresponding to the input CTS URN. Currently supports
+        Currently supports
         only HucitAuthor and HucitWork.
 
         :param urn: the CTS URN of the resource to fetch
@@ -165,23 +171,39 @@ class KnowledgeBase(object):
                 ?urn rdfs:label "%s"
             }
         """ % urn
-        try:  # check type of the input URN
-            assert type(urn) == type(CTS_URN(str(urn)))
-        except Exception as e:  # convert to pyCTS.CTS_URN if it's a string
-            logger.debug('Converted the input urn from string to %s' % type(CTS_URN))
+        # check type of the input URN
+        try:
+            assert isinstance(urn, CTS_URN)
+        except Exception as e:
+            # convert to pyCTS.CTS_URN if it's a string
             urn = CTS_URN(urn)
+            logger.debug('Converted the input urn from string to %s' % type(
+                CTS_URN
+            ))
+
         if (urn.work is not None):
             Work = self._session.get_class(surf.ns.EFRBROO['F1_Work'])
             result = self._store.execute_sparql(search_query)
-            resource_uri = result['results']['bindings'][0]['resource_URI']['value']
-            return self._session.get_resource(resource_uri, Work)
+            if len(result['results']['bindings']) == 0:
+                raise ResourceNotFound
+            else:
+                tmp = result['results']['bindings'][0]
+                resource_uri = tmp['resource_URI']['value']
+                return self._session.get_resource(resource_uri, Work)
+
         elif (urn.work is None and urn.textgroup is not None):
             Person = self._session.get_class(surf.ns.EFRBROO['F10_Person'])
             result = self._store.execute_sparql(search_query)
-            resource_uri = result['results']['bindings'][0]['resource_URI']['value']
-            return self._session.get_resource(resource_uri, Person)
+            if len(result['results']['bindings']) == 0:
+                raise ResourceNotFound
+            else:
+                tmp = result['results']['bindings'][0]
+                resource_uri = tmp['resource_URI']['value']
+                return self._session.get_resource(resource_uri, Person)
 
-    def search(self, search_string): #TODO if the underlying store is not Virtuoso it should fail and say something useful ;-)
+    # TODO: if the underlying store is not Virtuoso it should fail
+    # and say something useful ;-)
+    def search(self, search_string):
         """
         Searches for a given string through the resources' labels.
 
