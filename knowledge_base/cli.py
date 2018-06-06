@@ -24,11 +24,12 @@ import surf
 import pkg_resources
 from surfext import *
 from docopt import docopt
-from __init__ import KnowledgeBase
+from __init__ import KnowledgeBase, ResourceNotFound
 from surf.plugin.sparql_protocol.reader import SparqlReaderException
 
 
 logger = logging.getLogger('KnowledgeBase_CLI')
+
 
 def print_results(matches):
     """
@@ -42,7 +43,7 @@ def print_results(matches):
             label = unicode(search_result)[:40]+"..." if len(unicode(search_result)) > 40 else unicode(search_result)
             print("\n{:5}) {:50} {:40} (Matched: \"{}\")\n".format(n+1, label, search_result.get_urn(), matched_text))
         elif search_result.uri==surf.ns.EFRBROO['F1_Work']:
-            label = "{}, {}".format(search_result.author, search_result) 
+            label = "{}, {}".format(search_result.author, search_result)
             label = label[:40]+"..." if len(label) > 40 else label
             print("\n{:5}) {:50} {:40} (Matched: \"{}\")\n".format(n+1, label, search_result.get_urn(), matched_text))
 
@@ -50,13 +51,13 @@ def show_result(resource, verbose=False):
     """
     TODO
     """
-    if resource.uri==surf.ns.EFRBROO['F10_Person']:
+    if resource.uri == surf.ns.EFRBROO['F10_Person']:
         print("\n{} ({})\n".format(unicode(resource), resource.get_urn()))
         works = resource.get_works()
         print("Works by {} ({}):\n".format(resource, len(works)))
         [show_result(work) for work in works]
         print("\n")
-    elif resource.uri==surf.ns.EFRBROO['F1_Work']:
+    elif resource.uri == surf.ns.EFRBROO['F1_Work']:
         if verbose:
             print("\n{} ({})".format(unicode(resource), resource.get_urn()))
             print("\nTitles:")
@@ -66,14 +67,17 @@ def show_result(resource, verbose=False):
         else:
             print("{:50} {:40}".format(unicode(resource), resource.get_urn()))
 
+
 def main():
-    """
-    Define the CLI inteface/commands.
-    """
-    arguments = docopt(__doc__, version='Naval Fate 2.0')
-    cfg_filename = pkg_resources.resource_filename('knowledge_base','config/virtuoso.ini')
+    """Define the CLI inteface/commands."""
+    arguments = docopt(__doc__)
+    cfg_filename = pkg_resources.resource_filename(
+        'knowledge_base',
+        'config/virtuoso.ini'
+    )
     kb = KnowledgeBase(cfg_filename)
-    #print(arguments)
+
+    # the user has issued a `find` command
     if arguments["find"]:
         search_string = arguments["<search_string>"]
         try:
@@ -89,13 +93,39 @@ def main():
             return
         try:
             matches = kb.search(search_string)
-            print("\nSearching for \"%s\" yielded %s results" % (search_string, len(matches)))
+            print("\nSearching for \"%s\" yielded %s results" % (
+                search_string,
+                len(matches)
+            ))
             print_results(matches)
             return
         except SparqlReaderException as e:
             print("\nWildcard word needs at least 4 leading characters")
+    # the user has issued an `add` command
     elif arguments["add"]:
+        input_urn = arguments["--to"]
+
+        # first let's check if it's a valid URN
+        try:
+            urn = CTS_URN(input_urn)
+        except Exception as e:
+            print("The provided URN ({}) is invalid!".format(input_urn))
+            return
+
+        try:
+            resource = kb.get_resource_by_urn(urn)
+            assert resource is not None
+        except ResourceNotFound:
+            print("The KB does not contain a resource identified by {}".format(
+                urn
+            ))
+            return
+
+
+        print(arguments)
+        #if arguments[""]
         pass
+
 
 if __name__ == '__main__':
     main()
