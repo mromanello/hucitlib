@@ -3,6 +3,7 @@
 # author: Matteo Romanello, matteo.romanello@gmail.com
 
 import ipdb as pdb
+import pkg_resources
 import os
 import json
 import logging
@@ -88,6 +89,7 @@ def fetch_text_structure(urn, endpoint="http://cts.perseids.org/api/cts"):
                     urn,
                     ".".join(ref.split(".")[:level_n - 1])
                 )
+            # TODO: parallelize this bit
             textual_node = resolver.getTextualNode(
                 textId=urn,
                 subreference=ref,
@@ -130,3 +132,20 @@ def populate_text_structure(urn, ts):  # TODO: implement
     * for each level, add the TextElements
     """
     return
+
+
+def main():
+    works = [
+        'urn:cts:greekLit:tlg0012.tlg001',
+        'urn:cts:greekLit:tlg0012.tlg002',
+        'urn:cts:latinLit:phi0690.phi003',
+
+    ]
+    for work in works:
+        basedir = '/Users/rromanello/Documents/ClassicsCitations/hucit_kb/\
+            knowledge_base/data/text_structures'
+        download_text_structure(work, basedir)
+
+
+if __name__ == '__main__':
+    main()
