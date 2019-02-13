@@ -110,7 +110,7 @@ class HucitAuthor(object):
         name = [id for id in self.ecrm_P1_is_identified_by if id.uri == surf.ns.EFRBROO['F12_Name']][0]
 
         for label in name.rdfs_label:
-            if unicode(label) == name_to_remove:
+            if str(label) == name_to_remove:
                 name.rdfs_label.pop(name.rdfs_label.index(label))
                 name.update()
                 return True
@@ -171,7 +171,7 @@ class HucitAuthor(object):
         try:
             type_abbreviation = self.session.get_resource(BASE_URI_TYPES % "abbreviation"
                                                         , self.session.get_class(surf.ns.ECRM['E55_Type']))
-            abbreviations = [unicode(label)
+            abbreviations = [str(label)
                                 for name in self.ecrm_P1_is_identified_by
                                     for abbreviation in name.ecrm_P139_has_alternative_form
                                         for label in abbreviation.rdfs_label
@@ -372,7 +372,7 @@ class HucitWork(object):
 
     def get_titles(self):
         """TODO"""
-        return [(label.language, unicode(label)) for label in self.efrbroo_P102_has_title.first.rdfs_label]
+        return [(label.language, str(label)) for label in self.efrbroo_P102_has_title.first.rdfs_label]
 
     def get_abbreviations(self, combine=False):
         """
@@ -386,7 +386,7 @@ class HucitWork(object):
         try:
             type_abbreviation = self.session.get_resource(BASE_URI_TYPES % "abbreviation"
                                                         , self.session.get_class(surf.ns.ECRM['E55_Type']))
-            abbreviations = [unicode(label)
+            abbreviations = [str(label)
                                 for title in self.efrbroo_P102_has_title
                                     for abbreviation in title.ecrm_P139_has_alternative_form
                                         for label in abbreviation.rdfs_label
