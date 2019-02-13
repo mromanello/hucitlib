@@ -10,10 +10,10 @@ except ImportError:
 import surf
 import json
 import logging
-from surfext import *
+from knowledge_base.surfext import *
 from pyCTS import CTS_URN
 import pkg_resources
-import __version__
+import knowledge_base.__version__
 
 logger = logging.getLogger(__name__)
 

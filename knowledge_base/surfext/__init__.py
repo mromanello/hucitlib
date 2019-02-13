@@ -53,15 +53,15 @@ class HucitAuthor(object):
         try:
             english_name = [name[1] for name in names if name[0]=='en']
             return english_name[0]
-        except Exception, e:
+        except Exception as e:
             try:
                 default_name = [name[1] for name in names if name[0]==None]
                 return default_name[0]
-            except Exception, e:
+            except Exception as e:
                 try:
                     latin_name = [name[1] for name in names if name[0]=='la']
                     return latin_name[0]
-                except Exception, e:
+                except Exception as e:
                     return None
 
     def get_names(self):
@@ -211,7 +211,7 @@ class HucitAuthor(object):
             id.ecrm_P2_has_type = Type(BASE_URI_TYPES % "CTS_URN")
             id.save()
             return True
-        except Exception, e:
+        except Exception as e:
             raise e
 
     def get_works(self):
@@ -359,15 +359,15 @@ class HucitWork(object):
         try:
             english_title = [title[1] for title in titles if title[0]=='en']
             return english_title[0]
-        except Exception, e:
+        except Exception as  e:
             try:
                 default_title = [title[1] for title in titles if title[0]==None]
                 return default_title[0]
-            except Exception, e:
+            except Exception as  e:
                 try:
                     latin_title = [title[1] for title in titles if title[0]=='la']
                     return latin_title[0]
-                except Exception, e:
+                except Exception as  e:
                     return None
 
     def get_titles(self):
@@ -457,7 +457,7 @@ class HucitWork(object):
                                     if urnstring.uri == surf.ns.ECRM['E42_Identifier'] and
                                         urnstring.ecrm_P2_has_type.first == type_ctsurn][0]
             return urn
-        except Exception, e:
+        except Exception as  e:
             return None
 
     def set_urn(self, urn):
@@ -473,7 +473,7 @@ class HucitWork(object):
             id.ecrm_P2_has_type = Type(BASE_URI_TYPES % "CTS_URN")
             id.save()
             return True
-        except Exception, e:
+        except Exception as  e:
             raise e
 
     def has_text_structure(self):
@@ -641,7 +641,7 @@ class HucitTextElement(object):
         urn = self.ecrm_P1_is_identified_by.one
         try:
             return CTS_URN(urn)
-        except Exception, e:
+        except Exception as  e:
             raise e
 
 class HucitTextStructure(object):
