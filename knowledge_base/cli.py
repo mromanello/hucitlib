@@ -15,18 +15,18 @@ Options:
 
 """
 
-from __future__ import print_function
-from __future__ import unicode_literals
+from __future__ import print_function, unicode_literals
 
 import logging
-from pyCTS import CTS_URN, BadCtsUrnSyntax
-import surf
+
 import pkg_resources
-from surfext import *
+import surf
 from docopt import docopt
-from __init__ import KnowledgeBase, ResourceNotFound
+from pyCTS import CTS_URN, BadCtsUrnSyntax
 from surf.plugin.sparql_protocol.reader import SparqlReaderException
 
+from knowledge_base.__init__ import KnowledgeBase, ResourceNotFound
+from knowledge_base.surfext import *
 
 logger = logging.getLogger('KnowledgeBase_CLI')
 
