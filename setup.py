@@ -2,7 +2,7 @@ import os
 from setuptools import setup, find_packages
 
 NAME = "knowledge_base"
-execfile('{0}/__version__.py'.format(NAME))
+exec(open('{0}/__version__.py'.format(NAME)).read())
 VERSION = str_version
 
 def read(fname):
