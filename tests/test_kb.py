@@ -35,14 +35,16 @@ def test_kb_inmemory(kb_inmemory):
     logger.info("%s" % iliad.author)
 
 
-@pytest.mark.run(order=4)
+@pytest.mark.skip
+#@pytest.mark.run(order=4)
 def test_kb_author_names(kb_virtuoso):
     names = kb_virtuoso.author_names
     assert names is not None and len(names) > 0
     logger.info("%i unique author names found in the KB" % len(names))
 
 
-@pytest.mark.run(order=5)
+@pytest.mark.skip
+#@pytest.mark.run(order=5)
 def test_kb_author_abbreviations(kb_virtuoso):
     abbreviations = kb_virtuoso.author_abbreviations
     n_abbreviations = len(abbreviations)
@@ -56,14 +58,16 @@ def test_kb_author_abbreviations(kb_virtuoso):
         ))
 
 
-@pytest.mark.run(order=5)
+@pytest.mark.skip
+#@pytest.mark.run(order=5)
 def test_kb_get_titles(kb_virtuoso):
     titles = kb_virtuoso.work_titles
     assert titles is not None and len(titles) > 0
     logger.info("%i work titles found in the KB" % len(titles))
 
 
-@pytest.mark.run(order=6)
+@pytest.mark.skip
+#@pytest.mark.run(order=6)
 def test_kb_work_abbreviations(kb_virtuoso):
     abbreviations = kb_virtuoso.work_abbreviations
     assert abbreviations is not None and len(abbreviations) > 0
