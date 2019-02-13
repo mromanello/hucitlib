@@ -40,32 +40,32 @@ def print_results(matches):
         matched_text = match[0][:40]+"..." if len(match[0]) > 40 else match[0]
         search_result = match[1]
         if search_result.uri==surf.ns.EFRBROO['F10_Person']:
-            label = unicode(search_result)[:40]+"..." if len(unicode(search_result)) > 40 else unicode(search_result)
-            print("\n{:5}) {:50} {:40} (Matched: \"{}\")\n".format(n+1, label, search_result.get_urn(), matched_text))
+            label = str(search_result)[:40]+"..." if len(str(search_result)) > 40 else str(search_result)
+            print("\n{:5}) {:50} {} (Matched: \"{}\")\n".format(n+1, label, search_result.get_urn(), matched_text))
         elif search_result.uri==surf.ns.EFRBROO['F1_Work']:
             label = "{}, {}".format(search_result.author, search_result)
             label = label[:40]+"..." if len(label) > 40 else label
-            print("\n{:5}) {:50} {:40} (Matched: \"{}\")\n".format(n+1, label, search_result.get_urn(), matched_text))
+            print("\n{:5}) {:50} {} (Matched: \"{}\")\n".format(n+1, label, search_result.get_urn(), matched_text))
 
 def show_result(resource, verbose=False):
     """
     TODO
     """
     if resource.uri == surf.ns.EFRBROO['F10_Person']:
-        print("\n{} ({})\n".format(unicode(resource), resource.get_urn()))
+        print("\n{} ({})\n".format(str(resource), resource.get_urn()))
         works = resource.get_works()
         print("Works by {} ({}):\n".format(resource, len(works)))
         [show_result(work) for work in works]
         print("\n")
     elif resource.uri == surf.ns.EFRBROO['F1_Work']:
         if verbose:
-            print("\n{} ({})".format(unicode(resource), resource.get_urn()))
+            print("\n{} ({})".format(str(resource), resource.get_urn()))
             print("\nTitles:")
             print("\n".join(["{:20} ({})".format(title, lang) for lang, title in resource.get_titles()]))
             if len(resource.get_abbreviations()) > 0:
                 print("\nAbbreviations: {}\n".format(", ".join(["{}".format(abbr) for abbr in resource.get_abbreviations()])))
         else:
-            print("{:50} {:40}".format(unicode(resource), resource.get_urn()))
+            print("{:50} {:40}".format(str(resource), str(resource.get_urn())))
 
 
 def main():

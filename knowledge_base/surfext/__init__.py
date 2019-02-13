@@ -48,7 +48,7 @@ class HucitAuthor(object):
         names = ["%s (@%s)"%(name[1],name[0]) for name in self.get_names()]
         return ("HucitAuthor (names=[%s],urn=%s)"%(",".join(names),self.get_urn())).encode("utf-8")
 
-    def __unicode__(self):
+    def __str__(self):
         names = self.get_names()
         try:
             english_name = [name[1] for name in names if name[0]=='en']
@@ -351,7 +351,7 @@ class HucitWork(object):
         titles = ["%s (@%s)"%(title[1],title[0]) for title in self.get_titles()]
         return ("HucitWork (title=[%s],urn=%s)"%(",".join(titles),self.get_urn())).encode('utf-8')
 
-    def __unicode__(self):
+    def __str__(self):
         """
         TODO: finish
         """
