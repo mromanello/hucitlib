@@ -68,7 +68,6 @@ def test_hucitauthor_set_urn(kb_virtuoso):
 def test_hucitwork_set_urn(kb_virtuoso):
     urn = "urn:cts:greekLit:tlg0012.tlg001"
     iliad = kb_virtuoso.get_resource_by_urn(urn)
-    import pdb; pdb.set_trace()
     new_urn = "urn:cts:greekLit:tlg0012.iliad"
     iliad.set_urn(new_urn)
     iliad.load()
