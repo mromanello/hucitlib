@@ -8,6 +8,6 @@ install:
   - "pip install -U -r requirements_dev.txt"
   - "pip install -e ."
 # command to run tests
-script: py.test --cov=knowledge_base -s -vv
+script: py.test --cov=knowledge_base -vv
 after_success:
 - codecov
