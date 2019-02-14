@@ -52,13 +52,15 @@ def test_hucitauthor_add_abbreviation(kb_virtuoso):
 def test_hucitauthor_set_urn(kb_virtuoso):
     urn = "urn:cts:greekLit:tlg0012"
     homer = kb_virtuoso.get_resource_by_urn(urn)
-    new_urn = "urn:cts:greekLit:tlg0013"
+    new_urn = "urn:cts:greekLit:homer"
     homer.set_urn(new_urn)
-    assert str(homer.get_urn()) == new_urn
+    homer.load()
+    assert str(homer.get_urn()).value == new_urn
 
     homer = kb_virtuoso.get_resource_by_urn(new_urn)
     homer.set_urn(urn)
-    assert str(homer.get_urn()) == urn
+    homer.load()
+    assert str(homer.get_urn()).value == urn
 
 
 # TESTS FOR HUCITWORK
@@ -66,13 +68,16 @@ def test_hucitauthor_set_urn(kb_virtuoso):
 def test_hucitwork_set_urn(kb_virtuoso):
     urn = "urn:cts:greekLit:tlg0012.tlg001"
     iliad = kb_virtuoso.get_resource_by_urn(urn)
+    import pdb; pdb.set_trace()
     new_urn = "urn:cts:greekLit:tlg0012.iliad"
     iliad.set_urn(new_urn)
-    assert str(iliad.get_urn()) == new_urn
+    iliad.load()
+    assert str(iliad.get_urn()).value == new_urn
 
     iliad = kb_virtuoso.get_resource_by_urn(new_urn)
     iliad.set_urn(urn)
-    assert str(iliad.get_urn()) == urn
+    iliad.load()
+    assert str(iliad.get_urn()).value == urn
 
 
 @pytest.mark.run(order=13)
