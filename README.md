@@ -6,6 +6,11 @@
 [![Build Status](http://img.shields.io/travis/mromanello/hucit_kb.svg)](https://travis-ci.org/mromanello/hucit_kb)
 [![codecov](https://codecov.io/gh/mromanello/hucit_kb/branch/master/graph/badge.svg)](https://codecov.io/gh/mromanello/hucit_kb)
 
+**NB:** `hucitlib` is currently being ported from Python 2 to 3. For legacy-related
+reasons, the version available on PyPi (`hucitlib 0.2.9`) still supports only Python 2.
+If you need Python 3 support you may want to install version `0.3.0` available in the [issue-3/py3 branch](https://github.com/mromanello/hucit_kb/tree/issue-3/py3) (you will need to install
+it from sources as it currently requires a forked version of `surf`, since the official `surf` does not support Python 3 yet).
+
 ## Description
 
 The HuCit KB is a knowledge base about classical (Greek and Latin) texts, developed with the precise aim of supporting the automatic extraction of bibliographic references to such texts.
