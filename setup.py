@@ -5,6 +5,8 @@ NAME = "knowledge_base"
 exec(open('{0}/__version__.py'.format(NAME)).read())
 VERSION = str_version
 
+# TODO: update for python3
+
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
@@ -26,10 +28,12 @@ setup(name='hucitlib'
     }
     , classifiers=[
         'Intended Audience :: Science/Research',
-        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.6',
         'Operating System :: POSIX'
     ]
     , license='GPL v3'
-    , install_requires=['pyCTS', 'surf>=1.1.9', 'docopt']
+    # TODO: find a way to install Thibault's fork of surf from here
+    # so that it works when installing by pip.
+    , install_requires=['pyCTS', 'surf>=1.2.0', 'docopt']
     , long_description=read('README.md')
 )
