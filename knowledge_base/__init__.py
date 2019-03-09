@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # author: Matteo Romanello, matteo.romanello@gmail.com
 
+import os
 import pdb
 try:
     import configparser
@@ -10,10 +11,12 @@ except ImportError:
 import surf
 import json
 import logging
+from surfext import BASE_URI_TYPES, BASE_URI_WORKS, BASE_URI_AUTHORS
 from surfext import *
 from pyCTS import CTS_URN
 import pkg_resources
 import __version__
+from rdflib import Literal
 
 logger = logging.getLogger(__name__)
 
@@ -147,6 +150,28 @@ class KnowledgeBase(object):
                 for author in self.get_authors()
                 for work in author.get_works()
                 for i, abbrev in enumerate(work.get_abbreviations(combine=False) + work.get_abbreviations(combine=True))}
+
+    @property
+    def next_author_id(self):
+        ids = [
+            int(str(author.subject).split('/')[-1])
+            for author in self.get_authors()
+        ]
+        next_id = max(ids) + 1
+        assert next_id not in ids
+        return next_id
+
+    @property
+    def next_work_id(self):
+        ids = [
+            int(str(work.subject).split('/')[-1])
+            for author in self.get_authors()
+            for work in author.get_works()
+        ]
+        next_id = max(ids) + 1
+        assert next_id not in ids
+        return next_id
+
 
     def get_resource_by_urn(self, urn):
         """Fetch the resource corresponding to the input CTS URN.
@@ -405,3 +430,131 @@ class KnowledgeBase(object):
             "statistics": self.get_statistics()
             , "authors": [json.loads(author.to_json()) for author in self.get_authors()]
         }, indent=2)
+
+    #####################################
+    # Methods to create new Instances   #
+    # in the ontology                   #
+    #####################################
+
+    def create_author(self):
+        """Creates a new instance of HucitAuthor (F10_Person).
+
+
+        :return: The newly created author.
+        :rtype: HucitAuthor
+
+        """
+        next_id = self.next_author_id
+        Person = self._session.get_class(surf.ns.EFRBROO['F10_Person'])
+        uri = BASE_URI_AUTHORS % next_id
+        author = Person(uri)
+        author.save()
+        return author
+
+    def create_name(self, author_uri, names):
+        """Creates a new instance of F12_Name.
+
+        :param type author_uri: URI of the author to whom the name belongs.
+        :param list names: A list of name variants to be added as name labels.
+        :return: Description of returned object.
+        :rtype: surf.resource.EfrbrooF12_Name
+
+        """
+        Name = self._session.get_class(surf.ns.EFRBROO['F12_Name'])
+        name_uri = os.path.join(str(author_uri), "name")
+        new_name = Name(name_uri)
+
+        for name in names:
+            newlabel = Literal(name)
+            new_name.rdfs_label.append(newlabel)
+
+        new_name.save()
+        return new_name
+
+    def create_urn(self, author_uri, urn):
+        Type = self._session.get_class(surf.ns.ECRM['E55_Type'])
+        Identifier = self._session.get_class(surf.ns.ECRM['E42_Identifier'])
+        id_uri = "{}/cts_urn".format(str(author_uri))
+        id = Identifier(id_uri)
+        id.rdfs_label = Literal(urn)
+        id.ecrm_P2_has_type = Type(BASE_URI_TYPES % "CTS_URN")
+        id.save()
+        return id
+
+    def create_abbreviation(self, resource_uri, abbrevs):
+
+        type_abbreviation = self._session.get_resource(
+            BASE_URI_TYPES % "abbreviation",
+            self._session.get_class(surf.ns.ECRM['E55_Type'])
+        )
+        Appellation = self._session.get_class(surf.ns.ECRM['E41_Appellation'])
+        abbreviation_uri = "{}/abbr".format(str(resource_uri))
+        abbreviation = Appellation(abbreviation_uri)
+        abbreviation.ecrm_P2_has_type = type_abbreviation
+
+        for abbr in abbrevs:
+            newlabel = Literal(abbr)
+            abbreviation.rdfs_label.append(newlabel)
+
+        abbreviation.save()
+        return abbreviation
+
+    def create_work(self):
+        """Creates a new instance of HucitWork (F1_Work).
+
+
+        :return: The newly created work.
+        :rtype: HucitWork
+
+        """
+        next_id = self.next_work_id
+        Work = self._session.get_class(surf.ns.EFRBROO['F1_Work'])
+        uri = BASE_URI_WORKS % next_id
+        work = Work(uri)
+        work.save()
+        return work
+
+    def create_title(self, work_uri, titles):
+        """Creates a new instance of E35_Title.
+
+        :param type author_uri: URI of the work to which the title belongs.
+        :param list titles: A list of title variants for the title.
+        :return: The newly created work's title.
+        :rtype: surf.resource.EfrbrooF12_Name
+
+        """
+        Title = self._session.get_class(surf.ns.EFRBROO['E35_Title'])
+        title_uri = os.path.join(str(work_uri), "title")
+        new_title = Title(title_uri)
+
+        for title in titles:
+            newlabel = Literal(title)
+            new_title.rdfs_label.append(newlabel)
+
+        new_title.save()
+        return new_title
+
+    def add_author(self, urn, names, abbreviations):
+        author = self.create_author()
+        name = self.create_name(author.subject, names)
+        urn = self.create_urn(author.subject, urn)
+        abbr = self.create_abbreviation(author.subject, abbreviations)
+        name.ecrm_P139_has_alternative_form = abbr
+        name.update()
+        author.ecrm_P1_is_identified_by.append(name)
+        author.ecrm_P1_is_identified_by.append(urn)
+        author.update()
+        return author
+
+    def add_work(self, author, urn, titles, abbreviations):
+        work = self.create_work()
+        title = self.create_title(work.subject, titles)
+        abbr = self.create_abbreviation(work.subject, abbreviations)
+        title.ecrm_P139_has_alternative_form = abbr
+        title.update()
+        urn = self.create_urn(work.subject, urn)
+        work.efrbroo_P102_has_title.append(title)
+        work.ecrm_P1_is_identified_by.append(urn)
+        work.update()
+        # TODO: create CreationEvent to connect author and work
+        return work

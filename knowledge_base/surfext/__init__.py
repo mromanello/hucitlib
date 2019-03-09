@@ -196,7 +196,7 @@ class HucitAuthor(object):
                                                             and urnstring.ecrm_P2_has_type.first == type_ctsurn][0]
             return urn
         except Exception as e:
-            return None
+            raise e
 
     def set_urn(self,urn):
         """
