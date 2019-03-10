@@ -534,6 +534,22 @@ class KnowledgeBase(object):
         new_title.save()
         return new_title
 
+    def create_creation_event(self, work):
+        """Creates a new instance of F27_Work_Conception.
+
+
+        :return: The newly created F27_Work_Conception.
+        :rtype:
+
+        """
+        CreationEvent = self._session.get_class(
+            surf.ns.EFRBROO['F27_Work_Conception']
+        )
+        uri = "{}".format(os.path.join(work.subject, 'creation_event'))
+        event = CreationEvent(uri)
+        event.save()
+        return event
+
     def add_author(self, urn, names, abbreviations):
         author = self.create_author()
         name = self.create_name(author.subject, names)
@@ -557,4 +573,10 @@ class KnowledgeBase(object):
         work.ecrm_P1_is_identified_by.append(urn)
         work.update()
         # TODO: create CreationEvent to connect author and work
+        creation_event = self.create_creation_event(work)
+        creation_event.efrbroo_R16_initiated = work
+        creation_event.update()
+        author.efrbroo_P14i_performed = creation_event
+        author.update()
+        creation_event.update()
         return work

@@ -98,11 +98,11 @@ def test_add_author(kb_virtuoso):
 def test_add_work(kb_virtuoso):
     """Test adding a new instance of frbroo:F1_Work to the KB."""
     author = kb_virtuoso.get_resource_by_urn('urn:cts:Epibau:epibau007')
-    import ipdb; ipdb.set_trace()
     new_work = kb_virtuoso.add_work(
         author,
         urn="urn:cts:Epibau:epibau007.epibau001",
         titles=["Argumenta Aeneidis"],
         abbreviations=[]
     )
+    print(author.get_works())
     assert new_work is not None and isinstance(new_work, HucitWork)
