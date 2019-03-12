@@ -82,6 +82,7 @@ def test_kb_get_statistics(kb_virtuoso):
 def test_next_ids(kb_virtuoso):
     print(kb_virtuoso.next_author_id)
     print(kb_virtuoso.next_work_id)
+    print(kb_virtuoso.next_work_id)
 
 
 def test_add_author(kb_virtuoso):

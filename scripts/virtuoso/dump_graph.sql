@@ -1,5 +1,3 @@
 select 'Dumping the graph...';
--- 
-dump_one_graph ('http://purl.org/hucit/kb'
-				, '/Users/rromanello/Documents/ClassicsCitations/hucit_kb/knowledge_base/data/kb/hucit_'
-				, 1000000000); 
+--
+DB.DBA.dump_one_graph('http://purl.org/hucit/kb', '/home/romanell/Documents/ClassicsCitations/hucitlib/knowledge_base/data/kb/hucit_', 1000000000);

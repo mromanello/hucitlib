@@ -4,9 +4,9 @@
 # https://github.com/SemanticMediaWiki/SemanticMediaWiki/blob/master/tests/travis/install-services.sh#L8
 
 BASE_PATH=$(pwd)
-VIRTUOSO=7.2.4
+VIRTUOSO=7.2.5
 
-apt-get install libssl-dev -q
+apt-get install libssl1.0-dev -q
 apt-get install autoconf automake bison flex gawk gperf libtool -q
 
 #git clone git://github.com/openlink/virtuoso-opensource.git
@@ -36,12 +36,12 @@ make > /dev/null
 make install
 
 ## For Virtuoso
-export VIRTUOSO_PATH=/usr/local/virtuoso-opensource/bin
+#export VIRTUOSO_PATH=/usr/local/virtuoso-opensource/bin
 
-/usr/local/virtuoso-opensource/bin/virtuoso-t -f -c /usr/local/virtuoso-opensource/var/lib/virtuoso/db/virtuoso.ini &
+#/usr/local/virtuoso-opensource/bin/virtuoso-t -f -c /usr/local/virtuoso-opensource/var/lib/virtuoso/db/virtuoso.ini &
 
-sleep 10
+#sleep 10
 
-$BASE_PATH/scripts/virtuoso/virtuoso-run-script.sh $BASE_PATH/scripts/virtuoso/load_data.sql
+#$BASE_PATH/scripts/virtuoso/virtuoso-run-script.sh $BASE_PATH/scripts/virtuoso/load_data.sql
 
-sleep 5m
+#sleep 5m

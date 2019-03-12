@@ -67,6 +67,7 @@ class KnowledgeBase(object):
         self._works = None
         self._author_abbreviations = None
         self._work_abbreviations = None
+        self._last_work_id = None
         try:
             config = configparser.ConfigParser()
             config.readfp(open(config_file))
@@ -163,13 +164,18 @@ class KnowledgeBase(object):
 
     @property
     def next_work_id(self):
-        ids = [
-            int(str(work.subject).split('/')[-1])
-            for author in self.get_authors()
-            for work in author.get_works()
-        ]
-        next_id = max(ids) + 1
-        assert next_id not in ids
+        # not ideal (creates holes in numbering) but needed to speed up things
+        # another alternative may be to get all work URIs
+        # without bypassing the ORM
+        if self._last_work_id is None:
+            ids = [
+                int(str(work.subject).split('/')[-1])
+                for author in self.get_authors()
+                for work in author.get_works()
+            ]
+            self._last_work_id = max(ids)
+        next_id = self._last_work_id + 1
+        self._last_work_id = next_id
         return next_id
 
 
