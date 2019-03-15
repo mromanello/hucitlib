@@ -582,7 +582,7 @@ class KnowledgeBase(object):
         creation_event = self.create_creation_event(work)
         creation_event.efrbroo_R16_initiated = work
         creation_event.update()
-        author.efrbroo_P14i_performed = creation_event
+        author.efrbroo_P14i_performed.append(creation_event)
         author.update()
         creation_event.update()
         return work
