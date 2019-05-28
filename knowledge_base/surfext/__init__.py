@@ -27,7 +27,7 @@ from surf import *
 from pyCTS import CTS_URN
 from rdflib import Literal
 
-logger = logging.getLogger('__name__')
+logger = logging.getLogger(__name__)
 
 surf.ns.register(ecrm="http://erlangen-crm.org/current/")
 surf.ns.register(efrbroo="http://erlangen-crm.org/efrbroo/")
@@ -373,6 +373,35 @@ class HucitWork(object):
     def get_titles(self):
         """TODO"""
         return [(label.language, unicode(label)) for label in self.efrbroo_P102_has_title.first.rdfs_label]
+
+    def add_title(self, title, lang=None):
+        """
+        Adds a new title variant to a work.
+
+        :param title: the title to be added
+        :param lang: the language of the title variant
+        :return: `True` if the title is added, `False` otherwise (the title is
+            a duplicate)
+        """
+        try:
+            assert (lang, title) not in self.get_titles()
+        except Exception as e:
+            # TODO: raise a custom exception
+            logger.warning(
+                "Duplicate title detected while adding {} (lang={})".format(
+                    title, lang
+                )
+            )
+            return False
+        newlabel = Literal(title, lang=lang) if lang is not None else \
+            Literal(title)
+        title = self.efrbroo_P102_has_title.first
+        try:
+            title.rdfs_label.append(newlabel)
+            title.update()
+            return True
+        except Exception as e:
+            raise e
 
     def get_abbreviations(self, combine=False):
         """

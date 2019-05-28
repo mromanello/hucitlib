@@ -543,7 +543,6 @@ class KnowledgeBase(object):
     def create_creation_event(self, work):
         """Creates a new instance of F27_Work_Conception.
 
-
         :return: The newly created F27_Work_Conception.
         :rtype:
 
@@ -586,3 +585,30 @@ class KnowledgeBase(object):
         author.update()
         creation_event.update()
         return work
+
+    def remove_author(self, author):
+        """Removes an author and all connected resources from the KB."""
+
+        removed_resources = []
+
+        for identifier in author.ecrm_P1_is_identified_by:
+            removed_resources.append(author.subject)
+            identifier.remove()
+
+        for work in author.get_works():
+
+            for title in work.efrbroo_P102_has_title:
+                removed_resources.append(title.subject)
+                title.remove()
+
+            for identifier in work.ecrm_P1_is_identified_by:
+                removed_resources.append(identifier.subject)
+                identifier.remove()
+
+            removed_resources.append(work.subject)
+            work.remove()
+
+        removed_resources.append(author.subject)
+        author.remove()
+
+        return removed_resources
