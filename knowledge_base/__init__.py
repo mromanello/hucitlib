@@ -573,7 +573,7 @@ class KnowledgeBase(object):
         author.rdfs_label.append(
             Literal(
                 "{} :: {}".format(
-                    self.get_author_label(author_urn).encode('utf-8'),
+                    self.get_author_label(urn).encode('utf-8'),
                     author_urn
                 )
             )
@@ -581,7 +581,7 @@ class KnowledgeBase(object):
         author.update()
         return author
 
-    def add_work(self, author, urn, titles, abbreviations):
+    def add_work(self, author, urn, titles, abbreviations, same_as_uris=[]):
         work = self.create_work()
         title = self.create_title(work.subject, titles)
         abbr = self.create_abbreviation(work.subject, abbreviations)
