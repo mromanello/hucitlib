@@ -560,10 +560,24 @@ class KnowledgeBase(object):
         name = self.create_name(author.subject, names)
         urn = self.create_urn(author.subject, urn)
         abbr = self.create_abbreviation(author.subject, abbreviations)
+
         name.ecrm_P139_has_alternative_form = abbr
         name.update()
+
         author.ecrm_P1_is_identified_by.append(name)
         author.ecrm_P1_is_identified_by.append(urn)
+        author.update()
+
+        # add a human-readable composed of author's name +
+        # author's CTS URNs
+        author.rdfs_label.append(
+            Literal(
+                "{} :: {}".format(
+                    self.get_author_label(author_urn).encode('utf-8'),
+                    author_urn
+                )
+            )
+        )
         author.update()
         return author
 
@@ -571,19 +585,35 @@ class KnowledgeBase(object):
         work = self.create_work()
         title = self.create_title(work.subject, titles)
         abbr = self.create_abbreviation(work.subject, abbreviations)
+
         title.ecrm_P139_has_alternative_form = abbr
         title.update()
+
         urn = self.create_urn(work.subject, urn)
         work.efrbroo_P102_has_title.append(title)
         work.ecrm_P1_is_identified_by.append(urn)
         work.update()
-        # TODO: create CreationEvent to connect author and work
+
+        # create CreationEvent to connect author and work
         creation_event = self.create_creation_event(work)
         creation_event.efrbroo_R16_initiated = work
         creation_event.update()
         author.efrbroo_P14i_performed.append(creation_event)
         author.update()
         creation_event.update()
+
+        # add a human-readable label consisting of author's name +
+        # work title + work's CTS URN
+        work.rdfs_label.append(
+            Literal(
+                "{}, {} :: {}".format(
+                    self.get_author_label(author_urn).encode('utf-8'),
+                    self.get_work_label(work_urn).encode('utf-8'),
+                    urn
+                )
+            )
+        )
+
         return work
 
     def remove_author(self, author):
