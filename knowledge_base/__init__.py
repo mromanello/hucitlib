@@ -620,6 +620,10 @@ class KnowledgeBase(object):
             )
         )
 
+        # add sameAs links
+        for link in links:
+            work.owl_sameAs.append(URIRef(link))
+        work.update()
         return work
 
     def remove_author(self, author):
