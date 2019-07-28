@@ -657,15 +657,8 @@ class KnowledgeBase(object):
     def remove_work(self, work):
 
         removed_resources = []
-
         author = work.author
-        for event in author.efrbroo_P14i_performed:
-            if event.efrbroo_R16_initiated.first.get_urn() == work.get_urn():
-                author.efrbroo_P14i_performed.remove(event)
-                author.update()
-                event.efrbroo_R16_initiated.remove(work)
-                event.remove()
-
+        work_uri = work.subject
 
         for title in work.efrbroo_P102_has_title:
             removed_resources.append(title.subject)
@@ -676,4 +669,12 @@ class KnowledgeBase(object):
             identifier.remove()
 
         work.remove()
+
+
+        for event in author.efrbroo_P14i_performed:
+            if event.efrbroo_R16_initiated.first == work_uri:
+                author.efrbroo_P14i_performed.remove(event)
+                event.remove()
+                author.update()
+
         return removed_resources
