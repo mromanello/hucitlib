@@ -590,9 +590,9 @@ class KnowledgeBase(object):
         title.ecrm_P139_has_alternative_form = abbr
         title.update()
 
-        urn = self.create_urn(work.subject, urn)
+        work_urn = self.create_urn(work.subject, urn)
         work.efrbroo_P102_has_title.append(title)
-        work.ecrm_P1_is_identified_by.append(urn)
+        work.ecrm_P1_is_identified_by.append(work_urn)
         work.update()
 
         # create CreationEvent to connect author and work
