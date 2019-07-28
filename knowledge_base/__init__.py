@@ -558,7 +558,7 @@ class KnowledgeBase(object):
     def add_author(self, urn, names, abbreviations):
         author = self.create_author()
         name = self.create_name(author.subject, names)
-        urn = self.create_urn(author.subject, urn)
+        author_urn = self.create_urn(author.subject, urn)
         abbr = self.create_abbreviation(author.subject, abbreviations)
 
         name.ecrm_P139_has_alternative_form = abbr
@@ -573,7 +573,7 @@ class KnowledgeBase(object):
         author.rdfs_label.append(
             Literal(
                 "{} :: {}".format(
-                    self.get_author_label(urn).encode('utf-8'),
+                    self.get_author_label(author_urn).encode('utf-8'),
                     author_urn
                 )
             )
