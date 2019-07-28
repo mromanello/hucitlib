@@ -17,6 +17,7 @@ from pyCTS import CTS_URN
 import pkg_resources
 import __version__
 from rdflib import Literal
+from rdflib.term import URIRef
 
 logger = logging.getLogger(__name__)
 
