@@ -565,7 +565,7 @@ class KnowledgeBase(object):
         name.update()
 
         author.ecrm_P1_is_identified_by.append(name)
-        author.ecrm_P1_is_identified_by.append(urn)
+        author.ecrm_P1_is_identified_by.append(author_urn)
         author.update()
 
         # add a human-readable composed of author's name +
@@ -573,8 +573,8 @@ class KnowledgeBase(object):
         author.rdfs_label.append(
             Literal(
                 "{} :: {}".format(
-                    self.get_author_label(author_urn).encode('utf-8'),
-                    author_urn
+                    self.get_author_label(urn).encode('utf-8'),
+                    urn
                 )
             )
         )
