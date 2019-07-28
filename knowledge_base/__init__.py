@@ -17,6 +17,7 @@ from pyCTS import CTS_URN
 import pkg_resources
 import __version__
 from rdflib import Literal
+from rdflib.term import URIRef
 
 logger = logging.getLogger(__name__)
 
@@ -555,35 +556,74 @@ class KnowledgeBase(object):
         event.save()
         return event
 
-    def add_author(self, urn, names, abbreviations):
+    def add_author(self, urn, names, abbreviations, links=[]):
         author = self.create_author()
         name = self.create_name(author.subject, names)
-        urn = self.create_urn(author.subject, urn)
+        author_urn = self.create_urn(author.subject, urn)
         abbr = self.create_abbreviation(author.subject, abbreviations)
+
         name.ecrm_P139_has_alternative_form = abbr
         name.update()
+
         author.ecrm_P1_is_identified_by.append(name)
-        author.ecrm_P1_is_identified_by.append(urn)
+        author.ecrm_P1_is_identified_by.append(author_urn)
+        author.update()
+
+        # add a human-readable composed of author's name +
+        # author's CTS URNs
+        author.rdfs_label.append(
+            Literal(
+                "{} :: {}".format(
+                    self.get_author_label(urn).encode('utf-8'),
+                    urn
+                )
+            )
+        )
+
+        # add sameAs links
+        for link in links:
+            author.owl_sameAs.append(URIRef(link))
         author.update()
         return author
 
-    def add_work(self, author, urn, titles, abbreviations):
+    def add_work(self, author, urn, titles, abbreviations, links=[]):
         work = self.create_work()
         title = self.create_title(work.subject, titles)
         abbr = self.create_abbreviation(work.subject, abbreviations)
+        author_urn = author.get_urn()
+
         title.ecrm_P139_has_alternative_form = abbr
         title.update()
-        urn = self.create_urn(work.subject, urn)
+
+        work_urn = self.create_urn(work.subject, urn)
         work.efrbroo_P102_has_title.append(title)
-        work.ecrm_P1_is_identified_by.append(urn)
+        work.ecrm_P1_is_identified_by.append(work_urn)
         work.update()
-        # TODO: create CreationEvent to connect author and work
+
+        # create CreationEvent to connect author and work
         creation_event = self.create_creation_event(work)
         creation_event.efrbroo_R16_initiated = work
         creation_event.update()
         author.efrbroo_P14i_performed.append(creation_event)
         author.update()
         creation_event.update()
+
+        # add a human-readable label consisting of author's name +
+        # work title + work's CTS URN
+        work.rdfs_label.append(
+            Literal(
+                "{}, {} :: {}".format(
+                    self.get_author_label(author_urn).encode('utf-8'),
+                    self.get_work_label(urn).encode('utf-8'),
+                    urn
+                )
+            )
+        )
+
+        # add sameAs links
+        for link in links:
+            work.owl_sameAs.append(URIRef(link))
+        work.update()
         return work
 
     def remove_author(self, author):
@@ -610,5 +650,31 @@ class KnowledgeBase(object):
 
         removed_resources.append(author.subject)
         author.remove()
+
+        return removed_resources
+
+
+    def remove_work(self, work):
+
+        removed_resources = []
+        author = work.author
+        work_uri = work.subject
+
+        for title in work.efrbroo_P102_has_title:
+            removed_resources.append(title.subject)
+            title.remove()
+
+        for identifier in work.ecrm_P1_is_identified_by:
+            removed_resources.append(identifier.subject)
+            identifier.remove()
+
+        work.remove()
+
+
+        for event in author.efrbroo_P14i_performed:
+            if event.efrbroo_R16_initiated.first == work_uri:
+                author.efrbroo_P14i_performed.remove(event)
+                event.remove()
+                author.update()
 
         return removed_resources
