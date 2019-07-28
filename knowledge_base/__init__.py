@@ -662,6 +662,7 @@ class KnowledgeBase(object):
         for event in author.efrbroo_P14i_performed:
             if event.efrbroo_R16_initiated.first.get_urn() == work.get_urn():
                 event.remove()
+                author.efrbroo_P14i_performed.remove(event)
         author.update()
 
         for title in work.efrbroo_P102_has_title:
