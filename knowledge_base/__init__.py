@@ -555,7 +555,7 @@ class KnowledgeBase(object):
         event.save()
         return event
 
-    def add_author(self, urn, names, abbreviations):
+    def add_author(self, urn, names, abbreviations, links=[]):
         author = self.create_author()
         name = self.create_name(author.subject, names)
         author_urn = self.create_urn(author.subject, urn)
@@ -578,10 +578,14 @@ class KnowledgeBase(object):
                 )
             )
         )
+
+        # add sameAs links
+        for link in links:
+            author.owl_sameAs.append(URIRef(link))
         author.update()
         return author
 
-    def add_work(self, author, urn, titles, abbreviations, same_as_uris=[]):
+    def add_work(self, author, urn, titles, abbreviations, links=[]):
         work = self.create_work()
         title = self.create_title(work.subject, titles)
         abbr = self.create_abbreviation(work.subject, abbreviations)
