@@ -652,3 +652,19 @@ class KnowledgeBase(object):
         author.remove()
 
         return removed_resources
+
+
+    def remove_work(self, work):
+
+        removed_resources = []
+
+        for title in work.efrbroo_P102_has_title:
+            removed_resources.append(title.subject)
+            title.remove()
+
+        for identifier in work.ecrm_P1_is_identified_by:
+            removed_resources.append(identifier.subject)
+            identifier.remove()
+
+        work.remove()
+        return removed_resources
