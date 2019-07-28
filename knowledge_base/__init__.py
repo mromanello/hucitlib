@@ -585,6 +585,7 @@ class KnowledgeBase(object):
         work = self.create_work()
         title = self.create_title(work.subject, titles)
         abbr = self.create_abbreviation(work.subject, abbreviations)
+        author_urn = author.get_urn()
 
         title.ecrm_P139_has_alternative_form = abbr
         title.update()
@@ -608,7 +609,7 @@ class KnowledgeBase(object):
             Literal(
                 "{}, {} :: {}".format(
                     self.get_author_label(author_urn).encode('utf-8'),
-                    self.get_work_label(work_urn).encode('utf-8'),
+                    self.get_work_label(urn).encode('utf-8'),
                     urn
                 )
             )
