@@ -660,7 +660,7 @@ class KnowledgeBase(object):
 
         author = work.author
         for event in author.efrbroo_P14i_performed:
-            if event.efrbroo_R16_initiated.first.get_urn() == work.get_urn()
+            if event.efrbroo_R16_initiated.first.get_urn() == work.get_urn():
                 event.remove()
         author.update()
 
