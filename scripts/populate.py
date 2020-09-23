@@ -149,7 +149,7 @@ def main():
 
     ]
     for work in works:
-        basedir = '../knowledge_base/data/text_structures'
+        basedir = '../hucitlib/knowledge_base/data/text_structures/'
         download_text_structure(work, basedir)
 
 
