@@ -79,6 +79,7 @@ def fetch_text_structure(urn, endpoint="http://cts.perseids.org/api/cts"):
     for level_n, level_label in structure["levels"]:
 
         structure["valid_reffs"][level_n] = []
+        #pdb.set_trace()
         for ref in resolver.getReffs(urn, level=level_n):
             print(ref)
             element = {
@@ -90,16 +91,21 @@ def fetch_text_structure(urn, endpoint="http://cts.perseids.org/api/cts"):
                     ".".join(ref.split(".")[:level_n - 1])
                 )
             # TODO: parallelize this bit
-            textual_node = resolver.getTextualNode(
-                textId=urn,
-                subreference=ref,
-                prevnext=True
-            )
-            if textual_node.nextId is not None:
-                element["previous"] = "{}:{}".format(urn, textual_node.nextId)
-            if textual_node.prevId is not None:
-                element["following"] = "{}:{}".format(urn, textual_node.prevId)
-            structure["valid_reffs"][level_n].append(element)
+            try:
+                textual_node = resolver.getTextualNode(
+                    textId=urn,
+                    subreference=ref,
+                    prevnext=True
+                )
+                if textual_node.nextId is not None:
+                    element["following"] = "{}:{}".format(urn, textual_node.nextId)
+                if textual_node.prevId is not None:
+                    element["previous"] = "{}:{}".format(urn, textual_node.prevId)
+                structure["valid_reffs"][level_n].append(element)
+            except Exception as e:
+                # TODO: implement retry mechanism with `retrying` library
+                print(e)
+                pass
 
     return structure
 
@@ -136,14 +142,14 @@ def populate_text_structure(urn, ts):  # TODO: implement
 
 def main():
     works = [
+        'urn:cts:greekLit:tlg0011.tlg003',
         'urn:cts:greekLit:tlg0012.tlg001',
         'urn:cts:greekLit:tlg0012.tlg002',
         'urn:cts:latinLit:phi0690.phi003',
 
     ]
     for work in works:
-        basedir = '/Users/rromanello/Documents/ClassicsCitations/hucit_kb/\
-            knowledge_base/data/text_structures'
+        basedir = '../knowledge_base/data/text_structures'
         download_text_structure(work, basedir)
 
 

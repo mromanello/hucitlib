@@ -23,7 +23,9 @@ import json
 import surf
 import logging
 import itertools
+from typing import List
 from surf import *
+from surf.exceptions import NoResultFound
 from pyCTS import CTS_URN
 from rdflib import Literal
 
@@ -345,6 +347,30 @@ class HucitAuthor(object):
                     , "works" : [json.loads(work.to_json()) for work in self.get_works()]
                 }, indent=2)
 
+class HucitTextStructure(object):
+    """
+    Object mapping for instances of `http://purl.og/net/hucit#TextStructure`.
+    """
+
+    def add_element(self, urn, element_type, parent_urn=None, previous_urn=None, following_urn=None):# TODO: implement
+        """
+        >>> ts.add_element("urn:cts:greekLit:tlg0012.tlg001:1", "book")
+
+        What it does:
+        - create a new text element
+        - attach the urn to it
+        - attach the right type to it
+        - append it to its parent
+        - add the element to the text structure (hucit#element_part_of)
+        - returns the new element
+        """
+        return
+
+    @property
+    def work(self):
+        Work = self.session.get_class(surf.ns.EFRBROO['F1_Work'])
+        return Work.get_by(hucit_has_structure=self).first()
+
 class HucitWork(object):
     """
     Object mapping for instances of `http://erlangen-crm.org/efrbroo/F1_Work`.
@@ -495,8 +521,10 @@ class HucitWork(object):
         Adds a citable text structure to the work.
         """
 
-        ts = self.session.get_resource("%s/text_structure" % self.subject
-                                      , self.session.get_class(surf.ns.HUCIT['TextStructure']))
+        ts = self.session.get_resource(
+            "%s/text_structure" % self.subject
+            , self.session.get_class(surf.ns.HUCIT['TextStructure'])
+        )
         ts.rdfs_label.append(Literal(label))
         ts.save()
         self.hucit_has_structure = ts
@@ -561,7 +589,6 @@ class HucitWork(object):
             else:
                 return False
 
-
     def get_citation_levels(self, language):
         """
         Returns the levels of the TextStructure of this Work, in the right order (e.g. Book/Chapter/Section).
@@ -569,7 +596,7 @@ class HucitWork(object):
         pass
 
     @property
-    def author(self):
+    def author(self) -> HucitAuthor:
         """
         Returns the author to whom the work is attributed.
 
@@ -579,6 +606,14 @@ class HucitWork(object):
         Person = self.session.get_class(surf.ns.EFRBROO['F10_Person'])
         creation_event =  CreationEvent.get_by(efrbroo_R16_initiated=self).first()
         return Person.get_by(efrbroo_P14i_performed = creation_event).first()
+
+    @property
+    def structure(self) -> HucitTextStructure:
+        try:
+            return self.hucit_has_structure.one
+        except NoResultFound:
+            return None
+
 
     def get_top_elements(self):
         """
@@ -649,29 +684,3 @@ class HucitTextElement(object):
             return CTS_URN(urn)
         except Exception as  e:
             raise e
-
-class HucitTextStructure(object):
-    """
-    Object mapping for instances of `http://purl.og/net/hucit#TextStructure`.
-    """
-    def add_levels(self, text_levels):# TODO: implement
-        """
-        Adds the text element type in case they don't exist.
-
-        :param text_levels: a list of strings (e.g. ["book", "poem", "line"])
-        """
-        return
-
-    def add_element(self, urn, element_type, parent_urn=None, previous_urn=None, following_urn=None):# TODO: implement
-        """
-        >>> ts.add_element("urn:cts:greekLit:tlg0012.tlg001:1", "book")
-
-        What it does:
-        - create a new text element
-        - attach the urn to it
-        - attach the right type to it
-        - append it to its parent
-        - add the element to the text structure
-        - returns the new element
-        """
-        return

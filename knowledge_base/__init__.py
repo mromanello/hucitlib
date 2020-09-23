@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # author: Matteo Romanello, matteo.romanello@gmail.com
 
+import os
 import pdb
 try:
     import configparser
@@ -12,8 +13,10 @@ import json
 import logging
 from knowledge_base.surfext import *
 from pyCTS import CTS_URN
+from typing import Optional
 import pkg_resources
 import knowledge_base.__version__
+from rdflib import Literal
 
 logger = logging.getLogger(__name__)
 
@@ -328,9 +331,6 @@ class KnowledgeBase(object):
                 except Exception as e:
                     return None
 
-    def get_author_of(self):  # TODO finish
-        pass
-
     def get_statistics(self):
         """
         Gather basic stats about the Knowledge Base and its contents.
@@ -389,11 +389,79 @@ class KnowledgeBase(object):
         else:
             return None
 
-    def get_name_of(self): # TODO implement
-        pass
+    def get_textelement_types(self) -> List[surf.resource.Resource]:
+        """Returns all TextElementTypes defined in the knowledge base.
 
-    def get_title_of(self): # TODO implement
-        pass
+        :return: Description of returned object.
+        :rtype: List[surf.resource.Resource]
+
+        """
+        E55_Type = self._session.get_class(surf.ns.ECRM['E55_Type'])
+        return E55_Type.all()
+
+    def get_textelement_type(self, label : str) -> Optional[surf.resource.Resource]:
+        """Returns a TextElementType (instance of E55_Type) if present.
+
+        ..note::
+            `label` (lowercased) is used to create the URI
+            (http://purl.org/hucit/kb/types/{label}).
+
+        :param str label: Description of parameter `label`.
+        :return: Description of returned object.
+        :rtype: surf.resource.Resource
+
+        """
+        E55_Type = self._session.get_class(surf.ns.ECRM['E55_Type'])
+
+        # URI of expected text element type
+        textelement_type = E55_Type(
+            os.path.join("http://purl.org/hucit/kb/types/", label.lower())
+        )
+        if textelement_type.is_present():
+            return textelement_type
+        else:
+            return None
+
+    def add_textelement_type(self, label : str, lang : str = 'en') -> Optional[surf.resource.Resource]:
+        """Adds a new TextElementType to the Knowledge base if not yet present.
+
+        :param str label: Description of parameter `label`.
+        :param str lang: Description of parameter `lang`.
+        :return: Description of returned object.
+        :rtype: Optional[surf.resource.Resource]
+
+        """
+        label = label.lower()
+        E55_Type = self._session.get_class(surf.ns.ECRM['E55_Type'])
+
+        # try to see if it exists, otherwise create it
+        if self.get_textelement_type(label) is None:
+            new_E55_type = E55_Type(
+                os.path.join("http://purl.org/hucit/kb/types/", label)
+            )
+            new_E55_type.rdfs_label.append(Literal(label, lang))
+            new_E55_type.save()
+            return new_E55_type
+        else:
+            return None
+
+    def add_textelement_types(self, types : List[str]) -> None:
+        """Adds the text element type in case it doesn't exist.
+
+        :param types: a list of strings (e.g. ["book", "poem", "line"])
+        """
+
+        for el_type in types:
+            el_type_obj = self.get_textelement_type(el_type)
+            if el_type_obj is None:
+                new_el_obj = self.add_textelement_type(el_type)
+                print(
+                    f'Added new text element type: {new_el_obj.subject}',
+                    f' {new_el_obj.rdfs_label}'
+                )
+            else:
+                print(f'Level {el_type} already exists: {el_type_obj.subject}')
+        return
 
     def to_json(self):
         """
