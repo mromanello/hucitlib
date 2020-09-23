@@ -4,18 +4,6 @@
 
 """
 TODO: Description of the package.
-
-%load_ext autoreload
-%autoreload 2
-import surf
-from knowledge_base import KnowledgeBase
-kb = KnowledgeBase("../../knowledge_base/config/virtuoso_local.ini")
-w = kb.get_resource_by_urn("urn:cts:greekLit:tlg0012.tlg001")
-ts = w.add_text_structure("Canonical text structure of homer's iliad")
-w.remove_text_structure(ts)
-
-te = kb._session.get_resource("%s/urn:cts:greekLit:tlg0012.tlg001:1" % w.subject
-                              , kb._session.get_class(surf.ns.HUCIT['TextElement']))
 """
 
 import pdb

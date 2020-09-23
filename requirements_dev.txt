@@ -4,3 +4,5 @@ pytest-cov
 codecov
 pytest-ordering
 twine
+Sphinx
+sphinx-rtd-theme
