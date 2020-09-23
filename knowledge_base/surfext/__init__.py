@@ -26,6 +26,7 @@ import itertools
 from surf import *
 from pyCTS import CTS_URN
 from rdflib import Literal
+from rdflib.term import URIRef
 
 logger = logging.getLogger(__name__)
 
@@ -219,8 +220,14 @@ class HucitAuthor(object):
         Returns a list of the works (intances of `surf.Resource` and `HucitWork`)
         attributed to a given author.
         """
-        return [work  for creation in self.efrbroo_P14i_performed
-                                for work in creation.efrbroo_R16_initiated]
+        works = []
+        for creation in self.efrbroo_P14i_performed:
+            try:
+                for work in creation.efrbroo_R16_initiated:
+                    works.append(work)
+            except Exception:
+                pass
+        return works
 
     def to_json(self):
         """
