@@ -6,10 +6,17 @@
 Welcome to HucitLib's documentation!
 ====================================
 
+``HucitLib`` is a knowledge base about classical (Greek and Latin) texts, as
+well as a Python library to query and modify this knowledge base.
+
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Contents:
 
+   setup
+   model
+   cli
+   kb
    surf_mappings
 
 
