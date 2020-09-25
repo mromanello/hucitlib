@@ -3,7 +3,8 @@
 # author: Matteo Romanello, matteo.romanello@gmail.com
 
 import os
-import pdb
+import ipdb
+
 try:
     import configparser
 except ImportError:
@@ -11,12 +12,16 @@ except ImportError:
 import surf
 import json
 import logging
-from knowledge_base.surfext import *
+from hucitlib.surfext import *
 from pyCTS import CTS_URN
-from typing import Optional
+from typing import Optional, Dict
 import pkg_resources
-import knowledge_base.__version__
+import hucitlib.__version__
 from rdflib import Literal
+from tqdm import tqdm
+
+# from multiprocessing import Pool
+from collections import ChainMap
 
 logger = logging.getLogger(__name__)
 
@@ -25,16 +30,15 @@ def get_abbreviations(kb):
     """
     For the sake of profiling.
     """
-    return {"%s$$n%i" % (author.get_urn(), i): abbrev
-                for author in kb.get_authors()
-                for i, abbrev in enumerate(author.get_abbreviations())
-                if author.get_urn() is not None}
+    return {
+        "%s$$n%i" % (author.get_urn(), i): abbrev
+        for author in kb.get_authors()
+        for i, abbrev in enumerate(author.get_abbreviations())
+        if author.get_urn() is not None
+    }
 
 
-class ResourceNotFound(Exception):
-    """Raised when the resource identified by the URN is not in the KB."""
-
-
+# TODO: allow for a default config file in __init__()
 class KnowledgeBase(object):
     """
 
@@ -63,25 +67,34 @@ class KnowledgeBase(object):
         """
         TODO: read default configuration file if none is provided
         """
-        self._authors = None
-        self._works = None
+        self._author_names = None
+        self._work_titles = None
         self._author_abbreviations = None
         self._work_abbreviations = None
         try:
             config = configparser.ConfigParser()
-            config.readfp(open(config_file))
+            config.read_file(open(config_file))
             self._store_params = dict(config.items("surf"))
-            if ('port' in self._store_params):
-                self._store_params['port'] = int(self._store_params['port'])  # force the `port` to be an integer
+            if "port" in self._store_params:
+                self._store_params["port"] = int(
+                    self._store_params["port"]
+                )  # force the `port` to be an integer
             self._store = surf.Store(**self._store_params)
             self._session = surf.Session(self._store, {})
-            if ('rdflib_store' in self._store_params):
-                basedir = pkg_resources.resource_filename('knowledge_base', 'data/kb/')
-                sources = ["%s%s" % (basedir, file) for file in self._store_params["knowledge_base_sources"].split(",")]
+            if "rdflib_store" in self._store_params:
+                basedir = pkg_resources.resource_filename("knowledge_base", "data/kb/")
+                sources = [
+                    "%s%s" % (basedir, file)
+                    for file in self._store_params["knowledge_base_sources"].split(",")
+                ]
                 source_format = self._store_params["sources_format"]
                 for source_path in sources:
-                    self._store.writer._graph.parse(source=source_path, format=source_format)
-                    logger.info("The KnowledgeBase contains %i triples" % self._store.size())
+                    self._store.writer._graph.parse(
+                        source=source_path, format=source_format
+                    )
+                    logger.info(
+                        "The KnowledgeBase contains %i triples" % self._store.size()
+                    )
             self._register_namespaces()
             self._register_mappings()
         except Exception as e:
@@ -93,8 +106,8 @@ class KnowledgeBase(object):
         Thus they need to be dropped when pickling.
         """
         odict = self.__dict__.copy()
-        del odict['_store']
-        del odict['_session']
+        del odict["_store"]
+        del odict["_session"]
         return odict
 
     def __setstate__(self, dict):
@@ -102,19 +115,26 @@ class KnowledgeBase(object):
         self._store = surf.Store(**self._store_params)
         self._session = surf.Session(self._store, {})
         # don't forget to reload the triples if it's an in-memory store!
-        if ('rdflib_store' in self._store_params):
-            basedir = pkg_resources.resource_filename('knowledge_base', 'data/kb/')
-            sources = ["%s%s" % (basedir, file) for file in self._store_params["knowledge_base_sources"].split(",")]
+        if "rdflib_store" in self._store_params:
+            basedir = pkg_resources.resource_filename("knowledge_base", "data/kb/")
+            sources = [
+                "%s%s" % (basedir, file)
+                for file in self._store_params["knowledge_base_sources"].split(",")
+            ]
             source_format = self._store_params["sources_format"]
             for source_path in sources:
-                self._store.writer._graph.parse(source=source_path, format=source_format)
-                logger.info("The KnowledgeBase contains %i triples" % self._store.size())
+                self._store.writer._graph.parse(
+                    source=source_path, format=source_format
+                )
+                logger.info(
+                    "The KnowledgeBase contains %i triples" % self._store.size()
+                )
         self._register_namespaces()
         self._register_mappings()
 
     # some legacy methods
     @property
-    def author_names(self):
+    def author_names(self) -> Dict[str, str]:
         """
         Returns a dictionary like this:
 
@@ -124,32 +144,54 @@ class KnowledgeBase(object):
             , ...
         }
         """
-        return {"%s$$n%i" % (author.get_urn(), i): name[1]
-                for author in self.get_authors()
+
+        def fetch_names(author):
+            return {
+                "%s$$n%i" % (author.get_urn(), i): name[1]
                 for i, name in enumerate(author.get_names())
-                if author.get_urn() is not None}
+            }
+
+        if self._author_names is None:
+            authors = self.get_authors()
+            author_names = [
+                fetch_names(author)
+                for author in tqdm(authors)
+                if author.get_urn() is not None
+            ]
+            self._author_names = dict(ChainMap(*author_names))
+
+        return self._author_names
 
     @property
     def author_abbreviations(self):
-        return {"%s$$n%i" % (author.get_urn(), i): abbrev
-                for author in self.get_authors()
-                for i, abbrev in enumerate(author.get_abbreviations())
-                if author.get_urn() is not None}
+        return {
+            "%s$$n%i" % (author.get_urn(), i): abbrev
+            for author in self.get_authors()
+            for i, abbrev in enumerate(author.get_abbreviations())
+            if author.get_urn() is not None
+        }
 
     @property
     def work_titles(self):
-        return {"%s$$n%i" % (work.get_urn(), i): title[1]
-                for author in self.get_authors()
-                for work in author.get_works()
-                for i, title in enumerate(work.get_titles())
-                if work.get_urn() is not None}
+        return {
+            "%s$$n%i" % (work.get_urn(), i): title[1]
+            for author in self.get_authors()
+            for work in author.get_works()
+            for i, title in enumerate(work.get_titles())
+            if work.get_urn() is not None
+        }
 
     @property
     def work_abbreviations(self):
-        return {"%s$$n%i" % (work.get_urn(), i): abbrev
-                for author in self.get_authors()
-                for work in author.get_works()
-                for i, abbrev in enumerate(work.get_abbreviations(combine=False) + work.get_abbreviations(combine=True))}
+        return {
+            "%s$$n%i" % (work.get_urn(), i): abbrev
+            for author in self.get_authors()
+            for work in author.get_works()
+            for i, abbrev in enumerate(
+                work.get_abbreviations(combine=False)
+                + work.get_abbreviations(combine=True)
+            )
+        }
 
     def get_resource_by_urn(self, urn):
         """Fetch the resource corresponding to the input CTS URN.
@@ -161,7 +203,8 @@ class KnowledgeBase(object):
         :return: either an instance of `HucitAuthor` or of `HucitWork`
 
         """
-        search_query = """
+        search_query = (
+            """
             PREFIX frbroo: <http://erlangen-crm.org/efrbroo/>
             PREFIX crm: <http://erlangen-crm.org/current/>
             PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -173,35 +216,35 @@ class KnowledgeBase(object):
                 ?urn a crm:E42_Identifier .
                 ?urn rdfs:label "%s"
             }
-        """ % urn
+        """
+            % urn
+        )
         # check type of the input URN
         try:
             assert isinstance(urn, CTS_URN)
         except Exception as e:
             # convert to pyCTS.CTS_URN if it's a string
             urn = CTS_URN(urn)
-            logger.debug('Converted the input urn from string to %s' % type(
-                CTS_URN
-            ))
+            logger.debug("Converted the input urn from string to %s" % type(CTS_URN))
 
-        if (urn.work is not None):
-            Work = self._session.get_class(surf.ns.EFRBROO['F1_Work'])
+        if urn.work is not None:
+            Work = self._session.get_class(surf.ns.EFRBROO["F1_Work"])
             result = self._store.execute_sparql(search_query)
-            if len(result['results']['bindings']) == 0:
+            if len(result["results"]["bindings"]) == 0:
                 raise ResourceNotFound
             else:
-                tmp = result['results']['bindings'][0]
-                resource_uri = tmp['resource_URI']['value']
+                tmp = result["results"]["bindings"][0]
+                resource_uri = tmp["resource_URI"]["value"]
                 return self._session.get_resource(resource_uri, Work)
 
-        elif (urn.work is None and urn.textgroup is not None):
-            Person = self._session.get_class(surf.ns.EFRBROO['F10_Person'])
+        elif urn.work is None and urn.textgroup is not None:
+            Person = self._session.get_class(surf.ns.EFRBROO["F10_Person"])
             result = self._store.execute_sparql(search_query)
-            if len(result['results']['bindings']) == 0:
+            if len(result["results"]["bindings"]) == 0:
                 raise ResourceNotFound
             else:
-                tmp = result['results']['bindings'][0]
-                resource_uri = tmp['resource_URI']['value']
+                tmp = result["results"]["bindings"][0]
+                resource_uri = tmp["resource_URI"]["value"]
                 return self._session.get_resource(resource_uri, Person)
 
     # TODO: if the underlying store is not Virtuoso it should fail
@@ -213,43 +256,52 @@ class KnowledgeBase(object):
         :param search_string:
         :return: an instance of `HucitAuthor` or `HucitWork`.
         """
-        query = """
+        query = (
+            """
         SELECT ?s ?label ?type
         WHERE {
             ?s a ?type .
             ?s rdfs:label ?label .
             ?label bif:contains "'%s'" .
         }
-        """ % search_string
+        """
+            % search_string
+        )
         response = self._session.default_store.execute_sparql(query)
-        results = [(result['s']['value'], result['label']['value'], result['type']['value'])
-                                                            for result in response["results"]["bindings"]]
-        resources = [(label, self._session.get_resource(subject, self._session.get_class(type)))
-                                                            for subject, label, type in results]
+        results = [
+            (result["s"]["value"], result["label"]["value"], result["type"]["value"])
+            for result in response["results"]["bindings"]
+        ]
+        resources = [
+            (label, self._session.get_resource(subject, self._session.get_class(type)))
+            for subject, label, type in results
+        ]
 
-        Name = self._session.get_class(surf.ns.EFRBROO['F12_Name'])
-        Title = self._session.get_class(surf.ns.EFRBROO['E35_Title'])
-        Work = self._session.get_class(surf.ns.EFRBROO['F1_Work'])
-        Person = self._session.get_class(surf.ns.EFRBROO['F10_Person'])
+        Name = self._session.get_class(surf.ns.EFRBROO["F12_Name"])
+        Title = self._session.get_class(surf.ns.EFRBROO["E35_Title"])
+        Work = self._session.get_class(surf.ns.EFRBROO["F1_Work"])
+        Person = self._session.get_class(surf.ns.EFRBROO["F10_Person"])
 
         result = []
         for label, resource in resources:
-            if resource.uri == surf.ns.EFRBROO['E35_Title']:
-                work = Work.get_by(efrbroo_P102_has_title = resource).first()
+            if resource.uri == surf.ns.EFRBROO["E35_Title"]:
+                work = Work.get_by(efrbroo_P102_has_title=resource).first()
                 result.append((label, work))
-            elif resource.uri == surf.ns.EFRBROO['F12_Name']:
-                author = Person.get_by(ecrm_P1_is_identified_by = resource).first()
+            elif resource.uri == surf.ns.EFRBROO["F12_Name"]:
+                author = Person.get_by(ecrm_P1_is_identified_by=resource).first()
                 result.append((label, author))
-            elif resource.uri == surf.ns.ECRM['E41_Appellation']:
+            elif resource.uri == surf.ns.ECRM["E41_Appellation"]:
                 try:
-                    name = Name.get_by(ecrm_P139_has_alternative_form = resource).first()
+                    name = Name.get_by(ecrm_P139_has_alternative_form=resource).first()
                     assert name is not None
-                    author = Person.get_by(ecrm_P1_is_identified_by = name).first()
+                    author = Person.get_by(ecrm_P1_is_identified_by=name).first()
                     result.append((label, author))
                 except Exception as e:
-                    title = Title.get_by(ecrm_P139_has_alternative_form=resource).first()
+                    title = Title.get_by(
+                        ecrm_P139_has_alternative_form=resource
+                    ).first()
                     assert title is not None
-                    work = Work.get_by(efrbroo_P102_has_title = title).first()
+                    work = Work.get_by(efrbroo_P102_has_title=title).first()
                     result.append((label, work))
         return result
 
@@ -260,7 +312,7 @@ class KnowledgeBase(object):
         :return: a list of `HucitAuthor` instances.
 
         """
-        Person = self._session.get_class(surf.ns.EFRBROO['F10_Person'])
+        Person = self._session.get_class(surf.ns.EFRBROO["F10_Person"])
         return list(Person.all())
 
     def get_works(self):
@@ -269,7 +321,7 @@ class KnowledgeBase(object):
         :return: a list of `HucitWork` instances.
 
         """
-        Work = self._session.get_class(surf.ns.EFRBROO['F1_Work'])
+        Work = self._session.get_class(surf.ns.EFRBROO["F1_Work"])
         return list(Work.all())
 
     def get_author_label(self, urn):
@@ -293,7 +345,9 @@ class KnowledgeBase(object):
             try:
                 return none_names[0]
             except Exception as e:
-                la_names = sorted([name[1] for name in names if name[0] == "la"], key=len)
+                la_names = sorted(
+                    [name[1] for name in names if name[0] == "la"], key=len
+                )
                 try:
                     assert len(la_names) > 0
                     return la_names[0]
@@ -345,19 +399,20 @@ class KnowledgeBase(object):
             "number_works": 0,
             "number_work_titles": 0,
             "number_title_abbreviations": 0,
-            "number_opus_maximum":0,
+            "number_opus_maximum": 0,
         }
         for author in self.get_authors():
             if author.get_urn() is not None:
-                opmax = True if self.get_opus_maximum_of(author.get_urn())\
-                    is not None else False
+                opmax = (
+                    True
+                    if self.get_opus_maximum_of(author.get_urn()) is not None
+                    else False
+                )
                 if opmax:
                     statistics["number_opus_maximum"] += 1
             statistics["number_authors"] += 1
             statistics["number_author_names"] += len(author.get_names())
-            statistics["number_author_abbreviations"] += len(
-                author.get_abbreviations()
-            )
+            statistics["number_author_abbreviations"] += len(author.get_abbreviations())
             for work in author.get_works():
                 statistics["number_works"] += 1
                 statistics["number_work_titles"] += len(work.get_titles())
@@ -396,14 +451,14 @@ class KnowledgeBase(object):
         :rtype: List[surf.resource.Resource]
 
         """
-        E55_Type = self._session.get_class(surf.ns.ECRM['E55_Type'])
+        E55_Type = self._session.get_class(surf.ns.ECRM["E55_Type"])
         return E55_Type.all()
 
-    def get_textelement_type(self, label : str) -> Optional[surf.resource.Resource]:
+    def get_textelement_type(self, label: str) -> Optional[surf.resource.Resource]:
         """Returns a TextElementType (instance of E55_Type) if present.
 
-        ..note::
-            `label` (lowercased) is used to create the URI
+        .. note::
+            ``label`` (lowercased) is used to create the URI
             (http://purl.org/hucit/kb/types/{label}).
 
         :param str label: Description of parameter `label`.
@@ -411,7 +466,7 @@ class KnowledgeBase(object):
         :rtype: surf.resource.Resource
 
         """
-        E55_Type = self._session.get_class(surf.ns.ECRM['E55_Type'])
+        E55_Type = self._session.get_class(surf.ns.ECRM["E55_Type"])
 
         # URI of expected text element type
         textelement_type = E55_Type(
@@ -422,7 +477,9 @@ class KnowledgeBase(object):
         else:
             return None
 
-    def add_textelement_type(self, label : str, lang : str = 'en') -> Optional[surf.resource.Resource]:
+    def add_textelement_type(
+        self, label: str, lang: str = "en"
+    ) -> Optional[surf.resource.Resource]:
         """Adds a new TextElementType to the Knowledge base if not yet present.
 
         :param str label: Description of parameter `label`.
@@ -432,7 +489,7 @@ class KnowledgeBase(object):
 
         """
         label = label.lower()
-        E55_Type = self._session.get_class(surf.ns.ECRM['E55_Type'])
+        E55_Type = self._session.get_class(surf.ns.ECRM["E55_Type"])
 
         # try to see if it exists, otherwise create it
         if self.get_textelement_type(label) is None:
@@ -445,7 +502,7 @@ class KnowledgeBase(object):
         else:
             return None
 
-    def add_textelement_types(self, types : List[str]) -> None:
+    def add_textelement_types(self, types: List[str]) -> None:
         """Adds the text element type in case it doesn't exist.
 
         :param types: a list of strings (e.g. ["book", "poem", "line"])
@@ -456,11 +513,11 @@ class KnowledgeBase(object):
             if el_type_obj is None:
                 new_el_obj = self.add_textelement_type(el_type)
                 print(
-                    f'Added new text element type: {new_el_obj.subject}',
-                    f' {new_el_obj.rdfs_label}'
+                    f"Added new text element type: {new_el_obj.subject}",
+                    f" {new_el_obj.rdfs_label}",
                 )
             else:
-                print(f'Level {el_type} already exists: {el_type_obj.subject}')
+                print(f"Level {el_type} already exists: {el_type_obj.subject}")
         return
 
     def to_json(self):
@@ -469,7 +526,12 @@ class KnowledgeBase(object):
 
         :return: TODO
         """
-        return json.dumps({
-            "statistics": self.get_statistics()
-            , "authors": [json.loads(author.to_json()) for author in self.get_authors()]
-        }, indent=2)
+        return json.dumps(
+            {
+                "statistics": self.get_statistics(),
+                "authors": [
+                    json.loads(author.to_json()) for author in self.get_authors()
+                ],
+            },
+            indent=2,
+        )

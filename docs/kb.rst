@@ -1,5 +1,5 @@
 Knowledge base
 ===================
 
-.. autoclass:: knowledge_base.KnowledgeBase
+.. autoclass:: hucitlib.KnowledgeBase
     :members:

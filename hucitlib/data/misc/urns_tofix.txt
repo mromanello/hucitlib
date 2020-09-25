@@ -1,0 +1,1010 @@
+[
+ {
+  "old_urn": "urn:cts:cwkb:1314.8977",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/work/id/8977/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:766.1642",
+  "new_urn": "urn:cts:greekLit:tlg0086.tlg043",
+  "turtle_uri": "http://cwkb.org/work/id/1642/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:508.1070",
+  "new_urn": "urn:cts:latinLit:phi1276.phi001",
+  "turtle_uri": "http://cwkb.org/work/id/1070/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:535",
+  "new_urn": "urn:cts:latinLit:phi0926",
+  "turtle_uri": "http://cwkb.org/author/id/535/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:1358.4386",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/work/id/4386/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:431",
+  "new_urn": "urn:cts:latinLit:phi0474",
+  "turtle_uri": "http://cwkb.org/author/id/431/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:539",
+  "new_urn": "urn:cts:latinLit:phi1294",
+  "turtle_uri": "http://cwkb.org/author/id/539/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2386.8415",
+  "new_urn": "urn:cts:latinLit:stoa0040.stoa011",
+  "turtle_uri": "http://cwkb.org/work/id/8415/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:1051.3618",
+  "new_urn": "urn:cts:greekLit:tlg2000.tlg001",
+  "turtle_uri": "http://cwkb.org/work/id/3618/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:630.1310",
+  "new_urn": "urn:cts:latinLit:phi1345.phi001",
+  "turtle_uri": "http://cwkb.org/work/id/1310/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2796",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/2796/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2468",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/2468/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:1042",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/1042/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:431.913",
+  "new_urn": "urn:cts:latinLit:phi0474.phi049",
+  "turtle_uri": "http://cwkb.org/work/id/913/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:431.914",
+  "new_urn": "urn:cts:latinLit:phi0474.phi050",
+  "turtle_uri": "http://cwkb.org/work/id/914/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:568.1164",
+  "new_urn": "urn:cts:latinLit:phi0959.phi009",
+  "turtle_uri": "http://cwkb.org/work/id/1164/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:568.1162",
+  "new_urn": "urn:cts:latinLit:phi0959.phi007",
+  "turtle_uri": "http://cwkb.org/work/id/1162/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:568.1163",
+  "new_urn": "urn:cts:latinLit:phi0959.phi008",
+  "turtle_uri": "http://cwkb.org/work/id/1163/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:1056.3782",
+  "new_urn": "urn:cts:greekLit:tlg2034.tlg008",
+  "turtle_uri": "http://cwkb.org/work/id/3782/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:1083",
+  "new_urn": "urn:cts:latinLit:phi0540.phi001",
+  "turtle_uri": "http://cwkb.org/author/id/1083/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2842",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/2842/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:1317",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/1317/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:1314",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/1314/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:1315",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/1315/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:981.3368",
+  "new_urn": "urn:cts:greekLit:tlg0541.tlg010",
+  "turtle_uri": "http://cwkb.org/work/id/3368/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:766.1640",
+  "new_urn": "urn:cts:greekLit:tlg0086.tlg041",
+  "turtle_uri": "http://cwkb.org/work/id/1640/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:568",
+  "new_urn": "urn:cts:latinLit:phi0959",
+  "turtle_uri": "http://cwkb.org/author/id/568/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2515",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/2515/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:966",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/966/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:620.1278",
+  "new_urn": "urn:cts:latinLit:phi1017.phi004",
+  "turtle_uri": "http://cwkb.org/work/id/1278/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:408",
+  "new_urn": "urn:cts:latinLit:phi0448",
+  "turtle_uri": "http://cwkb.org/author/id/408/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2589.8239",
+  "new_urn": "urn:cts:greekLit:tlg1426.tlg001",
+  "turtle_uri": "http://cwkb.org/work/id/8239/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2425",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/2425/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2427",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/2427/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2423",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/2423/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2746",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/2746/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2742",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/2742/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2755.8765",
+  "new_urn": "urn:cts:latinLit:stoa0238.stoa001",
+  "turtle_uri": "http://cwkb.org/work/id/8765/turtle"
+ },
+
+## resume from here
+
+ {
+  "old_urn": "urn:cts:cwkb:620.1276",
+  "new_urn": "urn:cts:latinLit:phi1017.phi002",
+  "turtle_uri": "http://cwkb.org/work/id/1276/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2733",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/2733/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:634",
+  "new_urn": "urn:cts:latinLit:phi1020",
+  "turtle_uri": "http://cwkb.org/author/id/634/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2738",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/2738/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:638",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/638/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:775.1774",
+  "new_urn": "rn:cts:greekLit:tlg2035.tlg128",
+  "turtle_uri": "http://cwkb.org/work/id/1774/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:1106",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/1106/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:1398.4477",
+  "new_urn": "urn:cts:greekLit:tlg1252.tlg002",
+  "turtle_uri": "http://cwkb.org/work/id/4477/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:1427",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/1427/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:1428",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/1428/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:584.1207",
+  "new_urn": "urn:cts:latinLit:phi1318.phi001",
+  "turtle_uri": "http://cwkb.org/work/id/1207/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:539.1115",
+  "new_urn": "urn:cts:latinLit:phi1294.phi002",
+  "turtle_uri": "http://cwkb.org/work/id/1115/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:539.1114",
+  "new_urn": "urn:cts:latinLit:phi1294.phi001",
+  "turtle_uri": "http://cwkb.org/work/id/1114/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:974.3340",
+  "new_urn": "urn:cts:greekLit:tlg1483.tlg003",
+  "turtle_uri": "http://cwkb.org/work/id/3340/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:890.2489",
+  "new_urn": "urn:cts:greekLit:tlg0057.tlg017",
+  "turtle_uri": "http://cwkb.org/work/id/2489/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:1075.3866",
+  "new_urn": "urn:cts:greekLit:tlg0608.tlg001",
+  "turtle_uri": "http://cwkb.org/work/id/3866/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2746.8743",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/work/id/8743/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:766.1654",
+  "new_urn": "urn:cts:greekLit:tlg0086.tlg026",
+  "turtle_uri": "http://cwkb.org/work/id/1654/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:766.1657",
+  "new_urn": "urn:cts:greekLit:tlg0086.tlg031",
+  "turtle_uri": "http://cwkb.org/work/id/1657/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2582.8230",
+  "new_urn": "urn:cts:greekLit:tlg0579.tlg001",
+  "turtle_uri": "http://cwkb.org/work/id/8230/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2392",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/2392/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2390",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/2390/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:528",
+  "new_urn": "urn:cts:latinLit:phi0550",
+  "turtle_uri": "http://cwkb.org/author/id/528/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:766.1621",
+  "new_urn": "urn:cts:greekLit:tlg0086.tlg006",
+  "turtle_uri": "http://cwkb.org/work/id/1621/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:766.1620",
+  "new_urn": "urn:cts:greekLit:tlg0086.tlg001",
+  "turtle_uri": "http://cwkb.org/work/id/1620/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:535.1110",
+  "new_urn": "urn:cts:latinLit:phi0926.phi001",
+  "turtle_uri": "http://cwkb.org/work/id/1110/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:981",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/981/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:452",
+  "new_urn": "urn:cts:latinLit:phi0502",
+  "turtle_uri": "http://cwkb.org/author/id/452/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2557",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/2557/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:851",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/851/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2732",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/2732/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:377.763",
+  "new_urn": "urn:cts:latinLit:phi1212.phi003",
+  "turtle_uri": "http://cwkb.org/work/id/763/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:377.761",
+  "new_urn": "urn:cts:latinLit:phi1212.phi001",
+  "turtle_uri": "http://cwkb.org/work/id/761/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:377.768",
+  "new_urn": "urn:cts:latinLit:phi1212.phi008",
+  "turtle_uri": "http://cwkb.org/work/id/768/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:775",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/775/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:672",
+  "new_urn": "urn:cts:latinLit:phi0684",
+  "turtle_uri": "http://cwkb.org/author/id/672/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2796.8952",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/work/id/8952/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:431.908",
+  "new_urn": "urn:cts:latinLit:phi0474.phi044",
+  "turtle_uri": "http://cwkb.org/work/id/908/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2785",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/2785/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2842.9072",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/work/id/9072/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:431.901",
+  "new_urn": "urn:cts:latinLit:phi0474.phi037",
+  "turtle_uri": "http://cwkb.org/work/id/901/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:431.907",
+  "new_urn": "urn:cts:latinLit:phi0474.phi043",
+  "turtle_uri": "http://cwkb.org/work/id/907/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:1075",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/1075/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:431.904",
+  "new_urn": "urn:cts:latinLit:phi0474.phi040",
+  "turtle_uri": "http://cwkb.org/work/id/904/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2468.8534",
+  "new_urn": "urn:cts:latinLit:stoa0045.stoa011",
+  "turtle_uri": "http://cwkb.org/work/id/8534/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2386.8431",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/work/id/8431/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2741.8735",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/work/id/8735/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2447.8028",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/work/id/8028/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:763.1599",
+  "new_urn": "urn:cts:greekLit:tlg1194.tlg002",
+  "turtle_uri": "http://cwkb.org/work/id/1599/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:1322",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/1322/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:981.3371",
+  "new_urn": "urn:cts:greekLit:tlg0541.tlg023",
+  "turtle_uri": "http://cwkb.org/work/id/3371/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:981.3374",
+  "new_urn": "urn:cts:greekLit:tlg0541.tlg027",
+  "turtle_uri": "http://cwkb.org/work/id/3374/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:981.3376",
+  "new_urn": "urn:cts:greekLit:tlg0541.tlg033",
+  "turtle_uri": "http://cwkb.org/work/id/3376/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:3101",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/3101/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2390.8840",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/work/id/8840/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2790",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/2790/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:559",
+  "new_urn": "urn:cts:latinLit:phi0588",
+  "turtle_uri": "http://cwkb.org/author/id/559/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:789.1882",
+  "new_urn": "urn:cts:greekLit:tlg0533.tlg006",
+  "turtle_uri": "http://cwkb.org/work/id/1882/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2919",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/2919/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:415",
+  "new_urn": "urn:cts:latinLit:phi0830",
+  "turtle_uri": "http://cwkb.org/author/id/415/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:412",
+  "new_urn": "urn:cts:latinLit:phi1100",
+  "turtle_uri": "http://cwkb.org/author/id/412/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2502",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/2502/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:861.8107",
+  "new_urn": "urn:cts:greekLit:tlg1799.tlg009",
+  "turtle_uri": "http://cwkb.org/work/id/8107/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:951",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/951/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:620.1286",
+  "new_urn": "urn:cts:latinLit:phi1017.phi013",
+  "turtle_uri": "http://cwkb.org/work/id/1286/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:620.1281",
+  "new_urn": "urn:cts:latinLit:phi1017.phi007",
+  "turtle_uri": "http://cwkb.org/work/id/1281/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2437",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/2437/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:620.1288",
+  "new_urn": "urn:cts:latinLit:phi1017.phi015",
+  "turtle_uri": "http://cwkb.org/work/id/1288/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:630",
+  "new_urn": "urn:cts:latinLit:phi1345",
+  "turtle_uri": "http://cwkb.org/author/id/630/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:737",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/737/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:871.2331",
+  "new_urn": "urn:cts:greekLit:tlg2018.tlg020",
+  "turtle_uri": "http://cwkb.org/work/id/2331/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:783",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/783/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:1023",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/1023/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:1024",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/1024/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:1025",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/1025/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:1181",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/1181/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:766.9614",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/work/id/9614/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2613.8375",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/work/id/8375/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2423.8035",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/work/id/8035/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2427.7997",
+  "new_urn": "urn:cts:greekLit:tlg4040.tlg009",
+  "turtle_uri": "http://cwkb.org/work/id/7997/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:3098",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/3098/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2386.8494",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/work/id/8494/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:530.1101",
+  "new_urn": "urn:cts:latinLit:phi0923.phi001",
+  "turtle_uri": "http://cwkb.org/work/id/1101/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:524.1088",
+  "new_urn": "urn:cts:latinLit:phi0914.phi001",
+  "turtle_uri": "http://cwkb.org/work/id/1088/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:442.949",
+  "new_urn": "urn:cts:latinLit:phi0845.phi002",
+  "turtle_uri": "http://cwkb.org/work/id/949/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2386",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/2386/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:672.1376",
+  "new_urn": "urn:cts:latinLit:phi0684.phi001",
+  "turtle_uri": "http://cwkb.org/work/id/1376/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2390.8818",
+  "new_urn": "urn:cts:latinLit:stoa0275.stoa027",
+  "turtle_uri": "http://cwkb.org/work/id/8818/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:672.1379",
+  "new_urn": "urn:cts:latinLit:phi0684.phi004",
+  "turtle_uri": "http://cwkb.org/work/id/1379/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:998.3421",
+  "new_urn": "urn:cts:greekLit:tlg0022.tlg001",
+  "turtle_uri": "http://cwkb.org/work/id/3421/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2820.9027",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/work/id/9027/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:584",
+  "new_urn": "urn:cts:latinLit:phi1318",
+  "turtle_uri": "http://cwkb.org/author/id/584/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:1151.1084",
+  "new_urn": "urn:cts:latinLit:phi0911.phi001",
+  "turtle_uri": "http://cwkb.org/work/id/1084/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:1363.4411",
+  "new_urn": "urn:cts:latinLit:stoa0261.stoa001",
+  "turtle_uri": "http://cwkb.org/work/id/4411/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:904",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/904/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2733.8704",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/work/id/8704/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2441",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/2441/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:760",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/760/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:672.1377",
+  "new_urn": "urn:cts:latinLit:phi0684.phi002",
+  "turtle_uri": "http://cwkb.org/work/id/1377/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:766",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/766/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:1015",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/1015/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:1067",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/1067/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:1083.3885",
+  "new_urn": "urn:cts:greekLit:tlg0544.tlg001",
+  "turtle_uri": "http://cwkb.org/work/id/3885/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:1359.8092",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/work/id/8092/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:1089",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/1089/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:1056.3779",
+  "new_urn": "urn:cts:greekLit:tlg2034.tlg006",
+  "turtle_uri": "http://cwkb.org/work/id/3779/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:1331.4356",
+  "new_urn": "urn:cts:latinLit:stoa0261.stoa001",
+  "turtle_uri": "http://cwkb.org/work/id/4356/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:1317.4338",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/work/id/4338/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:1330",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/1330/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:1331",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/1331/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:1338.4364",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/work/id/4364/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:3115",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/3115/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:622.1292",
+  "new_urn": "urn:cts:latinLit:phi1014.phi001",
+  "turtle_uri": "http://cwkb.org/work/id/1292/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:943.4531",
+  "new_urn": "urn:cts:greekLit:tlg2871.tlg001",
+  "turtle_uri": "http://cwkb.org/work/id/4531/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2388.8679",
+  "new_urn": "urn:cts:latinLit:stoa0162.stoa004",
+  "turtle_uri": "http://cwkb.org/work/id/8679/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:932",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/932/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:426",
+  "new_urn": "urn:cts:latinLit:phi0470",
+  "turtle_uri": "http://cwkb.org/author/id/426/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2388.8677",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/work/id/8677/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2886",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/2886/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:1322.4345",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/work/id/4345/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:941",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/941/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:943",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/943/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2386.8461",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/work/id/8461/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:726",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/726/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:1094.3918",
+  "new_urn": "urn:cts:greekLit:tlg2006.tlg001",
+  "turtle_uri": "http://cwkb.org/work/id/3918/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:1427.4566",
+  "new_urn": "urn:cts:greekLit:tlg4019.tlg006",
+  "turtle_uri": "http://cwkb.org/work/id/4566/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:1056",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/1056/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:1051",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/1051/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:1059",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/1059/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2386.8419",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/work/id/8419/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:415.829",
+  "new_urn": "urn:cts:latinLit:phi0830.phi001",
+  "turtle_uri": "http://cwkb.org/work/id/829/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:1315.4328",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/work/id/4328/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:1171",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/1171/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:1372",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/1372/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:408.818",
+  "new_urn": "urn:cts:latinLit:phi0448.phi004",
+  "turtle_uri": "http://cwkb.org/work/id/818/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:890.2419",
+  "new_urn": "urn:cts:greekLit:tlg0057.tlg037",
+  "turtle_uri": "http://cwkb.org/work/id/2419/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2437.8993",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/work/id/8993/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:638.1323",
+  "new_urn": "urn:cts:latinLit:phi1348.phi001",
+  "turtle_uri": "http://cwkb.org/work/id/1323/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:866",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/866/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:981.3357",
+  "new_urn": "urn:cts:greekLit:tlg0541.tlg005",
+  "turtle_uri": "http://cwkb.org/work/id/3357/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2613",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/2613/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:508",
+  "new_urn": "urn:cts:latinLit:phi1276",
+  "turtle_uri": "http://cwkb.org/author/id/508/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:377",
+  "new_urn": "urn:cts:latinLit:phi1212",
+  "turtle_uri": "http://cwkb.org/author/id/377/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:1351.4377",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/work/id/4377/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:871",
+  "new_urn": "urn:cts:greekLit:tlg2018",
+  "turtle_uri": "http://cwkb.org/author/id/871/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:873",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/873/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:524",
+  "new_urn": "urn:cts:latinLit:phi0914",
+  "turtle_uri": "http://cwkb.org/author/id/524/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:904.2678",
+  "new_urn": "urn:cts:greekLit:tlg1402.tlg001",
+  "turtle_uri": "http://cwkb.org/work/id/2678/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:896",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/896/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2753",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/2753/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2755",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/author/id/2755/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:634.1315",
+  "new_urn": "urn:cts:latinLit:phi1020.phi001",
+  "turtle_uri": "http://cwkb.org/work/id/1315/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:634.1317",
+  "new_urn": "urn:cts:latinLit:phi1020.phi003",
+  "turtle_uri": "http://cwkb.org/work/id/1317/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:634.1316",
+  "new_urn": "urn:cts:latinLit:phi1020.phi002",
+  "turtle_uri": "http://cwkb.org/work/id/1316/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:1059.3818",
+  "new_urn": "urn:cts:greekLit:tlg4036.tlg001",
+  "turtle_uri": "http://cwkb.org/work/id/3818/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:948.3195",
+  "new_urn": "urn:cts:greekLit:tlg0542.tlg001",
+  "turtle_uri": "http://cwkb.org/work/id/3195/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:620",
+  "new_urn": "urn:cts:latinLit:phi1017",
+  "turtle_uri": "http://cwkb.org/author/id/620/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:507.1069",
+  "new_urn": "rn:cts:latinLit:phi2806.phi002",
+  "turtle_uri": "http://cwkb.org/work/id/1069/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:896.2544",
+  "new_urn": "urn:cts:greekLit:tlg2022.tlg062",
+  "turtle_uri": "http://cwkb.org/work/id/2544/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:2423.4358",
+  "new_urn": "None",
+  "turtle_uri": "http://cwkb.org/work/id/4358/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:664.1367",
+  "new_urn": "urn:cts:latinLit:phi1035.phi001",
+  "turtle_uri": "http://cwkb.org/work/id/1367/turtle"
+ },
+ {
+  "old_urn": "urn:cts:cwkb:861.2274",
+  "new_urn": "urn:cts:greekLit:tlg1799.tlg011",
+  "turtle_uri": "http://cwkb.org/work/id/2274/turtle"
+ },
+ {
+  "new_urn": "urn:cts:cwkb:917",
+  "old_urn": "urn:cts:greekLit:tlg0020",
+  "turtle_uri": "http://cwkb.org/author/id/917/turtle"
+ }
+]

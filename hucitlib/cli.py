@@ -21,6 +21,7 @@ import logging
 
 import pkg_resources
 import surf
+from typing import List, Tuple
 from docopt import docopt
 from pyCTS import CTS_URN, BadCtsUrnSyntax
 from surf.plugin.sparql_protocol.reader import SparqlReaderException
@@ -31,48 +32,57 @@ from knowledge_base.surfext import *
 logger = logging.getLogger("KnowledgeBase_CLI")
 
 
-def print_results(matches):
+def print_results(matches: Tuple[str, surf.resource.Resource]) -> None:
+    """Prints to stdout the list of search results.
+
+    :param Tuple[str, surf.resource.Resource] matches: List of search results, where
+        each result is a tuple containing the matching text and the object
+        (``surf.resource.Resource``).
+    :rtype: None
+
     """
-    :param matches: a list of tuples.
-    """
-    output = ""
     for n, match in enumerate(matches):
         matched_text = match[0][:40] + "..." if len(match[0]) > 40 else match[0]
         search_result = match[1]
         if search_result.uri == surf.ns.EFRBROO["F10_Person"]:
-            label = (
-                str(search_result)[:40] + "..."
-                if len(str(search_result)) > 40
-                else str(search_result)
-            )
-            print(
-                '\n{:5}) {:50} {} (Matched: "{}")\n'.format(
-                    n + 1, label, search_result.get_urn(), matched_text
-                )
-            )
-        elif search_result.uri == surf.ns.EFRBROO["F1_Work"]:
-            label = "{}, {}".format(search_result.author, search_result)
+            label, urn = search_result.rdfs_label.first.split(" :: ")
             label = label[:40] + "..." if len(label) > 40 else label
-            print(
-                '\n{:5}) {:50} {} (Matched: "{}")\n'.format(
-                    n + 1, label, search_result.get_urn(), matched_text
-                )
-            )
+            print(f"\n{n+1:5}) {urn} {label:50} (Matched: '{matched_text}')\n")
+        elif search_result.uri == surf.ns.EFRBROO["F1_Work"]:
+            work_label, urn = search_result.rdfs_label.first.split(" :: ")
+            label = work_label[:40] + "..." if len(work_label) > 40 else work_label
+            print(f'\n{n + 1:5}) {label:50} {urn} (Matched: "{matched_text}")\n')
+    return
 
 
-def show_result(resource, verbose=False):
-    """
-    TODO
+def print_abbreviations(abbreviations: List[str]) -> None:
+    pass
+
+
+def print_labels(labels: List[str]) -> None:
+    pass
+
+
+def display_resource(resource: surf.resource.Resource, verbose: bool = False) -> None:
+    """Prints to stdout informations about a given KB entry.
+
+    :param surf.resource.Resource resource: Description of parameter `resource`.
+    :param bool verbose: Description of parameter `verbose`.
+    :return: Description of returned object.
+    :rtype: None
+
     """
     if resource.uri == surf.ns.EFRBROO["F10_Person"]:
-        print("\n{} ({})\n".format(str(resource), resource.get_urn()))
+        print(f"\n{resource.rdfs_label.first} ({resource.subject}) \n")
         works = resource.get_works()
-        print("Works by {} ({}):\n".format(resource, len(works)))
-        [show_result(work) for work in works]
+        print(f"{len(works)} works by this author:")
+        [display_resource(work) for work in works]
         print("\n")
+        sameas_links = "\n".join([f" - {link}" for link in resource.owl_sameAs])
+        print(f"Related resources:\n{sameas_links}")
     elif resource.uri == surf.ns.EFRBROO["F1_Work"]:
         if verbose:
-            print("\n{} ({})".format(str(resource), resource.get_urn()))
+            print(f"\n{resource.rdfs_label.first}")
             print("\nTitles:")
             print(
                 "\n".join(
@@ -90,8 +100,10 @@ def show_result(resource, verbose=False):
                         )
                     )
                 )
+            sameas_links = "\n".join([f" - {link}" for link in resource.owl_sameAs])
+            print(f"Related resources:\n{sameas_links}")
         else:
-            print("{:50} {:40}".format(str(resource), str(resource.get_urn())))
+            print(f" - {resource.rdfs_label.first:80} ({resource.subject})")
 
 
 def main():
@@ -111,7 +123,7 @@ def main():
         try:
             urn = CTS_URN(search_string)
             match = kb.get_resource_by_urn(str(urn))
-            show_result(match, verbose=True)
+            display_resource(match, verbose=True)
             return
         except BadCtsUrnSyntax as e:
             pass

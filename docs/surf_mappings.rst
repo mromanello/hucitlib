@@ -4,17 +4,17 @@ Surf mappings
 Authors
 -------
 
-.. autoclass:: knowledge_base.surfext.HucitAuthor
+.. autoclass:: hucitlib.surfext.HucitAuthor
     :members:
 
 Works
 -----
 
-.. autoclass:: knowledge_base.surfext.HucitWork
+.. autoclass:: hucitlib.surfext.HucitWork
     :members:
 
 Citable text structures and text elements
 -----------------------------------------
 
-.. autoclass:: knowledge_base.surfext.HucitTextStructure
+.. autoclass:: hucitlib.surfext.HucitTextStructure
     :members:

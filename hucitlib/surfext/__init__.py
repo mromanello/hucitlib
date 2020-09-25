@@ -65,9 +65,13 @@ class HucitAuthor(object):
 
         .. code-block:: python
 
-          >>> homer = kb.get_resource_by_urn('urn:cts:greekLit:tlg0012')
-          >>> homer.get_abbreviations()
-          ['Hom.']
+            >>> homer = kb.get_resource_by_urn('urn:cts:greekLit:tlg0012')
+            >>> homer.get_abbreviations()
+            [('en', 'Homer'),
+            (None, 'Homeros'),
+            ('la', 'Homerus'),
+            ('fr', 'Homère'),
+            ('it', 'Omero')]
         """
         names = [
             id
@@ -346,13 +350,35 @@ class HucitTextStructure(object):
     Object mapping for instances of `http://purl.og/net/hucit#TextStructure`.
     """
 
-    def add_element(
-        self, urn, element_type, parent_urn=None, previous_urn=None, following_urn=None
-    ):  # TODO: implement
-        """
-        >>> ts.add_element("urn:cts:greekLit:tlg0012.tlg001:1", "book")
+    # TODO: implement
+    def create_element(
+        self,
+        urn: str,
+        element_type: surf.resource.Resource,
+        parent_urn: str = None,
+        previous_urn: str = None,
+        following_urn: str = None,
+    ):
+        """Short summary.
 
+        :param str urn: Text element's URN.
+        :param surf.resource.Resource element_type: Text element type.
+        :param str parent_urn: URN of parent text element.
+        :param str previous_urn: URN of preceding text element (if existing).
+        :param str following_urn: URN of following text element (if existing).
+        :return: The newly created text element.
+        :rtype: type
+
+        .. code-block:: python
+
+            >>> iliad = kb.get_resource_by_urn("urn:cts:greekLit:tlg0012.tlg001")
+            >>> ts = iliad.structure
+            >>> ts.add_element("urn:cts:greekLit:tlg0012.tlg001:1", "book")
+        """
+
+        """
         What it does:
+
         - create a new text element
         - attach the urn to it
         - attach the right type to it
@@ -553,9 +579,8 @@ class HucitWork(object):
         self.update()
         return self.hucit_has_structure.one
 
-    def remove_text_structure(
-        self, text_structure
-    ):  # TODO: delete also TextElements one by one
+    def remove_text_structure(self, text_structure):
+        # TODO: delete also TextElements one by one
         """
         Remove any citable text structure to the work.
         """
@@ -564,6 +589,10 @@ class HucitWork(object):
         ts.remove()
         self.update()
         return
+
+    @property
+    def structure(self):
+        return self.hucit_has_structure.first
 
     def _get_opus_maximum(self):
         """Instantiate an opus maximum type."""

@@ -17,7 +17,8 @@ def test_kb_virtuoso(kb_virtuoso):
     logger.info(iliad.author)
 
 
-@pytest.mark.run(order=2)
+@pytest.mark.skip
+# @pytest.mark.run(order=2)
 def test_pickle_kb_inmemory(kb_inmemory):
     pre_pickling_author_number = len(kb_inmemory.get_authors())
     pickled_kb = pickle.dumps(kb_inmemory)
@@ -25,7 +26,8 @@ def test_pickle_kb_inmemory(kb_inmemory):
     assert len(unpickled_kb.get_authors()) == pre_pickling_author_number
 
 
-@pytest.mark.run(order=3)
+@pytest.mark.skip
+# @pytest.mark.run(order=3)
 def test_kb_inmemory(kb_inmemory):
     logger.debug(kb_inmemory)
     authors = kb_inmemory.get_authors()
@@ -35,47 +37,45 @@ def test_kb_inmemory(kb_inmemory):
     logger.info("%s" % iliad.author)
 
 
-@pytest.mark.skip
-#@pytest.mark.run(order=4)
+# @pytest.mark.skip
+@pytest.mark.run(order=4)
 def test_kb_author_names(kb_virtuoso):
     names = kb_virtuoso.author_names
     assert names is not None and len(names) > 0
     logger.info("%i unique author names found in the KB" % len(names))
 
 
-@pytest.mark.skip
-#@pytest.mark.run(order=5)
+# @pytest.mark.skip
+@pytest.mark.run(order=5)
 def test_kb_author_abbreviations(kb_virtuoso):
     abbreviations = kb_virtuoso.author_abbreviations
     n_abbreviations = len(abbreviations)
     assert abbreviations is not None and n_abbreviations > 0
     logger.info("%i abbreviations of author names in the KB" % n_abbreviations)
     for i, author_key in enumerate(abbreviations.keys()[:10]):
-        logger.info("%i. %s => %s" % (
-            i,
-            author_key.split("$$")[0],
-            abbreviations[author_key]
-        ))
+        logger.info(
+            "%i. %s => %s" % (i, author_key.split("$$")[0], abbreviations[author_key])
+        )
 
 
-@pytest.mark.skip
-#@pytest.mark.run(order=5)
+# @pytest.mark.skip
+@pytest.mark.run(order=5)
 def test_kb_get_titles(kb_virtuoso):
     titles = kb_virtuoso.work_titles
     assert titles is not None and len(titles) > 0
     logger.info("%i work titles found in the KB" % len(titles))
 
 
-@pytest.mark.skip
-#@pytest.mark.run(order=6)
+# @pytest.mark.skip
+@pytest.mark.run(order=6)
 def test_kb_work_abbreviations(kb_virtuoso):
     abbreviations = kb_virtuoso.work_abbreviations
     assert abbreviations is not None and len(abbreviations) > 0
     logger.info("%i abbreviations of work titles found in the KB" % len(abbreviations))
 
 
-# @pytest.mark.run(order=7)
-@pytest.mark.skip
+@pytest.mark.run(order=7)
+# @pytest.mark.skip
 def test_kb_get_statistics(kb_virtuoso):
     stats = kb_virtuoso.get_statistics()
     logger.info(stats)
