@@ -372,8 +372,13 @@ class HucitTextStructure(object):
         .. code-block:: python
 
             >>> iliad = kb.get_resource_by_urn("urn:cts:greekLit:tlg0012.tlg001")
+            >>> etype_book = kb.get_textelement_type("book")
             >>> ts = iliad.structure
-            >>> ts.add_element("urn:cts:greekLit:tlg0012.tlg001:1", "book")
+            >>> ts.create_element(
+                "urn:cts:greekLit:tlg0012.tlg001:1",
+                element_type=type_book,
+                following_urn="urn:cts:greekLit:tlg0012.tlg001:2"
+            )
         """
 
         """

@@ -7,8 +7,10 @@ import json
 
 logger = logging.getLogger(__name__)
 
+###########################
+# TESTS FOR HucitAuthor   #
+###########################
 
-# TESTS FOR HUCITAUTHOR
 @pytest.mark.run(order=8)
 def test_hucitauthor_to_json(kb_virtuoso):
     """
@@ -62,8 +64,10 @@ def test_hucitauthor_set_urn(kb_virtuoso):
     homer.load()
     assert str(homer.get_urn()).value == urn
 
+########################
+# TESTS FOR HucitWork  #
+########################
 
-# TESTS FOR HUCITWORK
 @pytest.mark.run(order=12)
 def test_hucitwork_set_urn(kb_virtuoso):
     urn = "urn:cts:greekLit:tlg0012.tlg001"
@@ -123,3 +127,7 @@ def test_hucitwork_opmax(kb_virtuoso):
         "urn:cts:latinLit:phi0620.phi001"
     )
     assert Prop_elegies.is_opus_maximum() is True
+
+#################################
+# TESTS FOR HucitTextStructure  #
+#################################

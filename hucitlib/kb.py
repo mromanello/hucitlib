@@ -15,16 +15,18 @@ import json
 import logging
 from hucitlib.surfext import *
 from pyCTS import CTS_URN
-from typing import Optional, Dict
+from typing import Optional, Dict, List
 import pkg_resources
 import hucitlib.__version__
-from rdflib import Literal
+from rdflib import Literal, URIRef
 from tqdm import tqdm
 
 # from multiprocessing import Pool
 from collections import ChainMap
 
 logger = logging.getLogger(__name__)
+
+DEFAULT_CONFIG_FILENAME = "druid.ini"
 
 
 def get_abbreviations(kb):
@@ -42,13 +44,10 @@ def get_abbreviations(kb):
 # TODO: allow for a default config file in __init__()
 class KnowledgeBase(object):
     """
-
-    Example of usage:
-
-    >>> from knowledge_base import KnowledgeBase
-    >>> kb = KnowledgeBase('inmemory.ini')
-    >>> print kb.get_author_label('urn:cts:greekLit:tlg0012')
-
+    ``KnowledgeBase`` is a class that allows for accessing a HuCit
+    knowledge base in an object-oriented fashion. The abstraction layer it provides
+    means that you can use, search and modify its content without having to worry about
+    the underlying modelling of data in RDF.
     """
 
     def _register_mappings(self):
@@ -64,14 +63,41 @@ class KnowledgeBase(object):
         surf.ns.register(hucit="http://purl.org/net/hucit#")
         return
 
-    def __init__(self, config_file):
+    def __init__(self, config_file: str = None) -> None:
         """
-        TODO: read default configuration file if none is provided
+        :param str config_file: Path to the configuration file containing the
+            parameters to connect to the triple store whose data will be accessible
+            via the ``KnowledgeBase`` object.
+        :return: Description of returned object.
+        :rtype: None
+
+        .. note::
+            By default (i.e. when no configuration file is specified) a new
+            ``KnowledgeBase`` instance will be created that reads data directly
+            from the triple store hosted at `Druid <https://druid.datalegend.net/mromanello/hucit/>`_.
+            **NB**: please note that all methods that *modify* entries in the KB won't work as that
+            triple store is *read-only*.
+
+        Example of usage:
+
+        .. code-block:: python
+
+            >>> from hucit_kb import KnowledgeBase
+            >>> kb = KnowledgeBase()
+            >>> homer = kb.get_resource_by_urn('urn:cts:greekLit:tlg0012')
+            >>> print(homer.rdfs_label.one)
+
         """
         self._author_names = None
         self._work_titles = None
         self._author_abbreviations = None
         self._work_abbreviations = None
+
+        if config_file is None:
+            config_file = pkg_resources.resource_filename(
+                "hucitlib", f"config/{DEFAULT_CONFIG_FILENAME}"
+            )
+
         try:
             config = configparser.ConfigParser()
             config.read_file(open(config_file))
@@ -306,11 +332,11 @@ class KnowledgeBase(object):
                     result.append((label, work))
         return result
 
-    def get_authors(self):
-        """
-        Returns the authors in the Knowledge Base.
+    def get_authors(self) -> List[HucitAuthor]:
+        """Lists all authors contained in the knowledge base.
 
-        :return: a list of `HucitAuthor` instances.
+        :return: A list of authors.
+        :rtype: List[HucitAuthor]
 
         """
         Person = self._session.get_class(surf.ns.EFRBROO["F10_Person"])
@@ -386,7 +412,7 @@ class KnowledgeBase(object):
                 except Exception as e:
                     return None
 
-    def get_statistics(self):
+    def get_statistics(self) -> Dict[str, int]:
         """
         Gather basic stats about the Knowledge Base and its contents.
 
@@ -445,6 +471,7 @@ class KnowledgeBase(object):
         else:
             return None
 
+    # is this method really needed?
     def get_textelement_types(self) -> List[surf.resource.Resource]:
         """Returns all TextElementTypes defined in the knowledge base.
 
@@ -536,3 +563,37 @@ class KnowledgeBase(object):
             },
             indent=2,
         )
+
+    #####################
+    # Factory methods   #
+    #####################
+
+    def create_cts_urn(
+        self, resource: surf.resource.Resource, urn_string: str
+    ) -> Optional[surf.resource.Resource]:
+        """Creates a CTS URN object and assigns it to a given resource.
+
+        :param surf.resource.Resource resource: KB entry to be identified by the
+            CTS URN.
+        :param str urn_string: CTS URN identifier (e.g. ``urn:cts:greekLit:tlg0012``)
+        :return: The newly created object or ``None`` if it already existed.
+        :rtype: Optional[surf.resource.Resource]
+
+        """
+        Type = self._session.get_class(surf.ns.ECRM["E55_Type"])
+        Identifier = self._session.get_class(surf.ns.ECRM["E42_Identifier"])
+        id_uri = os.path.join(resource.subject, "cts_urn")
+        id = Identifier(id_uri)
+        if id.is_present():
+            print(
+                "Identifier not created!\n"
+                f"{resource.subject} already has a CTS URN identifier: {id.subject}"
+            )
+            return None
+        else:
+            id.rdfs_label = Literal(urn_string)
+            id.ecrm_P2_has_type = Type(BASE_URI_TYPES % "CTS_URN")
+            id.save()
+            resource.ecrm_P1_is_identified_by = id
+            resource.update()
+            return id
