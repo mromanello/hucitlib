@@ -6,6 +6,7 @@
 TODO: Description of the package.
 """
 
+import os
 import pdb
 import json
 import surf
@@ -66,7 +67,7 @@ class HucitAuthor(object):
         .. code-block:: python
 
             >>> homer = kb.get_resource_by_urn('urn:cts:greekLit:tlg0012')
-            >>> homer.get_abbreviations()
+            >>> homer.get_names()
             [('en', 'Homer'),
             (None, 'Homeros'),
             ('la', 'Homerus'),
@@ -109,7 +110,7 @@ class HucitAuthor(object):
         ][0]
         try:
             name.rdfs_label.append(newlabel)
-            name.update()
+            name.update()  # this is currently buggy in SURF (see my NOTES.md)
             return True
         except Exception as e:
             raise e
@@ -391,6 +392,11 @@ class HucitTextStructure(object):
         - add the element to the text structure (hucit#element_part_of)
         - returns the new element
         """
+
+        urn = CTS_URN(urn)
+        element_uri = os.path.join(self.work.subject, urn.passage_component)
+        print(f"Created {element_uri}")
+
         return
 
     @property
@@ -569,7 +575,7 @@ class HucitWork(object):
         """
         return len(self.hucit_has_structure) > 0
 
-    def add_text_structure(self, label):
+    def add_text_structure(self, label: str, lang: str = "en"):
         """
         Adds a citable text structure to the work.
         """
@@ -578,7 +584,7 @@ class HucitWork(object):
             "%s/text_structure" % self.subject,
             self.session.get_class(surf.ns.HUCIT["TextStructure"]),
         )
-        ts.rdfs_label.append(Literal(label))
+        ts.rdfs_label.append(Literal(label, lang))
         ts.save()
         self.hucit_has_structure = ts
         self.update()
