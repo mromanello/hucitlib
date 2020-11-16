@@ -254,25 +254,26 @@ class KnowledgeBase(object):
             urn = CTS_URN(urn)
             logger.debug("Converted the input urn from string to %s" % type(CTS_URN))
 
-        if urn.work is not None:
-            Work = self._session.get_class(surf.ns.EFRBROO["F1_Work"])
-            result = self._store.execute_sparql(search_query)
-            if len(result["results"]["bindings"]) == 0:
-                raise ResourceNotFound
-            else:
-                tmp = result["results"]["bindings"][0]
-                resource_uri = tmp["resource_URI"]["value"]
-                return self._session.get_resource(resource_uri, Work)
+        # determine the type of returned resource based on CTS URN semantics
+        if urn.passage_component is not None:
+            resource_type = self._session.get_class(surf.ns.HUCIT["TextElement"])
+        elif urn.work is not None:
+            resource_type = self._session.get_class(surf.ns.EFRBROO["F1_Work"])
+        elif (
+            urn.work is None
+            and urn.textgroup is not None
+            and urn.passage_component is None
+        ):
+            resource_type = self._session.get_class(surf.ns.EFRBROO["F10_Person"])
 
-        elif urn.work is None and urn.textgroup is not None:
-            Person = self._session.get_class(surf.ns.EFRBROO["F10_Person"])
-            result = self._store.execute_sparql(search_query)
-            if len(result["results"]["bindings"]) == 0:
-                raise ResourceNotFound
-            else:
-                tmp = result["results"]["bindings"][0]
-                resource_uri = tmp["resource_URI"]["value"]
-                return self._session.get_resource(resource_uri, Person)
+        # execute the sparql query and return the result
+        result = self._store.execute_sparql(search_query)
+        if len(result["results"]["bindings"]) == 0:
+            raise ResourceNotFound
+        else:
+            tmp = result["results"]["bindings"][0]
+            resource_uri = tmp["resource_URI"]["value"]
+            return self._session.get_resource(resource_uri, resource_type)
 
     # TODO: if the underlying store is not Virtuoso it should fail
     # and say something useful ;-)
@@ -568,6 +569,57 @@ class KnowledgeBase(object):
     # Factory methods   #
     #####################
 
+    # TODO: implement
+    def create_text_element(
+        self,
+        work: surf.resource.Resource,
+        urn_string: str,
+        element_type: surf.resource.Resource,
+        source_uri: str = None,
+    ):
+        """Short summary.
+
+        :param str urn: Text element's URN.
+        :param surf.resource.Resource element_type: Text element type.
+        :return: The newly created text element.
+        :rtype: type
+
+        .. code-block:: python
+
+            >>> iliad = kb.get_resource_by_urn("urn:cts:greekLit:tlg0012.tlg001")
+            >>> etype_book = kb.get_textelement_type("book")
+            >>> ts = iliad.structure
+            >>> ts.create_element(
+                "urn:cts:greekLit:tlg0012.tlg001:1",
+                element_type=type_book,
+                following_urn="urn:cts:greekLit:tlg0012.tlg001:2"
+            )
+        """
+        urn = CTS_URN(urn_string)
+        work_label = str(work.rdfs_label.one).split(" :: ")[0]
+        type_label = str(element_type.rdfs_label.one)
+        element_label = f"{work_label} {type_label} {urn.passage_component}"
+
+        # mint the URI
+        element_uri = os.path.join(work.subject, urn.passage_component)
+        TextElement = self._session.get_class(surf.ns.HUCIT["TextElement"])
+        new_element = TextElement(element_uri)
+        new_element.ecrm_P2_has_type = element_type
+        new_element.rdfs_label = [element_label]
+
+        if source_uri:
+            new_element.hucit_resolves_to = URIRef(source_uri)
+
+        new_element.save()
+
+        # create an RDF representation of the CTS URN
+        # identifying this textual element
+        element_urn = self.create_cts_urn(new_element, urn_string)
+
+        # perhaps send it to the logger instead
+        print(f"Created {new_element}")
+        return new_element
+
     def create_cts_urn(
         self, resource: surf.resource.Resource, urn_string: str
     ) -> Optional[surf.resource.Resource]:
@@ -589,11 +641,10 @@ class KnowledgeBase(object):
                 "Identifier not created!\n"
                 f"{resource.subject} already has a CTS URN identifier: {id.subject}"
             )
-            return None
         else:
             id.rdfs_label = Literal(urn_string)
             id.ecrm_P2_has_type = Type(BASE_URI_TYPES % "CTS_URN")
             id.save()
-            resource.ecrm_P1_is_identified_by = id
-            resource.update()
-            return id
+        resource.ecrm_P1_is_identified_by = id
+        resource.update()
+        return id
