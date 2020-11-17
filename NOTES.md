@@ -15,7 +15,8 @@ te = kb._session.get_resource("%s/urn:cts:greekLit:tlg0012.tlg001:1" % w.subject
 **TODO**:
 
 - [x] refactor sub-module names/organisation
-- [ ] fix bug in `surf` query translator (see below) 
+- [ ] fix bug in `surf` query translator (see below)
+- [ ] in travis, run tests against the newly installed triple store (not the remote one)
 
 **bug with `surf`**
 

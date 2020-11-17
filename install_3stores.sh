@@ -6,6 +6,7 @@
 BASE_PATH=$(pwd)
 VIRTUOSO=7.2.5
 
+apt-get update
 apt-get install libssl1.0-dev -q
 apt-get install autoconf automake bison flex gawk gperf libtool -q
 
