@@ -20,11 +20,7 @@ knowledge base contains:
 - information about the canonical citation structure of ancient works.
 
 ``hucitlib`` relies on `SuRF <https://pythonhosted.org/SuRF/>`_ , a Python Object RDF Mapper library, so as to In order to make the
-knowledge base as much as possible easy to use programmatically. `SuRF <https://pythonhosted.org/SuRF/>`_
-works similarly to Object-relation mappers (such as SQLAlchemy) with the main difference that Python objects
-are mapped to contents of a triples store rather than of a database. This allows for
-programmatic interaction with the knowledge base, and makes it possible to hide away certain
-complexities of the underlying data model.
+knowledge base as much as possible easy to use programmatically (read more here).
 
 If you are using ``hucitlib`` as part of your research, please cite the
 `following paper <http://ceur-ws.org/Vol-2014/paper-01.pdf>`_:
