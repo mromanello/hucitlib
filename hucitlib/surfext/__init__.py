@@ -12,8 +12,10 @@ import json
 import surf
 import logging
 import itertools
-from typing import List, Dict
+from collections import namedtuple
+from typing import List, Dict, Optional, Union, NamedTuple
 from surf import *
+from surf.resource import Resource
 from surf.exceptions import NoResultFound
 from pyCTS import CTS_URN
 from rdflib import Literal
@@ -31,9 +33,16 @@ BASE_URI_AUTHORS = surf.ns.KB["authors/%s"]
 BASE_URI_WORKS = surf.ns.KB["works/%s"]
 
 
+class CitationLevel(NamedTuple):
+    level: int
+    label: str
+    text_element_type: Resource
+    count: int
+
+
 class HucitAuthor(object):
     """
-    Object mapping for instances of `http://erlangen-crm.org/efrbroo/F10_Person`.
+    Object mapping for class `frbroo:F10_Person <http://erlangen-crm.org/efrbroo/>`_.
     """
 
     def __repr__(self):
@@ -86,9 +95,9 @@ class HucitAuthor(object):
         return self.names
 
     def add_name(self, name: str, lang: str = None) -> bool:
-        """Short summary.
+        """Adds a new name variant to an author’s name.
 
-        :param str name: The name to be added.
+        :param str name: The name variant to be added.
         :param str lang: The language of the name variant.
         :return: `True` if the name is added, `False` otherwise (the name is a duplicate)
         :rtype: bool
@@ -186,11 +195,20 @@ class HucitAuthor(object):
         except Exception as e:
             raise e
 
-    def get_abbreviations(self):
-        """
-        Get abbreviations of the names of the author.
+    def get_abbreviations(self) -> List[str]:
+        """Get abbreviations of the names of the author.
 
-        :return: a list of strings (empty list if no abbreviations available).
+        :return: A list of known abbreviations.
+        :rtype: List[str]
+
+        Example:
+
+        .. code-block:: python
+
+            >>> kb = KnowledgeBase()
+            >>> homer = kb.get_resource_by_urn('urn:cts:greekLit:tlg0012')
+            >>> homer.get_abbreviations()
+            ['Hom.']
         """
         abbreviations = []
         try:
@@ -211,9 +229,16 @@ class HucitAuthor(object):
         finally:
             return abbreviations
 
-    def get_urn(self):
-        """
-        Assumes that each HucitAuthor has only one CTS URN.
+    def get_urn(self) -> Optional[CTS_URN]:
+        """Returns the author's CTS URN.
+
+        .. note::
+
+            It is assumed that each HucitAuthor has only one CTS URN.
+
+        :return: Description of returned object.
+        :rtype: Optional[CTS_URN]
+
         """
         # TODO: check type
         try:
@@ -231,9 +256,13 @@ class HucitAuthor(object):
         except Exception as e:
             return None
 
-    def set_urn(self, urn):
-        """
-        Change the CTS URN of the author or adds a new one (if no URN is assigned).
+    def set_urn(self, urn: str) -> Optional[CTS_URN]:
+        """Changes the CTS URN of the author or adds a new one (if no URN is assigned).
+
+        :param str urn: The new CTS URN.
+        :return: Description of returned object.
+        :rtype: Optional[CTS_URN]
+
         """
         Type = self.session.get_class(surf.ns.ECRM["E55_Type"])
         Identifier = self.session.get_class(surf.ns.ECRM["E42_Identifier"])
@@ -250,10 +279,13 @@ class HucitAuthor(object):
         self.load()
         return self.get_urn()
 
-    def get_works(self):
-        """
-        Returns a list of the works (intances of `surf.Resource` and `HucitWork`)
-        attributed to a given author.
+    # def get_works(self) -> List[HucitWork]:
+    def get_works(self) -> List['HucitWork']:
+        """Returns a list of the works attributed to a given author.
+
+        :return: The author's known works.
+        :rtype: List[HucitWork]
+
         """
         return [
             work
@@ -261,9 +293,12 @@ class HucitAuthor(object):
             for work in creation.efrbroo_R16_initiated
         ]
 
-    def to_json(self):
-        """
-        Serialises a HucitAuthor to a JSON formatted string.
+    def to_json(self) -> None:
+        """Serialises a HucitAuthor to a JSON formatted string.
+
+        .. note::
+
+            This method will probably be deprecated in the near future.
 
         Example:
 
@@ -351,53 +386,9 @@ class HucitTextStructure(object):
     Object mapping for instances of `http://purl.og/net/hucit#TextStructure`.
     """
 
-    # TODO: implement
-    def create_element(
-        self,
-        urn: str,
-        element_type: surf.resource.Resource,
-        parent_urn: str = None,
-        previous_urn: str = None,
-        following_urn: str = None,
-    ):
-        """Short summary.
-
-        :param str urn: Text element's URN.
-        :param surf.resource.Resource element_type: Text element type.
-        :param str parent_urn: URN of parent text element.
-        :param str previous_urn: URN of preceding text element (if existing).
-        :param str following_urn: URN of following text element (if existing).
-        :return: The newly created text element.
-        :rtype: type
-
-        .. code-block:: python
-
-            >>> iliad = kb.get_resource_by_urn("urn:cts:greekLit:tlg0012.tlg001")
-            >>> etype_book = kb.get_textelement_type("book")
-            >>> ts = iliad.structure
-            >>> ts.create_element(
-                "urn:cts:greekLit:tlg0012.tlg001:1",
-                element_type=type_book,
-                following_urn="urn:cts:greekLit:tlg0012.tlg001:2"
-            )
-        """
-
-        """
-        What it does:
-
-        - create a new text element
-        - attach the urn to it
-        - attach the right type to it
-        - append it to its parent
-        - add the element to the text structure (hucit#element_part_of)
-        - returns the new element
-        """
-
-        urn = CTS_URN(urn)
-        element_uri = os.path.join(self.work.subject, urn.passage_component)
-        print(f"Created {element_uri}")
-
-        return
+    def add_element(self, text_element) -> None:
+        self.hucit_has_element.append(text_element)
+        self.update()
 
     @property
     def work(self):
@@ -601,6 +592,21 @@ class HucitWork(object):
         self.update()
         return
 
+    # TODO finish implementation
+    def get_citation_structure(self) -> List[CitationLevel]:
+        """
+        Returns a sorted list of citation levels
+            [
+                (1, 'book', ...),
+                (2, 'line', ...),
+            ]
+        """
+        pass
+
+    # TODO finish implementation
+    def get_citable_elements(self, CitationLevel):
+        pass
+
     @property
     def structure(self):
         return self.hucit_has_structure.first
@@ -652,12 +658,6 @@ class HucitWork(object):
             else:
                 return False
 
-    def get_citation_levels(self, language):
-        """
-        Returns the levels of the TextStructure of this Work, in the right order (e.g. Book/Chapter/Section).
-        """
-        pass
-
     @property
     def author(self) -> HucitAuthor:
         """
@@ -707,47 +707,101 @@ class HucitTextElement(object):
     """
 
     def __repr__(self):
-        return ""
+        return f"{self.rdfs_label.one} ({self.get_urn()})"
 
-    def next(self):
-        """ TODO """
-        return self.hucit_precedes.one
+    def __str__(self):
+        return "boh"
 
+    def add_relations(
+        self,
+        parent: Resource = None,
+        previous: Resource = None,
+        next: Resource = None,
+    ) -> None:
+        """Short summary.
+
+        :param Resource parent: Description of parameter `parent`.
+        :param Resource previous: Description of parameter `previous`.
+        :param Resource next: Description of parameter `next`.
+        :return: Description of returned object.
+        :rtype: None
+
+        """
+        if next:
+            self.hucit_precedes = next
+
+        if previous:
+            self.hucit_follows = previous
+
+        if parent:
+            self.hucit_is_part_of = parent
+
+            # in this case add also the parent relation
+            parent.hucit_has_part.append(self)
+            parent.update()
+
+        self.update()
+        return
+
+    @property
+    def next(self) -> Optional[Resource]:
+        """Returns the following text element (if any)."""
+        try:
+            return self.hucit_precedes.one
+        except NoResultFound:
+            return None
+
+    @property
     def previous(self):
-        """ TODO """
-        return self.hucit_follows.one
+        """Returns the preceding text element (if any)."""
+        try:
+            return self.hucit_follows.one
+        except NoResultFound:
+            return None
 
-    def get_labels(self):  # TODO: not sure
-        pass
+    @property
+    def children(self) -> List[Resource]:
+        """ Returns the children text element(s) (if any)."""
+        return self.hucit_has_part
 
-    def children(self):
-        """
-        TODO: the children elements should be returned
-        as an ordered collection
-        """
-        pass
-
+    @property
     def parent(self):
-        """
-        Returns the parent.
-        """
-        pass
+        """Returns the parent (if any)."""
+        try:
+            return self.hucit_is_part_of.one
+        except NoResultFound:
+            return None
 
-    def get_type(self):
-        pass
+    def get_type(self, as_string: bool = True) -> Union[str, Resource]:
+        """Short summary.
+
+        :param bool as_string: Description of parameter `as_string`.
+        :return: Description of returned object.
+        :rtype: Union[str, Resource]
+
+        """
+        if as_string:
+            return str(self.ecrm_P2_has_type.one.rdfs_label.one)
+        else:
+            return self.ecrm_P2_has_type.one
 
     def is_first(self):
-        pass
+        if self.previous is None:
+            return True
+        else:
+            return False
 
     def is_last(self):
-        pass
+        if self.next is None:
+            return True
+        else:
+            return False
 
-    def get_urn(self):
-        """
-        TODO
-        """
-        urn = self.ecrm_P1_is_identified_by.one
+    def get_urn(self) -> CTS_URN:
+        """ Returns the TextElement's CTS URN."""
+        # current assumption: only one CTS URN per element
+        urn_string = self.ecrm_P1_is_identified_by.one.rdfs_label.one
         try:
-            return CTS_URN(urn)
+            return CTS_URN(urn_string)
         except Exception as e:
             raise e

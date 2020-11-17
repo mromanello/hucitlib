@@ -92,18 +92,20 @@ def fetch_text_structure(
         print(f"Fetching text elements of level {level_n}")
         structure["valid_reffs"][level_n] = []
 
-        # pdb.set_trace()
         for ref in tqdm(resolver.getReffs(urn, level=level_n)):
             element = {
                 "current": "{}:{}".format(urn, ref),
             }
-            logging.info(f"Retrieving info about {element['current']} from {endpoint}")
             if "." in ref:
                 element["parent"] = "{}:{}".format(
                     urn, ".".join(ref.split(".")[: level_n - 1])
                 )
             try:
                 textual_node = fetch_textual_node(urn, ref, resolver)
+                logging.info(
+                    f"Retrieved info about {element['current']} from {endpoint}"
+                )
+
                 cts_request = f"?request=GetPassage&urn={element['current']}"
                 cts_uri = f"{os.path.join(endpoint, cts_request)}"
                 counter += 1
@@ -116,6 +118,9 @@ def fetch_text_structure(
                 element["link"] = cts_uri
                 structure["valid_reffs"][level_n].append(element)
             except Exception as e:
+                logger.error(
+                    f"Failed retrieving info about {element['current']} from {endpoint} with following exception: {e}"
+                )
                 raise (e)
 
             if stop_at > 0 and counter >= stop_at:
@@ -169,7 +174,7 @@ def populate_text_structure(kb: KnowledgeBase, work: Resource, ts: Dict) -> None
     # retrieve the text structure of the work
     # if not there, create one
 
-    work_label = work.rdfs_label.one.split(" :: ")[0]
+    work_label, work_urn = work.rdfs_label.one.split(" :: ")
 
     if work.has_text_structure():
         ts_obj = work.structure
@@ -182,6 +187,9 @@ def populate_text_structure(kb: KnowledgeBase, work: Resource, ts: Dict) -> None
     # citable text elements.
     counter = 0
     for text_level_n, element_type in ts["levels"]:
+        print(
+            f"Creating text elements for {work_urn}, hierarchical level {text_level_n}"
+        )
 
         # retrieve from the KB the corresponding text element type
         # if not there, create one
@@ -189,10 +197,7 @@ def populate_text_structure(kb: KnowledgeBase, work: Resource, ts: Dict) -> None
         if element_type_obj is None:
             element_type_obj = kb.add_textelement_type(element_type)
 
-        for text_element_dict in ts["valid_reffs"][str(text_level_n)]:
-
-            # if counter > 10:
-            #    break
+        for text_element_dict in tqdm(ts["valid_reffs"][str(text_level_n)]):
 
             text_element = kb.create_text_element(
                 work,
@@ -206,8 +211,11 @@ def populate_text_structure(kb: KnowledgeBase, work: Resource, ts: Dict) -> None
     # do another full pass in order to add hierarchical relations
     # between text elements
     for text_level_n, element_type in ts["levels"]:
+        print(
+            f"Adding relations between text elements for {work_urn}, hierarchical level {text_level_n}"
+        )
 
-        for text_element_dict in ts["valid_reffs"][str(text_level_n)]:
+        for text_element_dict in tqdm(ts["valid_reffs"][str(text_level_n)]):
 
             # retrieve relations between elements identified by URNs
             current_urn = text_element_dict["current"]

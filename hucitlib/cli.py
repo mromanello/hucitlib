@@ -5,9 +5,9 @@
 """Command line interface for a HuCit knowledge base.
 
 Usage:
-    knowledge_base/cli.py find <search_string> [--config-file=<path>]
-    knowledge_base/cli.py add (name|abbr|title|sameas) --to=<cts_urn> <string_to_add> [--config-file=<path>]
-    knowledge_base/cli.py (-h | --help)
+    hucit find <search_string> [--config-file=<path>]
+    hucit add (name|abbr|title|sameas) --to=<cts_urn> <string_to_add> [--config-file=<path>]
+    hucit (-h | --help)
 
 Options:
     --to=<cts_urn> CTS URN of the author/work to edit.
@@ -26,8 +26,9 @@ from docopt import docopt
 from pyCTS import CTS_URN, BadCtsUrnSyntax
 from surf.plugin.sparql_protocol.reader import SparqlReaderException
 
-from knowledge_base.__init__ import KnowledgeBase, ResourceNotFound
-from knowledge_base.surfext import *
+from hucitlib import KnowledgeBase
+from hucitlib.exceptions import ResourceNotFound
+from hucitlib.surfext import *
 
 logger = logging.getLogger("KnowledgeBase_CLI")
 
@@ -113,7 +114,7 @@ def main():
         cfg_filename = arguments["--config-file"]
     else:
         cfg_filename = pkg_resources.resource_filename(
-            "knowledge_base", "config/virtuoso.ini"
+            "hucitlib", "config/virtuoso.ini"
         )
     kb = KnowledgeBase(cfg_filename)
 

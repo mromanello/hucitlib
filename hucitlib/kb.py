@@ -159,17 +159,23 @@ class KnowledgeBase(object):
         self._register_namespaces()
         self._register_mappings()
 
+    @property
+    def settings(self) -> Dict[str, str]:
+        return self._store_params
+
     # some legacy methods
     @property
     def author_names(self) -> Dict[str, str]:
         """
         Returns a dictionary like this:
 
-        {
-            "urn:cts:greekLit:tlg0012$$n1" : "Homer"
-            , "urn:cts:greekLit:tlg0012$$n2" : "Omero"
-            , ...
-        }
+        .. code-block:: python
+
+            {
+                "urn:cts:greekLit:tlg0012$$n1" : "Homer"
+                , "urn:cts:greekLit:tlg0012$$n2" : "Omero"
+                , ...
+            }
         """
 
         def fetch_names(author):
@@ -516,6 +522,14 @@ class KnowledgeBase(object):
         :return: Description of returned object.
         :rtype: Optional[surf.resource.Resource]
 
+        .. code-block:: python
+
+            # this will work only when connecting to a triples store
+            # where you have access in writing mode
+            >>> from hucit_kb import KnowledgeBase
+            >>> kb = KnowledgeBase()
+            >>> element_type_obj = kb.add_textelement_type("book")
+
         """
         label = label.lower()
         E55_Type = self._session.get_class(surf.ns.ECRM["E55_Type"])
@@ -534,7 +548,18 @@ class KnowledgeBase(object):
     def add_textelement_types(self, types: List[str]) -> None:
         """Adds the text element type in case it doesn't exist.
 
-        :param types: a list of strings (e.g. ["book", "poem", "line"])
+        :param List[str] types: a list of strings (e.g. ["book", "poem", "line"])
+        :return: Description of returned object.
+        :rtype: None
+
+        .. code-block:: python
+
+            # this will work only when connecting to a triples store
+            # where you have access in writing mode
+            >>> from hucit_kb import KnowledgeBase
+            >>> kb = KnowledgeBase()
+            >>> kb.add_textelement_types(["book", "line"])
+
         """
 
         for el_type in types:
@@ -617,7 +642,9 @@ class KnowledgeBase(object):
         element_urn = self.create_cts_urn(new_element, urn_string)
 
         # perhaps send it to the logger instead
-        print(f"Created {new_element}")
+        logger.info(
+            f"Created text element {new_element.subject} => {repr(new_element)}"
+        )
         return new_element
 
     def create_cts_urn(
@@ -637,8 +664,8 @@ class KnowledgeBase(object):
         id_uri = os.path.join(resource.subject, "cts_urn")
         id = Identifier(id_uri)
         if id.is_present():
-            print(
-                "Identifier not created!\n"
+            logger.info(
+                "Identifier not created!"
                 f"{resource.subject} already has a CTS URN identifier: {id.subject}"
             )
         else:
