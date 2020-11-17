@@ -12,10 +12,7 @@ Installation
 Default triple store
 --------------------
 
-By default ``hucitlib`` reads its data from a public triple store, which runs
-on the CLARIAH Druid infrastructure.
-
-By default, when initialising a :py:class:`~hucitlib.KnowledgeBase` instance, RDF
+By default, when initialising a :py:class:`hucitlib.KnowledgeBase` instance, RDF
 data are read from a read-only public triple store, which runs
 on the CLARIAH Druid infrastructure:
 
@@ -41,7 +38,6 @@ Connecting to a local triple store
 
 The RDF data that power ``hucitlib`` can be stored in any triple store that
 supports the SPARQL 1.1 API.
-
 ``hucitlib`` comes with scripts to `install <https://github.com/mromanello/hucitlib/blob/master/install_3stores.sh>`_
 and `load/clear/dump <https://github.com/mromanello/hucitlib/tree/master/scripts/virtuoso>`_ data from a Virtuoso triples store.
 
