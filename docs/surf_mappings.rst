@@ -18,3 +18,6 @@ Citable text structures and text elements
 
 .. autoclass:: hucitlib.surfext.HucitTextStructure
     :members:
+
+.. autoclass:: hucitlib.surfext.HucitTextElement
+    :members:
