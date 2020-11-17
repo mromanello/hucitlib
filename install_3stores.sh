@@ -4,9 +4,9 @@
 # https://github.com/SemanticMediaWiki/SemanticMediaWiki/blob/master/tests/travis/install-services.sh#L8
 
 BASE_PATH=$(pwd)
-VIRTUOSO=7.2.4
+VIRTUOSO=7.2.5
 
-apt-get install libssl-dev -q
+apt-get install libssl1.0-dev -q
 apt-get install autoconf automake bison flex gawk gperf libtool -q
 
 #git clone git://github.com/openlink/virtuoso-opensource.git
