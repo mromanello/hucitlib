@@ -581,7 +581,7 @@ class HucitWork(object):
         self.update()
         return self.hucit_has_structure.one
 
-    def remove_text_structure(self, text_structure):
+    def remove_text_structure(self, text_structure) -> None:
         # TODO: delete also TextElements one by one
         """
         Remove any citable text structure to the work.

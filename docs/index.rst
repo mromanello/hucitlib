@@ -57,6 +57,7 @@ If you are using ``hucitlib`` as part of your research, please cite the
    model
    cli
    kb
+   kb_population
    surf_mappings
 
 

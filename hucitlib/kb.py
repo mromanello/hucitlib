@@ -13,9 +13,10 @@ except ImportError:
 import surf
 import json
 import logging
+from surf.resource import Resource
 from hucitlib.surfext import *
 from pyCTS import CTS_URN
-from typing import Optional, Dict, List
+from typing import Optional, Dict, List, Tuple
 import pkg_resources
 import hucitlib.__version__
 from rdflib import Literal, URIRef
@@ -283,12 +284,13 @@ class KnowledgeBase(object):
 
     # TODO: if the underlying store is not Virtuoso it should fail
     # and say something useful ;-)
-    def search(self, search_string):
-        """
-        Searches for a given string through the resources' labels.
+    def search(self, search_string: str) -> List[Tuple[str, Resource]]:
+        """Searches for a given string through the resources' labels.
 
-        :param search_string:
-        :return: an instance of `HucitAuthor` or `HucitWork`.
+        :param str search_string: Description of parameter `search_string`.
+        :return: Description of returned object.
+        :rtype: List[Tuple[str, Resource]]
+
         """
         query = (
             """
@@ -419,9 +421,14 @@ class KnowledgeBase(object):
                 except Exception as e:
                     return None
 
+    # TODO: re-implement
     def get_statistics(self) -> Dict[str, int]:
         """
         Gather basic stats about the Knowledge Base and its contents.
+
+        .. note::
+
+            This method currently has some performances issues.
 
         :return: a dictionary
 
@@ -594,7 +601,6 @@ class KnowledgeBase(object):
     # Factory methods   #
     #####################
 
-    # TODO: implement
     def create_text_element(
         self,
         work: surf.resource.Resource,

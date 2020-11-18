@@ -29,7 +29,7 @@ def fetch_textual_node(urn: str, ref: str, resolver: HttpCtsResolver):
 
 def fetch_text_structure(
     urn: str, endpoint: str = "http://cts.perseids.org/api/cts", stop_at: int = -1
-):
+) -> Dict[str, object]:
     """
     Fetches the text structure of a given work from a CTS endpoint.
 
@@ -40,21 +40,6 @@ def fetch_text_structure(
     :type endpoint: string
     :return: a dict with keys "urn", "provenance", "valid_reffs", "levels"
     :rtype: dict
-
-    .. note::
-        Notes on fetching less common/stable text structures (Bekker, Stephanus).
-
-        **Problem**: the Leipzig CTS API exposes only Stephanus pages (e.g. 17)
-                    but not Stephanus sections (e.g. 17a). but the sections are there
-                    in the TEI XML, marked up as `tei"milestone` elements.
-
-        **Solution**: a solution to this is to fetch the first level via the API,
-                    and extract the second level units directly from the TEI/XML
-                    via xpath.
-
-        `resolver.getPassage()\
-        .export(output=Mimetypes.PYTHON.ETREE).xpath(".//tei:milestone")` ecc
-
     """
 
     counter = 0
