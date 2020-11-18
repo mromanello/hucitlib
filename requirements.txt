@@ -1,7 +1,7 @@
 pyCTS
 https://github.com/PonteIneptique/surfrdf/archive/master.zip#egg=surf-1.2.0
 rdflib>=4.2.1
-#SPARQLWrapper==1.6.0
 docopt
 tqdm
 retrying
+MyCapytain==3.0.2
