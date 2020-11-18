@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 # author: Matteo Romanello, matteo.romanello@gmail.com
 
-import ipdb as pdb
 import pkg_resources
 import os
 import json
