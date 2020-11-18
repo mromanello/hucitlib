@@ -35,6 +35,7 @@ setup(
         "tqdm",
         "retrying",
         "rdflib>=4.2.1",
+        "MyCapytain"
     ],
     long_description=read("README.md"),
 )
