@@ -17,6 +17,7 @@ from typing import List, Dict, Optional, Union, NamedTuple
 from surf import *
 from surf.resource import Resource
 from surf.exceptions import NoResultFound
+from retrying import retry
 from pyCTS import CTS_URN
 from rdflib import Literal
 
@@ -280,7 +281,7 @@ class HucitAuthor(object):
         return self.get_urn()
 
     # def get_works(self) -> List[HucitWork]:
-    def get_works(self) -> List['HucitWork']:
+    def get_works(self) -> List["HucitWork"]:
         """Returns a list of the works attributed to a given author.
 
         :return: The author's known works.
@@ -386,9 +387,16 @@ class HucitTextStructure(object):
     Object mapping for instances of `http://purl.og/net/hucit#TextStructure`.
     """
 
-    def add_element(self, text_element) -> None:
-        self.hucit_has_element.append(text_element)
-        self.update()
+    def add_element(self, text_element, top_level=False) -> None:
+        text_element.context = self.subject
+        if top_level:
+            self.hucit_has_element.append(text_element)
+            self.update()
+        else:
+            logger.debug(
+                f"{text_element} not added to {self.subject} as it is not a top-level element"
+            )
+            pass
 
     @property
     def work(self):
@@ -712,6 +720,7 @@ class HucitTextElement(object):
     def __str__(self):
         return "boh"
 
+    @retry(stop_max_attempt_number=5, wait_fixed=5000)
     def add_relations(
         self,
         parent: Resource = None,

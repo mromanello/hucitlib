@@ -19,6 +19,8 @@ from pyCTS import CTS_URN
 from typing import Optional, Dict, List, Tuple
 import pkg_resources
 import hucitlib.__version__
+from hucitlib.exceptions import ResourceNotFound
+from retrying import retry
 from rdflib import Literal, URIRef
 from tqdm import tqdm
 
@@ -42,7 +44,6 @@ def get_abbreviations(kb):
     }
 
 
-# TODO: allow for a default config file in __init__()
 class KnowledgeBase(object):
     """
     ``KnowledgeBase`` is a class that allows for accessing a HuCit
@@ -227,6 +228,7 @@ class KnowledgeBase(object):
             )
         }
 
+    @retry(stop_max_attempt_number=5, wait_fixed=5000)
     def get_resource_by_urn(self, urn):
         """Fetch the resource corresponding to the input CTS URN.
 
@@ -601,6 +603,7 @@ class KnowledgeBase(object):
     # Factory methods   #
     #####################
 
+    @retry(stop_max_attempt_number=5, wait_fixed=5000)
     def create_text_element(
         self,
         work: surf.resource.Resource,

@@ -2,11 +2,27 @@
 # -*- coding: utf-8 -*-
 # author: Matteo Romanello, matteo.romanello@gmail.com
 
+"""Command line interface for populating the HuCit knowledge base.
+
+Usage:
+    hucitlib/populate.py --work=<cts_urn> --log-file=<path> --kb-config-file=<path> [--verbose]
+
+Options:
+    --work=<cts_urn>    CTS URN of the work whose citation structure should be populated
+    --kb-config-file=<path> Path to the configuration file (overwrites default configuration).
+    --log-file=<path>   Path to the log file
+    --verbose   Turn on verbose logging
+"""
+
+
 import pkg_resources
 import os
 import json
 import logging
+from docopt import docopt
+from hucitlib import init_logger
 from hucitlib import KnowledgeBase
+from hucitlib.exceptions import ResourceNotFound
 from typing import Dict
 from tqdm import tqdm
 from retrying import retry
@@ -164,7 +180,7 @@ def populate_text_structure(kb: KnowledgeBase, work: Resource, ts: Dict) -> None
         ts_obj = work.structure
     else:
         ts_obj = work.add_text_structure(
-            "Canonical text structure of {work_label}", "en"
+            f"Canonical text structure of {work_label}", "en"
         )
 
     # for each text level of a given work, iterate through all existing
@@ -183,13 +199,25 @@ def populate_text_structure(kb: KnowledgeBase, work: Resource, ts: Dict) -> None
 
         for text_element_dict in tqdm(ts["valid_reffs"][str(text_level_n)]):
 
+            text_element_urn = text_element_dict["current"]
+            try:
+                element_obj = kb.get_resource_by_urn(text_element_urn)
+                logger.info(
+                    f"Skipping, as an element for {text_element_urn} already exists = {element_obj.subject}"
+                )
+                continue
+            except ResourceNotFound:
+                pass
+
             text_element = kb.create_text_element(
                 work,
-                text_element_dict["current"],
+                text_element_urn,
                 element_type_obj,
                 text_element_dict["link"] if "link" in text_element_dict else None,
             )
-            ts_obj.add_element(text_element)
+            ts_obj.add_element(
+                text_element, top_level=True if text_level_n == 1 else False
+            )
             counter += 1
 
     # do another full pass in order to add hierarchical relations
@@ -227,6 +255,7 @@ def populate_text_structure(kb: KnowledgeBase, work: Resource, ts: Dict) -> None
 
             assert current_el is not None
 
+            # TODO worth parallelising
             current_el.add_relations(
                 parent=parent_el, previous=previous_el, next=following_el
             )
@@ -234,6 +263,19 @@ def populate_text_structure(kb: KnowledgeBase, work: Resource, ts: Dict) -> None
 
 
 def main():
+    arguments = docopt(__doc__)
+    work_id = arguments["--work"]
+    log_path = arguments["--log-file"]
+    kb_config = arguments["--kb-config-file"]
+    verbose = True if arguments["--verbose"] else False
+
+    # initialise the logger
+    root_logger = init_logger(log_path, verbose)
+
+    # TODO allow for an input file path to be passed as parameter
+    # this file will contain a line-separated list of work CTS URNs
+
+    """
     works = [
         "urn:cts:greekLit:tlg0011.tlg003",  # Sophocle's Ajax
         "urn:cts:greekLit:tlg0011.tlg002",  # Soph. Antigone
@@ -244,13 +286,22 @@ def main():
         "urn:cts:greekLit:tlg0001.tlg001",  # Apollonius Rhodius' Argonautica
         "urn:cts:latinLit:phi0959.phi006",  # Ovid's Metamorphoses
     ]
-    for work in works:
+    """
+    works = [work_id]
+    for work_urn in works:
+        kb = KnowledgeBase(kb_config)
+        work_obj = kb.get_resource_by_urn(work_id)
+
         basedir = TEXT_STRUCTURES_BASEDIR
-        structure_json_path = os.path.join(basedir, f"{work.replace(':', '-')}.json")
+        structure_json_path = os.path.join(
+            basedir, f"{work_urn.replace(':', '-')}.json"
+        )
         if os.path.exists(structure_json_path):
-            print(f"Skipping {work} as {structure_json_path} already exists.")
+            print(f"Skipping {work_urn} as {structure_json_path} already exists.")
         else:
-            download_text_structure(work, basedir)
+            download_text_structure(work_urn, basedir)
+        ts_json = load_text_structure_JSON(work_urn, basedir)
+        populate_text_structure(kb, work_obj, ts_json)
 
 
 if __name__ == "__main__":
