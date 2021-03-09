@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # author: Matteo Romanello, matteo.romanello@gmail.com
 
+import os
 import pdb
 try:
     import configparser
@@ -10,10 +11,13 @@ except ImportError:
 import surf
 import json
 import logging
+from surfext import BASE_URI_TYPES, BASE_URI_WORKS, BASE_URI_AUTHORS
 from surfext import *
 from pyCTS import CTS_URN
 import pkg_resources
 import __version__
+from rdflib import Literal
+from rdflib.term import URIRef
 
 logger = logging.getLogger(__name__)
 
@@ -64,6 +68,7 @@ class KnowledgeBase(object):
         self._works = None
         self._author_abbreviations = None
         self._work_abbreviations = None
+        self._last_work_id = None
         try:
             config = configparser.ConfigParser()
             config.readfp(open(config_file))
@@ -147,6 +152,33 @@ class KnowledgeBase(object):
                 for author in self.get_authors()
                 for work in author.get_works()
                 for i, abbrev in enumerate(work.get_abbreviations(combine=False) + work.get_abbreviations(combine=True))}
+
+    @property
+    def next_author_id(self):
+        ids = [
+            int(str(author.subject).split('/')[-1])
+            for author in self.get_authors()
+        ]
+        next_id = max(ids) + 1
+        assert next_id not in ids
+        return next_id
+
+    @property
+    def next_work_id(self):
+        # not ideal (creates holes in numbering) but needed to speed up things
+        # another alternative may be to get all work URIs
+        # without bypassing the ORM
+        if self._last_work_id is None:
+            ids = [
+                int(str(work.subject).split('/')[-1])
+                for author in self.get_authors()
+                for work in author.get_works()
+            ]
+            self._last_work_id = max(ids)
+        next_id = self._last_work_id + 1
+        self._last_work_id = next_id
+        return next_id
+
 
     def get_resource_by_urn(self, urn):
         """Fetch the resource corresponding to the input CTS URN.
@@ -405,3 +437,244 @@ class KnowledgeBase(object):
             "statistics": self.get_statistics()
             , "authors": [json.loads(author.to_json()) for author in self.get_authors()]
         }, indent=2)
+
+    #####################################
+    # Methods to create new Instances   #
+    # in the ontology                   #
+    #####################################
+
+    def create_author(self):
+        """Creates a new instance of HucitAuthor (F10_Person).
+
+
+        :return: The newly created author.
+        :rtype: HucitAuthor
+
+        """
+        next_id = self.next_author_id
+        Person = self._session.get_class(surf.ns.EFRBROO['F10_Person'])
+        uri = BASE_URI_AUTHORS % next_id
+        author = Person(uri)
+        author.save()
+        return author
+
+    def create_name(self, author_uri, names):
+        """Creates a new instance of F12_Name.
+
+        :param type author_uri: URI of the author to whom the name belongs.
+        :param list names: A list of name variants to be added as name labels.
+        :return: Description of returned object.
+        :rtype: surf.resource.EfrbrooF12_Name
+
+        """
+        Name = self._session.get_class(surf.ns.EFRBROO['F12_Name'])
+        name_uri = os.path.join(str(author_uri), "name")
+        new_name = Name(name_uri)
+
+        for name in names:
+            newlabel = Literal(name)
+            new_name.rdfs_label.append(newlabel)
+
+        new_name.save()
+        return new_name
+
+    def create_urn(self, author_uri, urn):
+        Type = self._session.get_class(surf.ns.ECRM['E55_Type'])
+        Identifier = self._session.get_class(surf.ns.ECRM['E42_Identifier'])
+        id_uri = "{}/cts_urn".format(str(author_uri))
+        id = Identifier(id_uri)
+        id.rdfs_label = Literal(urn)
+        id.ecrm_P2_has_type = Type(BASE_URI_TYPES % "CTS_URN")
+        id.save()
+        return id
+
+    def create_abbreviation(self, resource_uri, abbrevs):
+
+        type_abbreviation = self._session.get_resource(
+            BASE_URI_TYPES % "abbreviation",
+            self._session.get_class(surf.ns.ECRM['E55_Type'])
+        )
+        Appellation = self._session.get_class(surf.ns.ECRM['E41_Appellation'])
+        abbreviation_uri = "{}/abbr".format(str(resource_uri))
+        abbreviation = Appellation(abbreviation_uri)
+        abbreviation.ecrm_P2_has_type = type_abbreviation
+
+        for abbr in abbrevs:
+            newlabel = Literal(abbr)
+            abbreviation.rdfs_label.append(newlabel)
+
+        abbreviation.save()
+        return abbreviation
+
+    def create_work(self):
+        """Creates a new instance of HucitWork (F1_Work).
+
+
+        :return: The newly created work.
+        :rtype: HucitWork
+
+        """
+        next_id = self.next_work_id
+        Work = self._session.get_class(surf.ns.EFRBROO['F1_Work'])
+        uri = BASE_URI_WORKS % next_id
+        work = Work(uri)
+        work.save()
+        return work
+
+    def create_title(self, work_uri, titles):
+        """Creates a new instance of E35_Title.
+
+        :param type author_uri: URI of the work to which the title belongs.
+        :param list titles: A list of title variants for the title.
+        :return: The newly created work's title.
+        :rtype: surf.resource.EfrbrooF12_Name
+
+        """
+        Title = self._session.get_class(surf.ns.EFRBROO['E35_Title'])
+        title_uri = os.path.join(str(work_uri), "title")
+        new_title = Title(title_uri)
+
+        for title in titles:
+            newlabel = Literal(title)
+            new_title.rdfs_label.append(newlabel)
+
+        new_title.save()
+        return new_title
+
+    def create_creation_event(self, work):
+        """Creates a new instance of F27_Work_Conception.
+
+        :return: The newly created F27_Work_Conception.
+        :rtype:
+
+        """
+        CreationEvent = self._session.get_class(
+            surf.ns.EFRBROO['F27_Work_Conception']
+        )
+        uri = "{}".format(os.path.join(work.subject, 'creation_event'))
+        event = CreationEvent(uri)
+        event.save()
+        return event
+
+    def add_author(self, urn, names, abbreviations, links=[]):
+        author = self.create_author()
+        name = self.create_name(author.subject, names)
+        author_urn = self.create_urn(author.subject, urn)
+        abbr = self.create_abbreviation(author.subject, abbreviations)
+
+        name.ecrm_P139_has_alternative_form = abbr
+        name.update()
+
+        author.ecrm_P1_is_identified_by.append(name)
+        author.ecrm_P1_is_identified_by.append(author_urn)
+        author.update()
+
+        # add a human-readable composed of author's name +
+        # author's CTS URNs
+        author.rdfs_label.append(
+            Literal(
+                "{} :: {}".format(
+                    self.get_author_label(urn).encode('utf-8'),
+                    urn
+                )
+            )
+        )
+
+        # add sameAs links
+        for link in links:
+            author.owl_sameAs.append(URIRef(link))
+        author.update()
+        return author
+
+    def add_work(self, author, urn, titles, abbreviations, links=[]):
+        work = self.create_work()
+        title = self.create_title(work.subject, titles)
+        abbr = self.create_abbreviation(work.subject, abbreviations)
+        author_urn = author.get_urn()
+
+        title.ecrm_P139_has_alternative_form = abbr
+        title.update()
+
+        work_urn = self.create_urn(work.subject, urn)
+        work.efrbroo_P102_has_title.append(title)
+        work.ecrm_P1_is_identified_by.append(work_urn)
+        work.update()
+
+        # create CreationEvent to connect author and work
+        creation_event = self.create_creation_event(work)
+        creation_event.efrbroo_R16_initiated = work
+        creation_event.update()
+        author.efrbroo_P14i_performed.append(creation_event)
+        author.update()
+        creation_event.update()
+
+        # add a human-readable label consisting of author's name +
+        # work title + work's CTS URN
+        work.rdfs_label.append(
+            Literal(
+                "{}, {} :: {}".format(
+                    self.get_author_label(author_urn).encode('utf-8'),
+                    self.get_work_label(urn).encode('utf-8'),
+                    urn
+                )
+            )
+        )
+
+        # add sameAs links
+        for link in links:
+            work.owl_sameAs.append(URIRef(link))
+        work.update()
+        return work
+
+    def remove_author(self, author):
+        """Removes an author and all connected resources from the KB."""
+
+        removed_resources = []
+
+        for identifier in author.ecrm_P1_is_identified_by:
+            removed_resources.append(author.subject)
+            identifier.remove()
+
+        for work in author.get_works():
+
+            for title in work.efrbroo_P102_has_title:
+                removed_resources.append(title.subject)
+                title.remove()
+
+            for identifier in work.ecrm_P1_is_identified_by:
+                removed_resources.append(identifier.subject)
+                identifier.remove()
+
+            removed_resources.append(work.subject)
+            work.remove()
+
+        removed_resources.append(author.subject)
+        author.remove()
+
+        return removed_resources
+
+
+    def remove_work(self, work):
+
+        removed_resources = []
+        author = work.author
+        work_uri = work.subject
+
+        for title in work.efrbroo_P102_has_title:
+            removed_resources.append(title.subject)
+            title.remove()
+
+        for identifier in work.ecrm_P1_is_identified_by:
+            removed_resources.append(identifier.subject)
+            identifier.remove()
+
+        work.remove()
+
+
+        for event in author.efrbroo_P14i_performed:
+            if event.efrbroo_R16_initiated.first == work_uri:
+                author.efrbroo_P14i_performed.remove(event)
+                event.remove()
+                author.update()
+
+        return removed_resources

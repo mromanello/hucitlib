@@ -26,8 +26,9 @@ import itertools
 from surf import *
 from pyCTS import CTS_URN
 from rdflib import Literal
+from rdflib.term import URIRef
 
-logger = logging.getLogger('__name__')
+logger = logging.getLogger(__name__)
 
 surf.ns.register(ecrm="http://erlangen-crm.org/current/")
 surf.ns.register(efrbroo="http://erlangen-crm.org/efrbroo/")
@@ -196,7 +197,7 @@ class HucitAuthor(object):
                                                             and urnstring.ecrm_P2_has_type.first == type_ctsurn][0]
             return urn
         except Exception as e:
-            return None
+            raise e
 
     def set_urn(self,urn):
         """
@@ -219,8 +220,14 @@ class HucitAuthor(object):
         Returns a list of the works (intances of `surf.Resource` and `HucitWork`)
         attributed to a given author.
         """
-        return [work  for creation in self.efrbroo_P14i_performed
-                                for work in creation.efrbroo_R16_initiated]
+        works = []
+        for creation in self.efrbroo_P14i_performed:
+            try:
+                for work in creation.efrbroo_R16_initiated:
+                    works.append(work)
+            except Exception:
+                pass
+        return works
 
     def to_json(self):
         """
@@ -373,6 +380,35 @@ class HucitWork(object):
     def get_titles(self):
         """TODO"""
         return [(label.language, unicode(label)) for label in self.efrbroo_P102_has_title.first.rdfs_label]
+
+    def add_title(self, title, lang=None):
+        """
+        Adds a new title variant to a work.
+
+        :param title: the title to be added
+        :param lang: the language of the title variant
+        :return: `True` if the title is added, `False` otherwise (the title is
+            a duplicate)
+        """
+        try:
+            assert (lang, title) not in self.get_titles()
+        except Exception as e:
+            # TODO: raise a custom exception
+            logger.warning(
+                "Duplicate title detected while adding {} (lang={})".format(
+                    title, lang
+                )
+            )
+            return False
+        newlabel = Literal(title, lang=lang) if lang is not None else \
+            Literal(title)
+        title = self.efrbroo_P102_has_title.first
+        try:
+            title.rdfs_label.append(newlabel)
+            title.update()
+            return True
+        except Exception as e:
+            raise e
 
     def get_abbreviations(self, combine=False):
         """

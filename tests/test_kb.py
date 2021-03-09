@@ -3,6 +3,7 @@
 import logging
 import pytest
 import pickle
+from knowledge_base.surfext import HucitAuthor, HucitWork
 
 logger = logging.getLogger(__name__)
 
@@ -76,3 +77,33 @@ def test_kb_get_statistics(kb_virtuoso):
     stats = kb_virtuoso.get_statistics()
     logger.info(stats)
     assert stats is not None and 0 not in stats.values()
+
+
+def test_next_ids(kb_virtuoso):
+    print(kb_virtuoso.next_author_id)
+    print(kb_virtuoso.next_work_id)
+    print(kb_virtuoso.next_work_id)
+
+
+def test_add_author(kb_virtuoso):
+    """Test adding a new instance of frbroo:F10_Person to the KB."""
+
+    new_author = kb_virtuoso.add_author(
+        urn="urn:cts:Epibau:epibau007",
+        names=["Anthologia Latina", "Alexander Riese"],
+        abbreviations=["AL Riese"],
+    )
+    assert new_author is not None and isinstance(new_author, HucitAuthor)
+
+
+def test_add_work(kb_virtuoso):
+    """Test adding a new instance of frbroo:F1_Work to the KB."""
+    author = kb_virtuoso.get_resource_by_urn('urn:cts:Epibau:epibau007')
+    new_work = kb_virtuoso.add_work(
+        author,
+        urn="urn:cts:Epibau:epibau007.epibau001",
+        titles=["Argumenta Aeneidis"],
+        abbreviations=[]
+    )
+    print(author.get_works())
+    assert new_work is not None and isinstance(new_work, HucitWork)

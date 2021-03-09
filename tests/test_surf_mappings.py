@@ -119,3 +119,8 @@ def test_hucitwork_opmax(kb_virtuoso):
         "urn:cts:latinLit:phi0620.phi001"
     )
     assert Prop_elegies.is_opus_maximum() is True
+
+
+def test_hucitwork_add_title(kb_virtuoso):
+    in_gildonem = kb_virtuoso.get_resource_by_urn('urn:cts:cwkb:1362.4399')
+    in_gildonem.add_title('Bellum Gildonicum', lang='la')
