@@ -3,6 +3,7 @@
 ## Status
 
 [![PyPI version](https://badge.fury.io/py/hucitlib.svg)](https://badge.fury.io/py/hucitlib)
+[![Documentation Status](https://readthedocs.org/projects/hucitlib/badge/?version=latest)](https://hucitlib.readthedocs.io/en/latest/?badge=latest)
 [![Build Status](http://img.shields.io/travis/mromanello/hucit_kb.svg)](https://travis-ci.org/mromanello/hucit_kb)
 [![codecov](https://codecov.io/gh/mromanello/hucit_kb/branch/master/graph/badge.svg)](https://codecov.io/gh/mromanello/hucit_kb)
 

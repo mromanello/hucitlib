@@ -61,10 +61,10 @@ I may also try to get in touch with him mail@franzsteinmetz.de
 ## Publish library to pypi.org
 
 ```
-python setup.py sdist --formats=gztar,zip
+python setup.py sdist
 
 twine check dist/*
 
-
+twine upload dist/*
 ```
 
