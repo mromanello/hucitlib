@@ -36,4 +36,5 @@ setup(
         "surf @ git+https://github.com/franzlst/surfrdf@master#egg=surf"
     ],
     long_description=read("README.md"),
+    long_description_content_type='text/markdown'
 )

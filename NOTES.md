@@ -56,3 +56,15 @@ I may also try to get in touch with him mail@franzsteinmetz.de
 
     `resolver.getPassage()\
     .export(output=Mimetypes.PYTHON.ETREE).xpath(".//tei:milestone")` ecc
+
+
+## Publish library to pypi.org
+
+```
+python setup.py sdist --formats=gztar,zip
+
+twine check dist/*
+
+
+```
+
