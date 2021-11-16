@@ -25,17 +25,15 @@ setup(
         "Operating System :: POSIX",
     ],
     license="GPL v3"
-    # TODO: find a way to install Thibault's fork of surf from here
-    # so that it works when installing by pip.
     ,
     install_requires=[
         "pyCTS",
-        "surf>=1.2.0",
         "docopt",
         "tqdm",
         "retrying",
         "rdflib>=4.2.1",
-        "MyCapytain"
+        "MyCapytain",
+        "surf @ git+https://github.com/franzlst/surfrdf@master#egg=surf"
     ],
     long_description=read("README.md"),
 )
