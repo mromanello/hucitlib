@@ -1,0 +1,13 @@
+language: python
+python:
+  - "3.6"
+# command to install dependencies
+install:
+  - sudo -H ./install_3stores.sh
+  - "pip install -U -r requirements.txt"
+  - "pip install -U -r requirements_dev.txt"
+  - "pip install -e ."
+# command to run tests
+script: py.test --cov=knowledge_base -vv
+after_success:
+- codecov

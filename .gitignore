@@ -1,0 +1,27 @@
+# MacOS Specific
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+
+# pytest
+.cache
+
+# sphinx
+docs/_build
+
+# venv
+.env
+env/
+
+# Vim tmp files
+*~
+
+# pypi
+build/
+dist/
+
+.coverage
+*.egg-info/
+\#*#

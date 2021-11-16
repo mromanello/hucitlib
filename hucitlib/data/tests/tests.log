@@ -1,0 +1,14 @@
+2020-11-17 17:08:00,034 root         INFO     Using config file: /Users/matteo/Dropbox/My Mac (MacBook-Pro-9.local)/Documents/ClassicsCitations/hucitlib/hucitlib/config/virtuoso_pc6.ini
+2020-11-17 17:08:00,507 test_kb      INFO     {http://purl.org/hucit/kb/authors/3129 : http://erlangen-crm.org/efrbroo/F10_Person}
+2020-11-17 17:08:00,507 test_kb      INFO     {http://purl.org/hucit/kb/authors/3130 : http://erlangen-crm.org/efrbroo/F10_Person}
+2020-11-17 17:08:00,507 test_kb      INFO     {http://purl.org/hucit/kb/authors/3131 : http://erlangen-crm.org/efrbroo/F10_Person}
+2020-11-17 17:08:00,507 test_kb      INFO     {http://purl.org/hucit/kb/authors/3132 : http://erlangen-crm.org/efrbroo/F10_Person}
+2020-11-17 17:08:00,507 test_kb      INFO     {http://purl.org/hucit/kb/authors/3133 : http://erlangen-crm.org/efrbroo/F10_Person}
+2020-11-17 17:08:00,507 test_kb      INFO     {http://purl.org/hucit/kb/authors/3134 : http://erlangen-crm.org/efrbroo/F10_Person}
+2020-11-17 17:08:00,508 test_kb      INFO     {http://purl.org/hucit/kb/authors/3135 : http://erlangen-crm.org/efrbroo/F10_Person}
+2020-11-17 17:08:00,508 test_kb      INFO     {http://purl.org/hucit/kb/authors/3136 : http://erlangen-crm.org/efrbroo/F10_Person}
+2020-11-17 17:08:00,508 test_kb      INFO     {http://purl.org/hucit/kb/authors/3137 : http://erlangen-crm.org/efrbroo/F10_Person}
+2020-11-17 17:08:00,508 test_kb      INFO     {http://purl.org/hucit/kb/authors/3138 : http://erlangen-crm.org/efrbroo/F10_Person}
+2020-11-17 17:08:00,675 test_kb      INFO     {http://purl.org/hucit/kb/authors/927 : http://erlangen-crm.org/efrbroo/F10_Person}
+2020-11-17 17:14:27,910 test_kb      INFO     4957 unique author names found in the KB
+2020-11-17 17:22:27,517 test_kb      INFO     806 abbreviations of author names in the KB

@@ -39,7 +39,7 @@ def test_hucitauthor_add_duplicate_name(kb_virtuoso):
 @pytest.mark.run(order=10)
 def test_hucitauthor_add_abbreviation(kb_virtuoso):
     """
-    TODO: try adding abbreviation to an author that does not have any
+    Test adding an abbreviation to an author that does not have any (?).
     """
     abbr = "Arist."
     aristophanes = kb_virtuoso.get_resource_by_urn("urn:cts:greekLit:tlg0019")
@@ -52,13 +52,15 @@ def test_hucitauthor_add_abbreviation(kb_virtuoso):
 def test_hucitauthor_set_urn(kb_virtuoso):
     urn = "urn:cts:greekLit:tlg0012"
     homer = kb_virtuoso.get_resource_by_urn(urn)
-    new_urn = "urn:cts:greekLit:tlg0013"
+    new_urn = "urn:cts:greekLit:homer"
     homer.set_urn(new_urn)
-    assert str(homer.get_urn()) == new_urn
+    homer.load()
+    assert str(homer.get_urn()).value == new_urn
 
     homer = kb_virtuoso.get_resource_by_urn(new_urn)
     homer.set_urn(urn)
-    assert str(homer.get_urn()) == urn
+    homer.load()
+    assert str(homer.get_urn()).value == urn
 
 
 # TESTS FOR HUCITWORK
@@ -68,11 +70,13 @@ def test_hucitwork_set_urn(kb_virtuoso):
     iliad = kb_virtuoso.get_resource_by_urn(urn)
     new_urn = "urn:cts:greekLit:tlg0012.iliad"
     iliad.set_urn(new_urn)
-    assert str(iliad.get_urn()) == new_urn
+    iliad.load()
+    assert str(iliad.get_urn()).value == new_urn
 
     iliad = kb_virtuoso.get_resource_by_urn(new_urn)
     iliad.set_urn(urn)
-    assert str(iliad.get_urn()) == urn
+    iliad.load()
+    assert str(iliad.get_urn()).value == urn
 
 
 @pytest.mark.run(order=13)
@@ -95,11 +99,10 @@ def test_hucitwork_add_abbreviation(kb_virtuoso):
 @pytest.mark.run(order=15)
 def test_hucitwork_get_abbreviations(kb_virtuoso):
     iperide = kb_virtuoso.get_resource_by_urn("urn:cts:greekLit:tlg0030")
-    combined_abbreviations = iperide.get_works()[0].get_abbreviations(
-        combine=True
+    combined_abbreviations = iperide.get_works()[0].get_abbreviations(combine=True)
+    assert combined_abbreviations is not None and type(combined_abbreviations) is type(
+        []
     )
-    assert combined_abbreviations is not None and \
-        type(combined_abbreviations) is type([])
     logger.info(combined_abbreviations)
 
 
@@ -107,17 +110,13 @@ def test_hucitwork_opmax(kb_virtuoso):
     """Test opus maximum-related functions."""
     # test that AR's Argonatica are set as his OpMax
     logger.info("Veryfying AR's Argonautica")
-    AR_argonautica = kb_virtuoso.get_resource_by_urn(
-        "urn:cts:greekLit:tlg0001.tlg001"
-    )
+    AR_argonautica = kb_virtuoso.get_resource_by_urn("urn:cts:greekLit:tlg0001.tlg001")
     AR_urn = "urn:cts:greekLit:tlg0001"
     assert AR_argonautica.is_opus_maximum() is True
     assert AR_argonautica == kb_virtuoso.get_opus_maximum_of(AR_urn)
 
     logger.info("Veryfying Propertius' Elegies")
-    Prop_elegies = kb_virtuoso.get_resource_by_urn(
-        "urn:cts:latinLit:phi0620.phi001"
-    )
+    Prop_elegies = kb_virtuoso.get_resource_by_urn("urn:cts:latinLit:phi0620.phi001")
     assert Prop_elegies.is_opus_maximum() is True
 
 
