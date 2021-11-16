@@ -16,6 +16,9 @@ te = kb._session.get_resource("%s/urn:cts:greekLit:tlg0012.tlg001:1" % w.subject
 
 - [x] refactor sub-module names/organisation
 - [ ] fix bug in `surf` query translator (see below)
+- [ ] merge epibau branch
+- [ ] attach TextElements to a named graph, named after the TextStructure they live in (its URI)
+- [ ] tests for the populate module
 - [ ] in travis, run tests against the newly installed triple store (not the remote one)
 
 **bug with `surf`**
@@ -37,3 +40,19 @@ possible solution: swap lines 96 and 103
 
 when doing this, make sure to clone from https://github.com/franzlst/surfrdf
 I may also try to get in touch with him mail@franzsteinmetz.de
+
+---------------
+
+.. note::
+    Notes on fetching less common/stable text structures (Bekker, Stephanus).
+
+    **Problem**: the Leipzig CTS API exposes only Stephanus pages (e.g. 17)
+                but not Stephanus sections (e.g. 17a). but the sections are there
+                in the TEI XML, marked up as `tei"milestone` elements.
+
+    **Solution**: a solution to this is to fetch the first level via the API,
+                and extract the second level units directly from the TEI/XML
+                via xpath.
+
+    `resolver.getPassage()\
+    .export(output=Mimetypes.PYTHON.ETREE).xpath(".//tei:milestone")` ecc
