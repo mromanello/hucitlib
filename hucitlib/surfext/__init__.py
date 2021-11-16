@@ -388,6 +388,8 @@ class HucitTextStructure(object):
     """
 
     def add_element(self, text_element, top_level=False) -> None:
+        # TODO: the problem here is that the change to text element
+        # is not saved
         text_element.context = self.subject
         if top_level:
             self.hucit_has_element.append(text_element)

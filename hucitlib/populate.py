@@ -12,6 +12,11 @@ Options:
     --kb-config-file=<path> Path to the configuration file (overwrites default configuration).
     --log-file=<path>   Path to the log file
     --verbose   Turn on verbose logging
+
+Example:
+    python hucitlib/populate.py --work=urn:cts:greekLit:tlg0011.tlg004
+     --log-file=hucitlib/data/tests/populate-tlg0011.tlg004.log
+     --kb-config-file=hucitlib/config/virtuoso_local.ini
 """
 
 
